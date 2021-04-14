@@ -46,8 +46,12 @@
 \togglefalse{printglossary}
 \togglefalse{printindex}
 %-----------------------------------------------------------------
-\title{Notes on SICP, SICM, Functional Differential Geometry, 
-and Software Design for Flexibility, etc.}
+\title{Notes on\\
+ SICP,\\
+  SICM,\\
+   Functional Differential Geometry,\\ 
+ Software Design for Flexibility, \\
+ etc.}
 \author{John Alan McDonald 
 (palisades dot lakes at gmail dot com)}
 \date{draft of \today}
@@ -91,10 +95,156 @@ VanderhartSierra:2009:Clojure,}.
 \begin{plSection}{\citeAuthorYearTitle{HansonSussman:2021:SDFF}}
 %-----------------------------------------------------------------
 \begin{plSection}{Forward (Guy Steele)}
-\end{plSection}{Forward (Guy Steele)}
+
+Describes book as \emph{master class}, not tutorial.
+
+Argues for bundling code plus data as \emph{closures}. 
+Also \emph{generic functions}.
+
+Not, perhaps, the clearest such argument, but how much can you do
+in a 2 pages forward?
+
+My argument would go something like:
+Data is just bits, meaningless on its own.
+The code that manipulates those bits determines their 
+\emph{meaning}.
+The farther the ``distance'' (in some sense) 
+between code an data, 
+the higher the likelihood of confusion,
+of misinterpreting bits. 
+
+\end{plSection}%
+{Forward (Guy Steele)}
 %-----------------------------------------------------------------
 \begin{plSection}{Preface}
-\end{plSection}{Preface}
+
+One goal is to modify by addition, 
+without changing existing code.
+
+Begins talking about a very questionable analogy 
+to biological systems.
+Possibly a fallacy inherited from traditional AI.
+Particularly ironic in the middle of a pandemic.
+
+Something I believe:
+\begin{plQuote}
+{\citeAuthorYearTitle[p~xiii]{HansonSussman:2021:SDFF}}{}
+We have often programmed ourselves into corners
+and had to expend great effort to escape from those corners.
+We have accumulated enough experience to feel that we can
+identify, isolate, and demonstrate strategies
+that we have found to be effective for building large systems
+that can be adapted for purposes 
+that were not anticipated in the original design. {\ldots}
+\end{plQuote}
+However, they may be over promising in some sense.
+
+Sometimes, the best choice is starting over.
+There are different levels of ``starting over'':
+for example, complete re-design, 
+re-implementing a mostly-the-same API.
+
+My own experience is that, when having a choice
+between starting from scratch and fixing the existing code,
+the times I chose to start over were never a mistake,
+and many, if not most, of the times I chose to ``fix'' existing
+code turned out to cost more time than starting over would have.
+I think I am more likely than most to advocate starting clean,
+and in my experience I've been too conservative in that direction.
+The cause may be over-estimating the cost of something new
+relative to the costs of maintaining/updating something that
+already exists. 
+
+Plus fear of the unknown: legacy code whose authors have vanished,
+and no one present fully understands what it is doing or why.
+The fear is that there is some lost lesson in the existing
+code that will have to be painfully relearned in anything new.
+
+We will see if the book has any to say about making such choices.
+
+\end{plSection}%{Preface}
+%-----------------------------------------------------------------
+\begin{plSection}{Acknowledgements}
+\begin{plQuote}
+{\citeAuthorYearTitle[p~xiix]{HansonSussman:2021:SDFF}}{}
+In many ways this book is an advanced sequel to SICP.
+\end{plQuote}
+
+Sussman acknowledges discussions (in graduate school?)
+with Minsky and fellow students---possibly a source for the
+biologically motivated old-style AI ideas that appear.
+\end{plSection}%{Acknowledgements}
+%-----------------------------------------------------------------
+\begin{plSection}{Ch 1: Flexibility in nature and design}
+
+I find this chapter disappointing.
+
+I think the fundamental flaw is using 
+inappropriate analogies to (physical building) architecture
+and, especially, evolution, 
+to justify their ideas about software artifact design
+and construction,
+rather than arguing on first principles.
+This is some version of the ``false analogy'' 
+fallacy~\cite{wiki:ArgumentFromAnalogyFalse},
+or perhaps the
+``appeal to authority'' fallacy~\cite{wiki:ArgumentFromAuthority},
+where the ``authority'' isn't talking about the problem at hand, 
+and is not so clearly an ``authority'' in their own domain either.
+
+Another issue is that they seem to talk about 
+specialized vs general purpose
+and success vs failure as both binary.
+Any tool will have some domain of tasks where it can be used
+with varying degrees of success.
+Possibly the argument here should really be about 
+how (and when or if) making things more general increases
+the probable degree of success. 
+
+I think they may be missing the need for humility in specifying
+what a piece of software (or any tool) will be used for.
+Enlarging the domain of applicability, in the right ways,
+increases the chances that it will be useful when circumstances 
+change, and, more important, 
+when the first real use exposes all sorts of things 
+you simply failed to think of ahead of time
+(\textbf{TODO:} an example would be nice here.)
+
+%-----------------------------------------------------------------
+\begin{plSection}{Additive programming}
+
+Not crazy about the name.
+
+Code can be flexible if it permits updates by \emph{replacing}
+parts, not just \emph{adding} parts.
+Common case: 
+replace old implementation with (almost) equivalent 
+higher performance one.
+
+In either case, proper abstraction makes it less likely
+an update will break something that currently works.
+
+Advocates robustness in the sense of
+(1) accepting large domain of inputs
+and (2) producing a small ``range of outputs of a part'' 
+(codomain).
+
+Not sure I believe this.
+Depends on what ``accepting'' means in (1).
+Often the right choice is to clearly reject unacceptable inputs
+as soon as possible.
+For example, if somebody asks for $\sqrt{\text{blue}}$
+you generally don't want to quietly return \texttt{0x00000F}.
+
+\end{plSection}%{Additive programming}
+%-----------------------------------------------------------------
+
+\begin{plQuote}
+{\citeAuthorYearTitle[p~xiix]{HansonSussman:2021:SDFF}}{}
+\end{plQuote}
+
+
+\end{plSection}%{Ch 1: Flexibility in nature and design}
 %-----------------------------------------------------------------
 \end{plSection}%{\citeAuthorYearTitle{HansonSussman:2021:SDFF}}
 %-----------------------------------------------------------------
@@ -142,7 +292,6 @@ I think this eliminates the set paradoxes
 that led to the ``crisis in mathematics'' circa 1900~\cite{
 Feferman:2000:ConstructivePredicativeClassicalAnalysis,
 Ferreiros:2008:Crisis}.
-
 
 A proof is a procedure that takes a set of axiom expressions
 and returns another (according to some rules).
