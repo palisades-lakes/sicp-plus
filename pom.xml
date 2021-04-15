@@ -7,8 +7,8 @@
  <modelVersion>4.0.0</modelVersion>
  <groupId>palisades-lakes</groupId>
  <artifactId>sicpplus</artifactId>
- <description>Continuous spaces, differentiable functions, optimization, ...</description>
- <version>0.0.1-SNAPSHOT</version>
+ <description>Clojure exercises based on SICP, SICM, SDFF, etc.</description>
+ <version>0.0.0-SNAPSHOT</version>
  <parent>
   <groupId>palisades-lakes</groupId>
   <artifactId>palisades-lakes-parent</artifactId>

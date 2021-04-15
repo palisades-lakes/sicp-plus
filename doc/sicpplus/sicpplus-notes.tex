@@ -113,8 +113,7 @@ between code an data,
 the higher the likelihood of confusion,
 of misinterpreting bits. 
 
-\end{plSection}%
-{Forward (Guy Steele)}
+\end{plSection}%{Forward (Guy Steele)}
 %-----------------------------------------------------------------
 \begin{plSection}{Preface}
 
@@ -142,18 +141,21 @@ However, they may be over promising in some sense.
 Sometimes, the best choice is starting over.
 There are different levels of ``starting over'':
 for example, complete re-design, 
-re-implementing a mostly-the-same API.
+re-implementing a mostly-the-same API, {\ldots}
 
 My own experience is that, when having a choice
 between starting from scratch and fixing the existing code,
 the times I chose to start over were never a mistake,
 and many, if not most, of the times I chose to ``fix'' existing
 code turned out to cost more time than starting over would have.
-I think I am more likely than most to advocate starting clean,
+I think I have always been more likely than most 
+                to advocate starting clean,
 and in my experience I've been too conservative in that direction.
 The cause may be over-estimating the cost of something new
 relative to the costs of maintaining/updating something that
-already exists. 
+already exists. THe reasons for that may have something to do
+with the difficulty of associating costs to a design decision
+that was made long ago.
 
 Plus fear of the unknown: legacy code whose authors have vanished,
 and no one present fully understands what it is doing or why.
@@ -175,7 +177,7 @@ with Minsky and fellow students---possibly a source for the
 biologically motivated old-style AI ideas that appear.
 \end{plSection}%{Acknowledgements}
 %-----------------------------------------------------------------
-\begin{plSection}{Ch 1: Flexibility in nature and design}
+\begin{plSection}{1 Flexibility in nature and design}
 
 I find this chapter disappointing.
 
@@ -192,23 +194,46 @@ or perhaps the
 where the ``authority'' isn't talking about the problem at hand, 
 and is not so clearly an ``authority'' in their own domain either.
 
-Another issue is that they seem to talk about 
+They mention both screw fasteners and digital computers
+as examples  of ``general purpose inventions'',
+without saying what ``general purpose'' means.
+There is obviously some limitation,
+since a digital computer isn't very useful for holding two pieces 
+of metal together, and a screw fastener won't help much in, say,
+calculating your taxes. 
+But the analogy really falls apart if you stop for a moment to
+think about the fact that there probably on the order of 
+$10^{5}\text{--}10^{6}$ different types of screw fasteners,
+some  of which are highly optimized for specific applications,
+and none of which cover all possible applications.
+And the same is true, more or less, for digital computers,
+though the number of distinct types is likely fewer.
+
+I'm sure they know better, 
+but their discussion suggests
 specialized vs general purpose
-and success vs failure as both binary.
+and success vs failure are both binary.
 Any tool will have some domain of tasks where it can be used
 with varying degrees of success.
 Possibly the argument here should really be about 
 how (and when or if) making things more general increases
 the probable degree of success. 
 
-I think they may be missing the need for humility in specifying
+Possibly a better way to approach this
+would be to talk about the need for humility in specifying
 what a piece of software (or any tool) will be used for.
 Enlarging the domain of applicability, in the right ways,
 increases the chances that it will be useful when circumstances 
 change, and, more important, 
 when the first real use exposes all sorts of things 
-you simply failed to think of ahead of time
-(\textbf{TODO:} an example would be nice here.)
+you simply failed to think of ahead of time.
+This is related in some ways to the ``Postel's law''
+mentioned later, which I would re-word as:
+functions should have large domains and small codomains.
+But I think it's not really the same thing
+(\textbf{TODO:} need a better word for problem ``domain"
+that distinguishes it from function ``domain".
+And examples would be nice.)
 
 %-----------------------------------------------------------------
 \begin{plSection}{Additive programming}
@@ -219,16 +244,38 @@ Code can be flexible if it permits updates by \emph{replacing}
 parts, not just \emph{adding} parts.
 Common case: 
 replace old implementation with (almost) equivalent 
-higher performance one.
+higher performance one, and discard the slow version to ensure
+it isn't invoked accidentally. 
 
 In either case, proper abstraction makes it less likely
 an update will break something that currently works.
 
-Advocates robustness in the sense of
+What they advocate (p~2--3)
+\begin{itemize}
+  \item minimize assumptions about what a program will do.
+  \item just-in-time decisions instead.
+  \item whole more than sum of parts (this is almost automatic,
+  depending on the meaning of ``sum''.)
+  \item parts with separate concerns. (should really be groups of
+  parts that share concerns, separate different groups.
+  contradicts shared apis below.)
+  \item minimize interactions (which contradicts to some degree
+  wanting more than the sum of parts)
+  \item parts ``simple and general'' 
+  (but what does that mean? given two designs, how do you
+  tell which is simpler and more general?)
+  \item enlarge the (function) domain of ``acceptable'' inputs
+  (which contradicts ``simple and general''?)
+  \item reduce the codomain of possible outputs. 
+  \item families of parts with same api (possibly on both sides
+  of the api) (contradicts separate concerns, since sharing
+  an api means sharing ``concerns'')
+\end{itemize}
+
+Postel's Law: Advocates robustness in the sense of
 (1) accepting large domain of inputs
 and (2) producing a small ``range of outputs of a part'' 
 (codomain).
-
 Not sure I believe this.
 Depends on what ``accepting'' means in (1).
 Often the right choice is to clearly reject unacceptable inputs
@@ -236,14 +283,199 @@ as soon as possible.
 For example, if somebody asks for $\sqrt{\text{blue}}$
 you generally don't want to quietly return \texttt{0x00000F}.
 
+More concrete recommendations (p~3--5):
+\begin{itemize}
+  \item \emph{domain specific languages}, which they equate to a family
+  of ``mix-and-match parts''. I don't think that's 
+  what most people mean by DSL, rather something more like
+  syntactic sugar to make it easier to type common expressions
+  in a problem domain. I've never been a fan of that notion of
+  DSLs. Needing one is a symptom that you haven't gotten the
+  abstractions (the mix-and-match parts) right. And it tends
+  to create arbitrary syntactic barriers resulting in 
+  ``impedance mismatch''.
+  \item \emph{generic dispatch}. They require methods (``handlers'')
+  to be associated with ``disjoint sets of arguments'', 
+  which I don't think is always the right choice.
+  They don't assume method choice is determined by class
+  inheritance (good!).
+  \item \emph{layer} data and procedures. Not at all clear what 
+  that means (yet). Something about metadata.
+  Example of numerical data with units.  
+  \item combine multiple sources of (independent) 
+  \emph{partial information}. 
+  Also not clear what it means (yet).
+  Example of combining parallax and brightness, etc., to estimate
+  distance to star. 
+  Not clear what's partial about this.
+  Sounds like algorithms rather than
+  program design techniques, and the idea that this can be done
+  in an application-independent way, without careful
+  testing and tuning in each case, seems naive.
+  We'll see {\ldots}.
+  \item \emph{degeneracy}. again not clear from brief description.
+  They say that its' ``dual'' to partial
+  information, but actually sounds like the same thing.
+  Perhaps the idea is multiple procedures for computing the same
+  thing, rather than multiple sources of data.
+  (I really hate it when people use ``dual'' with specifying
+  what they mean, in a way that seems like they just
+  think it sounds cool, 
+  and haven't thought thru what the point is.)
+\end{itemize}
+
+Last couple paragraphs on p~5:
+Mentions upfront cost of flexible design vs
+lifetime maintenance.
+I think this could be strengthened.
+A point that could be added is that 
+it is easier to see the effect of design decisions 
+on the cost/time of the initial implementation,
+and harder to connect them to maintenance costs, 
+often years later, with no one around who even remembers 
+what those choices were. 
+
 \end{plSection}%{Additive programming}
 %-----------------------------------------------------------------
+\begin{plSection}{1.1 Architecture of computation}
 
-\begin{plQuote}
-{\citeAuthorYearTitle[p~xiix]{HansonSussman:2021:SDFF}}{}
-\end{plQuote}
+``A metaphor from architecture may be illuminating for the kind
+of system that we contemplate.''
 
+My appeal-to-false-authority alarms are going off.
+The appeal to physical architecture, pattern languages, etc.,
+is commonplace in writings on software design,
+but I have always found it suspect.
+The idea that a field 
+where the constraints and degrees of freedom
+are so fundamentally different should be imitated 
+by software design is questionable at best.
+As one who has had to deal with many heavily designed
+and consequently dysfunctional buildings,
+I find the idea that architects are actually good at what they do,
+in any real sense, dubious.
+See for example \citeAuthorYearTitle{Rybczynski:1986:Home},
+which is a reference I just happen to have read some years ago.
+(\textbf{TODO:} quote the forward?)
 
+The remainder of the section is a confusing description 
+of the term ``parti''.
+And I don't think there is anything that wouldn't have been 
+clearer if given directly in terms of software,
+without the appeal to (physical) architecture as a model. 
+
+\end{plSection}%{Sec~1.1 Architecture of computation}
+%-----------------------------------------------------------------
+\begin{plSection}{1.2 Smart parts for flexibility}
+
+Starts with discussing the difficulty of specification
+in the face of complexity. 
+
+But, how do you measure complexity?
+Example: how do you specify that a program
+``plays a \emph{good} game of chess''?
+But the issue there isn't complexity.
+Possibly it is intrinsic ambiguity: disagreement about what
+``good'' means.
+I'm not sure that chess is the best example of that.
+Most would agree winning is better than losing.
+I suppose you could get some ambiguity out of lack of
+total ordering: 
+program A might (usually) beat program B,
+which might (usually) beat program C, 
+which might (usually) beat program A {\ldots}.
+
+Then another appeal-to-false-authority,
+in this case, with a claim the biological systems
+are inherently robust and adaptable
+(ironic in the middle of a pandemic).
+Not clear at this point exactly what that implies for software
+design.
+
+``One idea is that biological systems use contextual signals
+that are informative rather than imperative.
+There is no master commander saying what each mart must do;
+instead the parts choose their roles based on their surroundings.''
+
+They seem to be advocating some communicating agents model
+of computation.
+The point is lost: at one point they are arguing for
+``smart parts'', but also ``simpler'' and ``more general'',
+all of which conflict. depending on the meaning of those
+undefined terms. 
+The analogy to biological systems falls apart with another
+moment's thought: 
+individual cells might be considered ``general'',
+at least when they are stem cells,
+but I don't think many would accept calling them ``simple''
+or ``smart''.
+
+This is followed by another false analogy to social systems:
+democracy is better than autocracy, 
+so software should avoid central controller designs.
+I think there are good reasons for avoiding 
+centralized synchronization,
+and it doesn't need an appeal to democracy to justify it.
+If anything the argument could go in the opposite direction:
+it's easier to understand why synchronization and deadlock
+are problems in software systems, 
+which might help understand when similar designs 
+might or might not be a good idea in social systems.
+ 
+%-----------------------------------------------------------------
+\begin{plSection}{Body plans}
+
+``All vertebrates have essentially the same body plan.''
+
+False authority alarm! 
+They assume, without any evidence or argument,
+that this ia a good thing, 
+rather than just a contingent effect of 
+evolution and constraints of biological development.
+Rather than being an example of flexible design,
+the shared body plan of vertebrates
+is as or more likely evidence of natural selection
+``painting itself into a corner''.
+
+They then turn to design of radio receivers as another analogy.
+The problem with this analogy is that all radio receivers
+are doing pretty much the same thing,
+and, even in this specialized case, 
+it appears that there are a number of distinct ``body plans''.
+
+They eventually get around to ``combinators''
+and ``combinator languages''.
+I've never been crazy about the terminology;
+to me it makes something that's simple and obvious 
+seem more difficult
+and obscure than it needs to be.
+
+The actual idea is good and important:
+Systems are built out of things we think of as more-or-less
+independent components;
+the structures that combine components 
+are themselves components,
+(more-or-less) independent of each other 
+and the things they combine,
+and they can be further combined, ad infinitum {\ldots}.
+
+I don't think you need any of the analogies to explain this
+or justify it; I think they just get in the way.
+And biological system don't have the same elegant recursive
+structure, so if you took that as you model, 
+you would miss something critical.
+
+``Biological systems are universal in that each component can,
+in principle, act as any other component.''
+This is just flat out false. 
+
+(And what's the implication for
+software?)
+ 
+\end{plSection}%{Body plans}
+%-----------------------------------------------------------------
+\end{plSection}%{1.2 Smart parts for flexibility}
+%-----------------------------------------------------------------
 \end{plSection}%{Ch 1: Flexibility in nature and design}
 %-----------------------------------------------------------------
 \end{plSection}%{\citeAuthorYearTitle{HansonSussman:2021:SDFF}}
