@@ -466,15 +466,252 @@ structure, so if you took that as you model,
 you would miss something critical.
 
 ``Biological systems are universal in that each component can,
-in principle, act as any other component.''
+in principle, act as any other component. [p~11]''
 This is just flat out false. 
+Not even really true for stem cells, 
+even at early stages of development,
+and certainly not true later.
 
-(And what's the implication for
-software?)
- 
+(And what's the implication for software?)
+
+Section finishes by proposing an \emph{evaluator} as 
+analog to stem cells:
+``An evaluator takes a description of some computation
+to be performed and input to that computation.
+It produces the outputs that would arise if we passed the inputs
+to a bespoke component that implemented the desired computation.
+In computation we have a chance to pursue the powerfully
+flexible strategy of embryonic development.
+We will elaborate on the use of evaluator technology in chapter 5.''
+
+This has so many problems, it's hard to know where to begin.
+There are the usual, and unnecessary, appeal-to fallacies.
+Perhaps more important, how is 
+``a description of some computation to be performed"
+different from 
+``a bespoke component''? 
+The stem cell analogy doesn't work, and obscures whatever
+advantages and disadvantages an evaluator strategy might have.
+THere are many stem cells,
+and each re-configures itself
+into something distinct and more specialized, 
+in a one-way process.
+The (almost always single) evaluator doesn't change, 
+it just gets different computations to perform.
+My guess is that the advantages are related to delaying
+certain decisions about how to perform a particular computation,
+following the general principle (not from biology or architecture)
+that delaying a decision often gives you 
+more information that can be used to optimize it.
+Of course, delay isn't always better; 
+sometimes waiting removes options.
+
 \end{plSection}%{Body plans}
 %-----------------------------------------------------------------
 \end{plSection}%{1.2 Smart parts for flexibility}
+%-----------------------------------------------------------------
+\begin{plSection}{1.3 Redundancy and degeneracy}
+
+
+
+Problems:
+\begin{itemize}
+  
+  \item ``One of the characteristics of biological systems
+is that they are redundant. 
+Organs such as the liver and kidney are highly \emph{redundant}:
+there is vastly more capacity than is necessary to do the job,
+so a person missing a kidney or part of a [sic] liver suffers
+no obvious incapacity.
+Biological systems are also highly \emph{degenerate}:
+there are usually many ways 
+to satisfy a given requirement.''[p~12]
+Usual unnecessary, false analogy.
+  There are many obvious, better analogies, like airplane design.
+  
+  \item ``\emph{highly} redundant'',
+  ``\emph{vastly} more capacity'' [emphasis mine]:
+  Unless you could get by with, say,  less than $\frac{1}{10}$ 
+  of a liver and kidney, I wouldn't say they are ``highly'' or
+  ``vastly'' redundant.
+  
+  \item''\emph{degenerate}'': A few minutes looking at 
+  dictionaries online finds no definition that matches this use.
+  A guess is that this use is like ``dual'' earlier---a math-y
+  sounding word that they haven't defined or thought thru
+  carefully. What they mean is actually ``redundant'',
+  and I guess they are trying to distinguish two kinds 
+  of redundancy: excess capacity and and alternate mechanisms.
+  
+  \item They go on to describe the genetic code as ``degenerate'',
+  which is yet another, distinct, non-standard, undefined meaning. 
+  In this case, the issue is that
+  the mapping from DNA to protein is not $\OneToOne$,
+  multiple points in DNA space map to the same protein.
+  They then confuse the many-to-one-ness of the mapping
+  with a different, and not so obviously true, ``continuity" 
+  property:
+  small changes to DNA (often) result 
+  in small changes in cell function.
+  
+  \item ``The theoretical structure of physics is deeply 
+\emph{degenerate}.
+For example, problems in classical mechanics can be approached
+in multiple ways.''[p~12, emphasis mine]
+This use is closer to their ``definition'',
+but missing a key point. 
+A better way to look at these things is to formulate 
+the problem at the right level of abstraction,
+and consider the choice between 
+multiple representations/parameterizations of that abstraction
+a computational detail.
+(I think this may be why I never got very far 
+in the first edition of SICM.)
+For example:
+\begin{plQuote}
+{\citeAuthorYearTitle{MacLane:1954:Courses}}
+{maclane:vspace}
+Throughout these courses the infusion of a geometrical
+point of view is of paramount importance. A vector
+is geometrical; it is an element of a vector space, defined
+by suitable axioms—whether the scalars be real numbers or
+elements of a general field. A vector is not an n-tuple of
+numbers until a coordinate system has been chosen. Any
+teacher and any text book which starts with the idea that vectors
+are n-tuples is committing a crime for which the proper
+punishment is ridicule. The n-tuple idea is not ‘easier,’ it is
+harder; it is not clearer, it is more misleading. By the same
+token, linear transformations are basic and matrices are their
+representations\ldots
+\end{plQuote}
+
+\item ``Engineered systems may incorporate some redundancy 
+{\ldots}.
+But they almost never incorporate degeneracy {\ldots},
+except as a side effect of designs that are not optimal.''
+Doesn't take much effort to show this is false.
+Airplanes and nuclear power plants, among many other cases,
+as a matter of course, incorporate many ``degenerate'' components,
+where ``degenerate'' means 
+``redundant distinct mechanisms for each critical task''.
+
+\end{itemize}
+
+At the end of this section, they refer to 
+``combining partial information'' which will be covered in ch 7.
+This confused discussion of ``redundancy'' and ``degeneracy''
+is at best distantly related, and doesn't touch 
+on the key issue: How do you combine?
+Maybe ch 7 will be better {\ldots}.
+
+\end{plSection}%{1.3 Redundancy and degeneracy}
+%-----------------------------------------------------------------
+\begin{plSection}{Exploratory behavior}
+
+This section is similar to the preceding ones.
+Inappropriate biological analogies that misunderstand the biology
+and obscure the possibly valuable point.
+
+The real idea is to compute something by searching a domain.
+They seem to assume search must be random,
+but of course that need not be so.
+
+Figure 1.2 illustrates two possibilities:
+(1) generate and test, looping until the test returns success,
+and (2) generate and filter, without feedback.
+I suspect that there is a better, more general picture,
+related to walking around a domain,
+using data accumulated on previous samples to determine
+the next step.
+
+They finally mention ``backtracking'', to be discussed 
+further in ch 4 and 5.
+
+\end{plSection}%{Exploratory behavior}
+%-----------------------------------------------------------------
+\begin{plSection}{1.5 The cost of flexibility}
+
+Better than the previous sections,
+because they mostly drop 
+the appeals to false authority/analogy fallacies.
+
+Starts by saying general and evolvable systems,
+ that use the techniques described (very poorly!) 
+ in the previous systems, are expensive.
+Not clear to me that that is true, at least not always,
+and nothing concrete to justify it.
+
+``Part of the problem is that we are thinking abut cost
+in the wrong terms.''[p~17]
+Good as far as it goes, but I think they are missing something
+important.
+
+A fundamental problem in software design, or any design problem,
+is that it is hard to usefully characterize what ``better' means,
+and hard to demonstrate to a skeptical observer that one
+approach is ``better'' than another.
+Hard enough to do with a reasonably objective observer,
+and so much worse in areas like software design,
+where people are heavily invested in particular technologies,
+in time, money, and emotion.
+
+I think this is a reason that so many fall into two rough classes
+of fallacious reasoning. 
+
+One is the appeal to false authority/analogy so prevalent in this 
+chapter. 
+In the perhaps more common version of this, the authors set 
+themselves as the authority, 
+usually accompanied by oracular pronouncements left to the reader
+to interpret.
+This book is thankfully free from that.
+The next most common is to appeal to some authority/analogy
+from some other problem domain, about which 
+neither the reader nor the author know much.
+
+The second class of fallacy is some variation on false 
+quantification. 
+In other words, pick some criterion that is
+easy to measure, easy to compare, and, ideally,
+provides a total ordering. 
+THe classic example is thinking more money is always better;
+easy to tell that job A pays more than job B;
+hard to tell which one really makes your life ``better''.
+
+This chapter is essentially defending their ideas about software
+design from fallacy type (2),
+but they could do better.
+
+They point out the error of premature optimization,
+but miss the fact that start up costs are easier to measure
+and, because they are closer in time, easier to attribute to
+design choices. 
+Long term maintenance costs are harder to measure and
+associate with particular design choices.
+
+The other problem with early optimization is that you don't
+really understand what the code needs to do until you try to
+use it in a real situation.
+
+There is a subsection titled ``The problem with correctness''.
+I agree with the conclusion, but I don't think their arguments
+are very good.
+
+``We assert this discipline [requiring proofs of correctness]
+makes systems more brittle''.
+But they don't offer much to support this assertion.
+
+The fundamental problem with achieving ``correctness''
+by proving a program meets a specification is:
+How do you know the specification is correct?
+In some sense, you are really just re-writing the program
+in a different language.
+At most, you are removing some distracting details,
+and specifying only results, rather than how to get there.
+It is, in any case, restricted to tasks  where a person can
+read and verify the specification by eye.
+
+\end{plSection}%{1.5 The cost of flexibility}
 %-----------------------------------------------------------------
 \end{plSection}%{Ch 1: Flexibility in nature and design}
 %-----------------------------------------------------------------
