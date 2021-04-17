@@ -178,11 +178,14 @@ biologically motivated old-style AI ideas that appear.
 \end{plSection}%{Acknowledgements}
 %-----------------------------------------------------------------
 \begin{plSection}{1 Flexibility in nature and design}
+%-----------------------------------------------------------------
+\begin{plSection}{Summary of my reaction}
 
 I find this chapter disappointing.
 
 I think the fundamental flaw is using 
-inappropriate analogies to (physical building) architecture
+inappropriate analogies to other problem domains,
+eg, (physical building) architecture
 and, especially, evolution, 
 to justify their ideas about software artifact design
 and construction,
@@ -194,6 +197,107 @@ or perhaps the
 where the ``authority'' isn't talking about the problem at hand, 
 and is not so clearly an ``authority'' in their own domain either.
 
+These and similarly fallacious reasoning are common
+in books about software design strategies, best practices,
+philosophies, etc.
+
+In software design, or any design problem,
+it is difficult to usefully characterize what ``better'' means,
+and hard to demonstrate to a skeptical observer that one
+approach is ``better'' than another.
+Hard enough to do with a reasonably objective observer,
+and so much worse in areas like software design,
+where people are heavily invested in particular technologies,
+in time, money, and emotion.
+
+I think this is a reason that so many fall into two rough classes
+of fallacious reasoning. 
+
+One is the appeal to false authority/analogy so prevalent in this 
+chapter. 
+
+In the perhaps more common version of this, the authors set 
+themselves, or some other software ``guru'' as the authority, 
+usually accompanied by oracular pronouncements left to the reader
+to interpret.
+This book is thankfully free from that.
+
+The next most common is to appeal to some authority/analogy
+from some other problem domain,
+about which neither the reader nor the author know much.
+The advantage of this, as (false) propaganda, 
+is that the reader might doubt the pronouncements
+of some ``guru'' that are falsified by their own experience,
+but would be less confident questioning, for example,
+dubious assertions about how evolution works.
+
+The second class of fallacy is some variation on false 
+quantification. 
+In other words, pick some single criterion that is
+easy to measure, easy to compare, and, ideally,
+provides a total ordering. 
+THe classic example is thinking more money is always better;
+easy to tell that job A pays more than job B;
+hard to tell which one really makes your life ``better''.
+
+This chapter is essentially defending their ideas about software
+design from fallacy type (2),
+but they could do better.
+
+They point out the error of premature optimization,
+but miss the fact that start up costs are easier to measure
+and, because they are closer in time, easier to attribute to
+design choices. 
+Long term maintenance costs are harder to measure and
+associate with particular design choices.
+
+The other problem with early optimization is that you don't
+really understand what the code needs to do until you try to
+use it in a real situation.
+
+They are missing, what I think is one of the strongest arguments
+in favor of their approach---the need for 
+\emph{experimental/exploratory programming}.
+\begin{itemize}
+  \item Situations where you can fully specify what you need
+  ahead of time---where you even understand what's 
+  possible---are extremely rare.
+  \item The faster and further you explore possibilities,
+  the better the final result.
+  \item If you don't do this, you are giving up one of the
+  biggest advantages software has over other kinds of engineering:
+  it is really easy to try different things.
+  In this, I think there is a lot in common with math research.
+  Hit a dead end? Erase the blackboard (delete files) 
+  and start over.
+  In physical engineering, say airplane design, you would have
+  to scrap a $10^{6}$ dollar prototype and build another
+  (and another and another {\ldots}).
+  
+  \item Sometimes people advocate 
+  
+  \item There is no final result. Context keeps changing.
+  
+\end{itemize}
+Hanson and Sussman use the word \emph{evolvable}, 
+to mean something similar, but not exactly the same,
+and their use is confused by the false analogy to biology.
+Evolution has no goal. 
+Exploratory programming is about figuring out what the goal 
+of the code can and should be.
+
+Missing:
+Software as written language; 
+say just enough; avoid s/he problem.
+Math (another written language) uses ambiguity
+and implied context to reduce complexity,
+to make (symbolic) calculations feasible,
+within a few pages, blackboards, mortal mortal memory.
+Is something similar possible or good in software? 
+
+\end{plSection}%{Summary of my reaction}
+%-----------------------------------------------------------------
+\begin{plSection}{Initial text in ch 1}
 They mention both screw fasteners and digital computers
 as examples  of ``general purpose inventions'',
 without saying what ``general purpose'' means.
@@ -336,6 +440,8 @@ often years later, with no one around who even remembers
 what those choices were. 
 
 \end{plSection}%{Additive programming}
+%-----------------------------------------------------------------
+\end{plSection}%{Initial text in ch 1}
 %-----------------------------------------------------------------
 \begin{plSection}{1.1 Architecture of computation}
 
@@ -712,6 +818,11 @@ It is, in any case, restricted to tasks  where a person can
 read and verify the specification by eye.
 
 \end{plSection}%{1.5 The cost of flexibility}
+%-----------------------------------------------------------------
+\begin{plSection}{2 Domain Specific Languages}
+
+\end{plSection}%{2 Domain Specific Languages}
+%-----------------------------------------------------------------
 %-----------------------------------------------------------------
 \end{plSection}%{Ch 1: Flexibility in nature and design}
 %-----------------------------------------------------------------
