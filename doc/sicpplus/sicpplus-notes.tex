@@ -341,6 +341,7 @@ And examples would be nice.)
 
 %-----------------------------------------------------------------
 \begin{plSection}{Additive programming}
+\label{sec:AdditiveProgramming}
 
 Not crazy about the name.
 
@@ -389,7 +390,8 @@ you generally don't want to quietly return \texttt{0x00000F}.
 
 More concrete recommendations (p~3--5):
 \begin{itemize}
-  \item \emph{domain specific languages}, which they equate to a family
+  \item \emph{domain specific languages}, 
+  which they equate to a family
   of ``mix-and-match parts''. I don't think that's 
   what most people mean by DSL, rather something more like
   syntactic sugar to make it easier to type common expressions
@@ -819,12 +821,61 @@ read and verify the specification by eye.
 
 \end{plSection}%{1.5 The cost of flexibility}
 %-----------------------------------------------------------------
+\end{plSection}%{Ch 1: Flexibility in nature and design}
+%-----------------------------------------------------------------
 \begin{plSection}{2 Domain Specific Languages}
 
+As I mentioned in \cref{sec:AdditiveProgramming},
+their description of ``DSL'' doesn't match 
+what the term suggests to me
+(and, I think, to most software developers):
+restrictive syntactic sugar that reduces 
+the unnecessary baroque boilerplate code, 
+that results from choosing a bad base language.
+
+In \cref{sec:AdditiveProgramming},
+they describe a DSL as a family
+of ``mix-and-match parts''.
+Here, they call it  
+``an abstraction in which the nouns and verbs of the language
+are directly related to the problem domain.''
+They don't say what they mean by ``nouns'' and ``verbs'',
+or give any reference.
+
+A quick search shows that this is a popular topic for web rants,
+But I haven't found anything very insightful.
+It looks like yet another misleading metaphor/simile
+that lets people think they've gotten some easy insight,
+when, in fact, it's just wrong.
+Functions aren't verbs and objects aren't nouns,
+even superficially.
+And many natural languages don't  have clearly distinguished 
+nouns and verbs (eg Chinese and English!).
+
+(I'm not sure where the ``noun/verb $=$ object/function'' 
+metaphor originated,
+maybe \citeAuthorYearTitle{Yegge:2006:Nouns}?)
+
+%-----------------------------------------------------------------
+\begin{plSection}{2.1 Combinators}
+%-----------------------------------------------------------------
+\begin{plSection}{2.1.1 Function combinators}
+%-----------------------------------------------------------------
+\begin{plSection}{Arity}
+\end{plSection}%{Arity}
+%-----------------------------------------------------------------
+\begin{plSection}{Multiple values}
+\end{plSection}%{Multiple values}
+%-----------------------------------------------------------------
+\begin{plSection}{A small library}
+\end{plSection}%{A small library}
+%-----------------------------------------------------------------
+\end{plSection}%{2.1.1 Function combinators}
+%-----------------------------------------------------------------
+\end{plSection}%{2.1 Combinators}
+%-----------------------------------------------------------------
 \end{plSection}%{2 Domain Specific Languages}
 %-----------------------------------------------------------------
-%-----------------------------------------------------------------
-\end{plSection}%{Ch 1: Flexibility in nature and design}
 %-----------------------------------------------------------------
 \end{plSection}%{\citeAuthorYearTitle{HansonSussman:2021:SDFF}}
 %-----------------------------------------------------------------
@@ -836,45 +887,11 @@ software and a mathematical formulation of the problems.
 %-----------------------------------------------------------------
 \begin{plSection}{Foundation sketch}
 
+Math from idealized countable computation.
+
 Idea: base mathematics on an ideal (Turing-like) machine.
 Then mapping to usable software is more-or-less mapping
 the ideal machine to a realizable one.
-
-Ideal machine: 
-\begin{itemize}
-  \item Turing machine~\cite{
-  Turing:1936:Computability,
-  Turing:1937:ComputabilityLambda,
-  Turing:1938:ComputabilityCorrection},
-  Lambda calculus, etc.,
-  equivalent,
-  but more ``convenient''.
-  \item unbounded (but not infinite)
-  \item deterministic (?)
-  \item references with tagged values
-  \item write-once memory (but maybe that's not ``convenient'')?
-  \item Primitive values plus data structures built out of tagged
-  references.
-\end{itemize}
-
-Ideal (formal) language. Lambda calculus but more ``convenient''.
-
-Math based on procedures (procedural functions) 
-in the ideal language.
-
-Everything must handle the possible of non-terminating procedures
-(on some or all inputs).
-
-A set is a procedure that returns true or false for any input
-value.
-As opposed to axiomatic set theory.
-I think this eliminates the set paradoxes
-that led to the ``crisis in mathematics'' circa 1900~\cite{
-Feferman:2000:ConstructivePredicativeClassicalAnalysis,
-Ferreiros:2008:Crisis}.
-
-A proof is a procedure that takes a set of axiom expressions
-and returns another (according to some rules).
 
 End result is something like constructive analysis
 with no more than countable infinity, if that.
@@ -894,7 +911,54 @@ See:
 \citeAuthorYearTitle[ch~14 ``Why a little bit goes a long way:
 logical foundations of scientifically applicable mathematics'']{Feferman:1998:LightOfLogic}
 
+%-----------------------------------------------------------------
+\begin{plSection}{An ideal machine}
+\begin{itemize}
+  \item Turing machine~\cite{
+  Turing:1936:Computability,
+  Turing:1937:ComputabilityLambda,
+  Turing:1938:ComputabilityCorrection},
+  Lambda calculus, etc.,
+  equivalent,
+  but more ``convenient''.
+  \item unbounded (but not infinite)
+  \item deterministic (?)
+  \item references with tagged values
+  \item write-once memory (but maybe that's not ``convenient'')?
+  \item Primitive values plus data structures built out of tagged
+  references.
+\end{itemize}
+\end{plSection}%{An ideal machine}
+%-----------------------------------------------------------------
+\begin{plSection}{An ideal language}
+Ideal (formal) language. Lambda calculus but more ``convenient''.
 
+Math based on procedures (procedural functions) 
+in the ideal language.
+
+Everything must handle the possible of non-terminating procedures
+(on some or all inputs).
+\end{plSection}%{An ideal language}
+%-----------------------------------------------------------------
+\begin{plSection}{(Procedural) Functions} 
+
+A set is a procedure that returns true or false for any input
+value.
+As opposed to axiomatic set theory.
+I think this eliminates the set paradoxes
+that led to the ``crisis in mathematics'' circa 1900~\cite{
+Feferman:2000:ConstructivePredicativeClassicalAnalysis,
+Ferreiros:2008:Crisis}.
+
+A proof is a procedure that takes a set of axiom expressions
+and returns another (according to some rules).
+
+\end{plSection}%{(Procedural) Functions} 
+%-----------------------------------------------------------------
+\begin{plSection}{(Procedural) Sets} 
+
+\end{plSection}%{(Procedural) Sets} 
+%-----------------------------------------------------------------
 \end{plSection}%{Foundation sketch}
 %-----------------------------------------------------------------
 \end{plSection}%{Implementation}
