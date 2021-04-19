@@ -825,6 +825,12 @@ read and verify the specification by eye.
 %-----------------------------------------------------------------
 \begin{plSection}{2 Domain Specific Languages}
 
+Some misleading/confusing  (in my opinion)
+vocabulary, chosen, perhaps, beacuse 
+each of these things has been something of a fad,
+in certain subsets of the software world:
+\begin{description}
+\item[DSL]
 As I mentioned in \cref{sec:AdditiveProgramming},
 their description of ``DSL'' doesn't match 
 what the term suggests to me
@@ -833,6 +839,7 @@ restrictive syntactic sugar that reduces
 the unnecessary baroque boilerplate code, 
 that results from choosing a bad base language.
 
+\item[Nouns and verbs]
 In \cref{sec:AdditiveProgramming},
 they describe a DSL as a family
 of ``mix-and-match parts''.
@@ -852,12 +859,90 @@ even superficially.
 And many natural languages don't  have clearly distinguished 
 nouns and verbs (eg Chinese and English!).
 
-(I'm not sure where the ``noun/verb $=$ object/function'' 
+I'm not sure where the ``noun/verb $=$ object/function'' 
 metaphor originated,
-maybe \citeAuthorYearTitle{Yegge:2006:Nouns}?)
+maybe \citeAuthorYearTitle{Yegge:2006:Nouns}?
 
+\item[Combinator]
+This is burying the lead. 
+Doesn't mean much.
+Essentially just a function that takes functions as arguments,
+and returns a function as value.
+
+Real issue is functions as ``first class'' values in the 
+language~\cite{wiki:FirstClassValue}.
+To what extent are functions first class in Scheme?
+Not fully first class in Clojure because the 
+{\clojureFont clojure.lang.IFn} interface only covers applying 
+a function to arguments.
+You can't for example, easily find the name of a function,
+determine if a function was created 
+by composing other functions,
+what those other functions were,
+determine if a function is a closure,
+what the lexical environment of the closure is,
+etc.
+
+Key properties needed in the language for ``combinators'':
+\begin{itemize}
+\item Functions are values that can be passed to other functions
+as arguments.
+\item Functions are values that can be stored (referenced)
+in data structures.
+\item New functions can be created at runtime, that reference
+a new instance of some data structure,
+usually containing functions.
+\end{itemize}
+\end{description}
+
+Deserves more discussion first-class-ness and artificial barriers
+between what any programmer can do and what only
+the language implementer can do.
+
+Security argument false. 
+Important to be able to impose constraints on
+who can read/create/execute/modify what. 
+Doing this in the language definition
+is neither necessary nor sufficient.
 %-----------------------------------------------------------------
 \begin{plSection}{2.1 Combinators}
+
+Iterated line search as a collection of better, less shallow, 
+examples.
+
+\begin{plListing}
+{{\schemeFont compose} in Scheme}
+{reinventSubtraction}
+\begin{lstlisting}[language=scheme]
+(define (compose f g)
+  (lambda args
+    (f (apply g args))))
+\end{lstlisting}
+\end{plListing}
+
+\begin{plListing}
+{{\pseudocodeFont compose} pseudocode}
+{reinventSubtraction}
+\begin{lstlisting}[language=pseudocode]
+(define (compose f g)
+  (lambda args
+    (f (apply g args))))
+\end{lstlisting}
+\end{plListing}
+
+\begin{plListing}
+{Reinventing subtraction}
+{reinventSubtraction}
+\begin{lstlisting}[language=clojure]
+(when (<= $b$ $c$)
+  (loop [$a$ 0]
+    (cond 
+      (= $c$ (+ $a$ $b$)) $a$
+      (< $c$ (+ $a$ $b$)) :no-solution
+      :else (recur (+ 1 $a$)))))
+\end{lstlisting}
+\end{plListing}
+
 %-----------------------------------------------------------------
 \begin{plSection}{2.1.1 Function combinators}
 %-----------------------------------------------------------------
