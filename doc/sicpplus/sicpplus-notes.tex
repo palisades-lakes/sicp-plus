@@ -914,6 +914,19 @@ examples.
 \begin{plSection}{2.1.1 Function combinators}
 
 \begin{plListing}
+{Reinventing subtraction (checking fonts)}
+{reinventSubtraction}
+\begin{lstlisting}[language=pseudocode]
+(when (<= $b$ $c$)
+  (loop [$a$ 0]
+    (cond 
+      (= $c$ (+ $a$ $b$)) $a$
+      (< $c$ (+ $a$ $b$)) :no-solution
+      :else (recur (+ 1 $a$)))))
+\end{lstlisting}
+\end{plListing}
+
+\begin{plListing}
 {{\schemeFont compose} in Scheme}
 {composeSchemeA}
 \begin{lstlisting}[language=scheme]
@@ -936,6 +949,10 @@ examples.
 
 Is {\schemeFont the-composition} in the global environment?
 Given a reference to the function object, can you find its name?
+Can you determine, from an arbitrary function object,
+whether it is a composition?
+Can you extract the factors of a closure?
+Can you get at the lexical environment of a closure?
 
 \begin{plListing}
 {{\clojureFont compose} in Clojure}
@@ -956,19 +973,6 @@ what metadata goes with the {\clojureFont var},
 and which with the function object
 (and there may even be different metadata on the 
 {\clojureFont var}'s symbol).
-
-\begin{plListing}
-{Reinventing subtraction}
-{reinventSubtraction}
-\begin{lstlisting}[language=pseudocode]
-(when (<= $b$ $c$)
-  (loop [$a$ 0]
-    (cond 
-      (= $c$ (+ $a$ $b$)) $a$
-      (< $c$ (+ $a$ $b$)) :no-solution
-      :else (recur (+ 1 $a$)))))
-\end{lstlisting}
-\end{plListing}
 
 %-----------------------------------------------------------------
 \begin{plSection}{Arity}
