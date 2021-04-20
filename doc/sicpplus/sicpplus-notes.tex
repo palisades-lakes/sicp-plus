@@ -910,9 +910,12 @@ is neither necessary nor sufficient.
 Iterated line search as a collection of better, less shallow, 
 examples.
 
+%-----------------------------------------------------------------
+\begin{plSection}{2.1.1 Function combinators}
+
 \begin{plListing}
 {{\schemeFont compose} in Scheme}
-{reinventSubtraction}
+{composeSchemeA}
 \begin{lstlisting}[language=scheme]
 (define (compose f g)
   (lambda args
@@ -921,19 +924,43 @@ examples.
 \end{plListing}
 
 \begin{plListing}
-{{\pseudocodeFont compose} pseudocode}
-{reinventSubtraction}
-\begin{lstlisting}[language=pseudocode]
+{{\schemeFont compose} in Scheme}
+{composeSchemeB}
+\begin{lstlisting}[language=scheme]
 (define (compose f g)
-  (lambda args
+  (define (the-composition . args)
+    (f (apply g args)))
+  the-composition)
+\end{lstlisting}
+\end{plListing}
+
+Is {\schemeFont the-composition} in the global environment?
+Given a reference to the function object, can you find its name?
+
+\begin{plListing}
+{{\clojureFont compose} in Clojure}
+{composeClojure}
+\begin{lstlisting}[language=clojure]
+(defn compose [f g]
+  (fn the-composition [& args]
     (f (apply g args))))
 \end{lstlisting}
 \end{plListing}
 
+No straightforward way to get at a named function's name.
+Best option is parsing {\clojureFont (str f)},
+but there's no guarantee the output format will stay the same.
+Another possibility is finding the name in the function's 
+metadata, but it's also pretty murky
+what metadata goes with the {\clojureFont var},
+and which with the function object
+(and there may even be different metadata on the 
+{\clojureFont var}'s symbol).
+
 \begin{plListing}
 {Reinventing subtraction}
 {reinventSubtraction}
-\begin{lstlisting}[language=clojure]
+\begin{lstlisting}[language=pseudocode]
 (when (<= $b$ $c$)
   (loop [$a$ 0]
     (cond 
@@ -943,8 +970,6 @@ examples.
 \end{lstlisting}
 \end{plListing}
 
-%-----------------------------------------------------------------
-\begin{plSection}{2.1.1 Function combinators}
 %-----------------------------------------------------------------
 \begin{plSection}{Arity}
 \end{plSection}%{Arity}
