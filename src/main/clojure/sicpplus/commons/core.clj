@@ -80,7 +80,35 @@
 (prefer-method name clojure.lang.Named clojure.lang.Fn)
 (prefer-method name clojure.lang.Named clojure.lang.IMeta)
 ;;----------------------------------------------------------------
-;----------------------------------------------------------------
+;; see https://stackoverflow.com/questions/1696693/clojure-how-to-find-out-the-arity-of-function-at-runtime
+(defn arity
+  
+  "Returns the maximum arity of:
+    - anonymous functions like `#()` and `(fn [])`.
+    - defn'ed functions like `map` or `+`.
+    - macros, by passing a var like `#'->`.
+
+  Returns `:variadic` if the function/macro is variadic."
+  
+  [f]
+  
+  (let [func (if (var? f) @f f)
+        methods (->> func class .getDeclaredMethods
+                  (map #(vector (.getName %)
+                                (count (.getParameterTypes %)))))
+        var-args? (some #(-> % first #{"getRequiredArity"})
+                        methods)]
+    (if var-args?
+      :variadic
+      (let [max-arity (->> methods
+                        (filter (comp #{"invoke"} first))
+                        (sort-by second)
+                        last
+                        second)]
+        (if (and (var? f) (-> f meta :macro))
+          (- max-arity 2) ;; substract implicit &form and &env arguments
+          max-arity)))))
+;;----------------------------------------------------------------
 ;; timing
 ;;----------------------------------------------------------------
 ;; like clojure.core.time, prefixes results with a message
@@ -130,12 +158,11 @@
 (defmacro echo 
   "Print the expressions followed by their values. 
    Useful for quick logging."
-  [& exps]
-  (let [qexprs (mapv str exps)]
-    `(println 
-       ~@qexprs 
-       " -> "
-       ~@(mapv (fn [expr] `(print-str ~expr)) exps))))
+  [& es]
+  `(do
+     ~@(mapv (fn [q e] `(println ~q " -> " (print-str ~e))) 
+             (mapv str es)
+             es)))
 ;;----------------------------------------------------------------
 (defn pprint-str
   "Pretty print <code>x</code> without getting carried away..."
