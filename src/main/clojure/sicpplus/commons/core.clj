@@ -1,7 +1,7 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 (ns ^{:author "palisades dot lakes at gmail dot com"
-      :date "2021-04-20"
+      :date "2021-04-21"
       :doc 
       "Generally useful stuff with no obvious better location" }
     
@@ -10,7 +10,8 @@
   (:refer-clojure :exclude [contains? name time])
   (:require [clojure.pprint :as pp]
             [clojure.string :as s])
-  (:import [java.util Collection HashMap Iterator List Map]
+  (:import [java.lang.reflect Method]
+           [java.util Collection HashMap Iterator List Map]
            [java.time LocalDateTime]
            [java.time.format DateTimeFormatter]
            [com.google.common.collect Multimap]
@@ -94,8 +95,8 @@
   
   (let [func (if (var? f) @f f)
         methods (->> func class .getDeclaredMethods
-                  (map #(vector (.getName %)
-                                (count (.getParameterTypes %)))))
+                  (map #(vector (.getName ^Method %)
+                                (count (.getParameterTypes ^Method %)))))
         var-args? (some #(-> % first #{"getRequiredArity"})
                         methods)]
     (if var-args?
@@ -106,7 +107,8 @@
                         last
                         second)]
         (if (and (var? f) (-> f meta :macro))
-          (- max-arity 2) ;; substract implicit &form and &env arguments
+          (- (int max-arity) 2) 
+          ;; substract implicit &form and &env arguments
           max-arity)))))
 ;;----------------------------------------------------------------
 ;; timing
@@ -155,15 +157,6 @@
     (let [^String msg (s/join " " args)]
       (.printStackTrace (Throwable. msg)))))
 ;;----------------------------------------------------------------
-(defmacro echo 
-  "Print the expressions followed by their values. 
-   Useful for quick logging."
-  [& es]
-  `(do
-     ~@(mapv (fn [q e] `(println ~q " -> " (print-str ~e))) 
-             (mapv str es)
-             es)))
-;;----------------------------------------------------------------
 (defn pprint-str
   "Pretty print <code>x</code> without getting carried away..."
   ([x length depth]
@@ -175,4 +168,17 @@
       (with-out-str (pp/pprint x))))
   ([x length] (pprint-str x length 8))
   ([x] (pprint-str x 10 8)))
+;;----------------------------------------------------------------
+(defmacro echo 
+  "Print the expressions followed by their values. 
+   Useful for quick logging."
+  [& es]
+  `(do
+     ~@(mapv (fn [e] 
+               `(print 
+                  "\n"
+                  (pprint-str (quote ~e) 60)
+                  "->\n" 
+                  (pprint-str ~e 60))) 
+             es)))
 ;;----------------------------------------------------------------

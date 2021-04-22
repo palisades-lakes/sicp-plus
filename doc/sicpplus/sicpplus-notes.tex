@@ -932,6 +932,86 @@ examples.
 %-----------------------------------------------------------------
 \begin{plSection}{2.1.1 Function combinators}
 
+Preview: 
+\begin{itemize}
+  \item Use of ``combinator'' seems like a shallow allusion
+  to fashionable terminology, no depth.
+  \item Fail to give any convincing example of a ``combinator''
+  in anything like a real application.
+  \item The real idea is ``functions that manipulate functions'';
+  they are missing any consideration of what that implies, 
+  especially in terms of functions as first class objects.
+  \item What's particularly missing is any thought about
+  what a ``function'' is, eg, domain, codomain, etc.
+  \item All the input/output arity stuff doesn't 
+  work, certainly not in Clojure, and I'm pretty sure, 
+  not in Scheme, because functions don't have a specific input
+  arity in either, Clojure doesn't have multiple value return,
+  and I don't think Scheme necessarily has a fixed number of
+  multiple values returned. (And the Scheme examples rely on
+  features of MIT Scheme which aren't present in other dialects!)
+  \item They don't even point out that multiple arity input and
+  multiple value output are the same thing!
+  \item A better approach would be to stop and first talk
+  about what a function is: takes one element of the domain
+  and returns one element of the codomain
+  (if it terminates, and maybe errors are distinct from the
+  codomain?).
+  \item Instead of talking about multiple arguments, 
+  should talk about cartesian product domains and codomains.
+  This would lead nicely to a discussion 
+  about value ambiguity in math, and the problems that arise
+  when translating that into code. In this case,
+  the problem is that math doesn't usually distinguish
+  $\left(\Set{A} \times \Set{B} \right)\times \Set{C}$
+  from
+  $\Set{A} \times \left(\Set{B} \times \Set{C} \right)$
+  or from
+  $\Set{A} \times \Set{B} \times \Set{C}$,
+  but {\clojureFont [[a b] c]}, {\clojureFont [a [b c]]},
+  and {\clojureFont [a b c]} (to use a Clojure example)
+  are different, need to be handled differently,
+  and, almost surely, would be intended to mean something 
+  different.
+  I think many unconsciously assume cartesian product 
+  is associative, but that probably doesn't carry over
+  to tuples in software.
+  \item The same issue comes up with {\schemeFont compose},
+  and ought to be addressed.
+  Would it make sense to be able to say 
+  {\schemeFont (compose f0 f1 f2)}?
+  Do we want to distinguish that from 
+  {\schemeFont (compose f0 (compose f1 f2))}
+  and {\schemeFont (compose (compose f0 f1) f2)}?
+  In Clojure, {\clojureFont (comp f0 f1 & fs)}
+  is \emph{variadic} (takes as many args as you want).
+  
+  \item Varying input arities, and output multiple values
+  are just different \emph{representations} for elements
+  of the (co)domain, some syntactic sugar for common cases.
+  In other words, multi-argument input and multiple value output
+  should both be understood as packing and unpacking lists
+  (or some other data structure) which represent elements of the
+  (co)domains. 
+  \item The sugar should be considered (a) typing convenience
+  and (b) a hint to the compiler that the argument/returned value
+  lists will be very short lived, with very limited visibility,
+  and should be implemented appropriately for this restricted use.
+  \item Emphasizing the need for multiple different 
+  \emph{representations} of elements of the (co)domain
+  would lead nicely to generic functions. 
+  \item {\schemeFont compose}  and {\schemeFont parallel-combine}
+  both make sense. The remaining examples are confusing,
+  bug prone, and rely on obscure language features.
+  They could all be done better and simpler more robustly
+  as compositions with (co)domain transformations.
+  \item If the section focused on {\schemeFont compose},
+  that could nicely lead to something like {\schemeFont decompose},
+  aka factoring of functions, something which I have found
+  extremely important in many contexts, and, I think,
+  generally not appreciated.
+\end{itemize}
+
 \begin{plListing}
 {Reinventing subtraction (checking fonts)}
 {reinventSubtraction}
@@ -946,7 +1026,7 @@ examples.
 \end{plListing}
 
 \begin{plListing}
-{{\schemeFont compose} in Scheme}
+{anonymous {\schemeFont compose} in Scheme}
 {composeSchemeA}
 \begin{lstlisting}[language=scheme]
 (define (compose f g)
@@ -956,7 +1036,7 @@ examples.
 \end{plListing}
 
 \begin{plListing}
-{{\schemeFont compose} in Scheme}
+{named {\schemeFont compose} in Scheme}
 {composeSchemeB}
 \begin{lstlisting}[language=scheme]
 (define (compose f g)
@@ -968,6 +1048,10 @@ examples.
 
 Is {\schemeFont the-composition} in the global environment?
 Given a reference to the function object, can you find its name?
+The name is pointless, even for debugging,
+since it doesn't tell you what was composed,
+so there will be many functions named 
+{\schemeFont the-composition}.
 Can you determine, from an arbitrary function object,
 whether it is a composition?
 Can you extract the factors of a closure?
