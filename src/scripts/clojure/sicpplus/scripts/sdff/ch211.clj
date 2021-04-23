@@ -21,21 +21,24 @@
 ;; think I  have that somewhere...
 
 ;;----------------------------------------------------------------
-;; check associativity of clojhure <code>comp</code>?
+;; check associativity of clojure <code>comp</code>?
 
 (let [add1 (fn [x] (+ 1 x))
       mul2 (fn [x] (* 2 x))
-      sqrt (fn [x] (Math/sqrt x))]
+      sqrt (fn [x] (Math/sqrt x))
+      c21 (comp (comp sqrt mul2) add1)
+      c12 (comp sqrt (comp mul2 add1))
+      c3 (comp sqrt mul2 add1)]
   (scc/echo 
-    (comp (comp sqrt mul2) add1)
-    (comp sqrt (comp mul2 add1))
-    (comp sqrt mul2 add1)))  
+    c21
+    c12
+    c3
+    (= c21 c12 c3)))  
 ;;----------------------------------------------------------------
 ;; simplest translation of example p 24
 
 (defn compose [f g]
-  (fn the-composition [& args]
-    (f (apply g args))))
+  (fn the-composition [x] (f (g x))))
 
 ;;----------------------------------------------------------------
 ;; more metadata
@@ -45,24 +48,23 @@
    of <code>f</code> and <code>g</code>."
   {:added "2021-04-20"}
   ^IFn [^IFn f ^IFn g]
-  (fn the-composition [& args]
-    (f (apply g args))))
+  (fn the-composition [x] (f (g x))))
 
 ;;----------------------------------------------------------------
 ;; example p 24
 ;; clojure.core
 
-(let [fgc (comp (fn [x] (list 'foo x))
-                (fn [x] (list 'bar x)))
-      fg0 (compose (fn [x] (list 'foo x))
-                   (fn [x] (list 'bar x)))
-      fg1 (compose1 (fn [x] (list 'foo x))
-                    (fn [x] (list 'bar x)))]
-  
-  (scc/echo
-    (fgc 'z)
-    (fg0 'z)
-    (fg1 'z)))
+;(let [fgc (comp (fn [x] (list :foo x))
+;                (fn [x] (list :bar x)))
+;      fg0 (compose (fn [x] (list :foo x))
+;                   (fn [x] (list :bar x)))
+;      fg1 (compose1 (fn [x] (list :foo x))
+;                    (fn [x] (list :bar x)))]
+;  
+;  (scc/echo
+;    (fgc :z)
+;    (fg0 :z)
+;    (fg1 :z)))
 ;;----------------------------------------------------------------
 ;; example p 25: iterate
 ;; type hints to eliminate boxed math warnings, could just disable
@@ -89,24 +91,68 @@
 ;;----------------------------------------------------------------
 (defn square [^long x] (* x x))
 
-(scc/echo 
-  ((iterate 3 square) 5)
-  ((iterate0 3 square) 5))
+;(scc/echo 
+;  ((iterate 3 square) 5)
+;  ((iterate0 3 square) 5))
+;;----------------------------------------------------------------
+;; TODO: cartesian namespace
+
+(defn cartesian-tuple 
+  "Collect the <code>elements</code> into a tuple in the 
+   appropriate cartesian product space.
+   Here just using <code>vector</code> for all tuples,
+   supporting only the set of all possible Java objects 
+   as the element domains." 
+  [& elements] 
+  (vec elements))
+
+;; TODO: memoize this?
+
+(defn cartesian-projection 
+  "Return the projection that selects the <code>i<code>th
+   element of a cartesian tuple."
+  [i]
+  (fn [tuple] (get tuple i)))
+
+(def cartesian-project-0 (cartesian-projection 0))
+(def cartesian-project-1 (cartesian-projection 1))
+
+(defn cartesian-diagonal 
+  "Take 2 functions and return a function that maps the 
+   cartesian product of the domains to the cartesian product
+   of the codomains by applying each function to its corresponding
+   domain element in the input 
+   and making a tuple of the 2 results."
+  [f g]
+  (fn [x] 
+    [(f (cartesian-project-0 x)) 
+     (g (cartesian-project-1 x))]))
+
+(defn cartesian-split
+  "Take 2 functions with the same domain 
+   and return a function that maps that
+   to the cartesian product of the codomains 
+   by applying both function to the input 
+   and making a tuple of the 2 results."
+  [f g]
+  (fn [x] [(f x) (g x)]))
+
 ;;----------------------------------------------------------------
 ;; p 26
-(defn parallel-combine [h f g]
-  (fn the-combination [& args]
-    (h (apply f args) (apply g args))))
-
 ;; why different arg names in
 ;; <code>[x y z]</code> vs <code>[u v w]?
 ;; did using the same names confuse students?
 
+(defn cartesian-combine [h f g]
+  (compose h (cartesian-split f g)))
+
 (scc/echo 
-  ((parallel-combine vector
-                     (fn [x y z] ['foo x y z])
-                     (fn [u v w] ['bar u v w]))
-    'a 'b 'c))
+  ((cartesian-combine reverse
+                      (fn [x] [:foo x])
+                      (fn [x] [:bar x]))
+    [:a :b :c])
+  )
+
 ;;----------------------------------------------------------------
 ;; Arity p 27, Multiple values p 30
 ;;
@@ -143,34 +189,19 @@
 ;; to combine arbitrary functions and transformations between
 ;; domains;
 
-(defn spread-combine 
-  
-  "A better approach to the examples in SDFF 2.1.1 Arity:
-    <dl>
-    <dt>h</dt><dd>arbitrary function</dd>
-    <dt>fg2h</dt><dd>
-    maps from 
-    <code>(cartesian-product (codomain f) (codomain g))</code>
-    to <code>(codomain h)</code?.</dd>
-    <dt>f</dt><dd>arbitrary function
-    <dt>h2f</dt><dd>maps from <code>(domain h)</code> to
-    <code>(domain f)</code>
-    <dt>g</dt><dd>arbitrary function
-    <dt>h2g</dt><dd>maps from <code>(domain h)</code> to
-    <code>(domain g)</code>
-    </dl>
-    The body of this function is very simple, evidence 
-    against actually defining it."
-  [h fg2h f h2f g h2g]
-  (parallel-combine 
-    (compose h fg2h) (compose f h2f) (compose g h2g)))
+(defn diagonal-combine 
+  "Like <code>spread-combine</code>,
+   but assumes <code>(domain h)</code> is the cartesian product
+   of the codomains of <code>f</code> and <code>g</code>,
+   and the domain of the returned function is the cartesian 
+   product of the domains of <code>f</code> and <code>g</code>."
+  [h f g]
+  (compose h (cartesian-diagonal f g)))
 
 ;;----------------------------------------------------------------
 
 (scc/echo
-  ((spread-combine 
-     reverse vector
-     (fn [xf] (vec xf)) (fn [xh] (take 2 xh))
-     (fn [xg] (vec xg)) (fn [xh] (take-last 3 xh)))
-    (list :a :b :c :d :e)))
+  ((diagonal-combine reverse reverse reverse)
+    [[:a :b] [:c :d :e]])
+  )
 

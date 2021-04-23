@@ -1057,6 +1057,13 @@ whether it is a composition?
 Can you extract the factors of a closure?
 Can you get at the lexical environment of a closure?
 
+From this point, I'm only going to include Clojure versions
+of the examples.
+They won't be direct translations, but rather whatever I think
+makes the most sense for the topic at hand.
+
+However, in this case, a direct translation:
+
 \begin{plListing}
 {{\clojureFont compose} in Clojure}
 {composeClojure}
@@ -1067,7 +1074,11 @@ Can you get at the lexical environment of a closure?
 \end{lstlisting}
 \end{plListing}
 
-No straightforward way to get at a named function's name.
+Note: Like Scheme, Clojure functions are not fully first class.
+The {\javaFont clojure.lang.IFn} interface is barely advertised,
+and basically only supports applying a function to arguments.
+There is no straightforward way 
+to get at a named function's name.
 Best option is parsing {\clojureFont (str f)},
 but there's no guarantee the output format will stay the same.
 Another possibility is finding the name in the function's 
@@ -1077,6 +1088,28 @@ and which with the function object
 (and there may even be different metadata on the 
 {\clojureFont var}'s symbol).
 
+We don't need the translation of {\schemeFont compose}, 
+because the equivalent {\clojureFont clojure.core/comp}
+is built in.
+
+However, because I want to be able to do more at runtime,
+I will be implementing a parallel world of more first class
+functions, including {\clojureFont compose}
+as a generic function (see TODO: refs to relevant sections).
+Making {\clojureFont compose} generic allows,
+for example, optimizations in the case where we know enough
+about the internals of the factors to reduce unnecessary
+intermediate pushing and popping in the argument/value stack,
+shared preliminary code, etc.
+See \cref{sec:Compose} for more details.
+
+\textbf{TODO:} should I adopt a naming convention to distinguish
+generic from non-generic functions. Or should it just be assumed
+that \emph{all} functions in my code are generic?
+Can this be hidden in the implementation---normal functions
+overwritten with a generic one on the first occurrence
+of {\clojureFont defmethod}?
+ 
 %-----------------------------------------------------------------
 \begin{plSection}{Arity}
 \end{plSection}%{Arity}
@@ -1177,6 +1210,15 @@ and returns another (according to some rules).
 \end{plSection}%{(Procedural) Sets} 
 %-----------------------------------------------------------------
 \end{plSection}%{Foundation sketch}
+%-----------------------------------------------------------------
+\begin{plSection}{First class functions} 
+%-----------------------------------------------------------------
+\begin{plSection}{Composition}\label{sec:Compose}
+
+\end{plSection}%{Composition} 
+%-----------------------------------------------------------------
+\end{plSection}%{First class functions} 
+%-----------------------------------------------------------------
 %-----------------------------------------------------------------
 \end{plSection}%{Implementation}
 %-----------------------------------------------------------------
