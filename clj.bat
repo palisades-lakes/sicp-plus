@@ -23,6 +23,6 @@ set OPENS=--add-opens java.base/java.lang=ALL-UNNAMED
 set CP=-cp ./src/scripts/clojure;lib/*
 set JAVA="%JAVA_HOME%\bin\java"
 
-set CMD=%JAVA% %THRUPUT% -ea %GC% %PROF% %XMX% %TRACE% %OPENS% %CP% clojure.main %*
+set CMD=%JAVA% %THRUPUT% -ea %GC% %PROF% %XMX% %TRACE% %OPENS% %CP% clojure.main %* --report-stderr 
 ::echo %CMD%
 %CMD%

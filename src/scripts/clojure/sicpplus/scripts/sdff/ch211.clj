@@ -11,7 +11,8 @@
   (:refer-clojure :exclude [iterate])
   (:require [clojure.java.io :as io]
             [clojure.string :as s]
-            [sicpplus.commons.core :as scc])
+            [sicpplus.commons.core :as scc]
+            [sicpplus.cartesian :as cartesian]
   (:import 
     [java.lang Math]
     [clojure.lang IFn]
@@ -41,16 +42,6 @@
   (fn the-composition [x] (f (g x))))
 
 ;;----------------------------------------------------------------
-;; more metadata
-
-(defn compose1 
-  "Returns a named function which evaluates the composition
-   of <code>f</code> and <code>g</code>."
-  {:added "2021-04-20"}
-  ^IFn [^IFn f ^IFn g]
-  (fn the-composition [x] (f (g x))))
-
-;;----------------------------------------------------------------
 ;; example p 24
 ;; clojure.core
 
@@ -58,7 +49,8 @@
 ;                (fn [x] (list :bar x)))
 ;      fg0 (compose (fn [x] (list :foo x))
 ;                   (fn [x] (list :bar x)))
-;      fg1 (compose1 (fn [x] (list :foo x))
+;      fg1 (cartesian/compose
+;(fn [x] (list :foo x))
 ;                    (fn [x] (list :bar x)))]
 ;  
 ;  (scc/echo
@@ -94,60 +86,9 @@
 ;(scc/echo 
 ;  ((iterate 3 square) 5)
 ;  ((iterate0 3 square) 5))
-;;----------------------------------------------------------------
-;; TODO: cartesian namespace
-
-(defn cartesian-tuple 
-  "Collect the <code>elements</code> into a tuple in the 
-   appropriate cartesian product space.
-   Here just using <code>vector</code> for all tuples,
-   supporting only the set of all possible Java objects 
-   as the element domains." 
-  [& elements] 
-  (vec elements))
-
-;; TODO: memoize this?
-
-(defn cartesian-projection 
-  "Return the projection that selects the <code>i<code>th
-   element of a cartesian tuple."
-  [i]
-  (fn [tuple] (get tuple i)))
-
-(def cartesian-project-0 (cartesian-projection 0))
-(def cartesian-project-1 (cartesian-projection 1))
-
-(defn cartesian-diagonal 
-  "Take 2 functions and return a function that maps the 
-   cartesian product of the domains to the cartesian product
-   of the codomains by applying each function to its corresponding
-   domain element in the input 
-   and making a tuple of the 2 results."
-  [f g]
-  (fn [x] 
-    [(f (cartesian-project-0 x)) 
-     (g (cartesian-project-1 x))]))
-
-(defn cartesian-split
-  "Take 2 functions with the same domain 
-   and return a function that maps that
-   to the cartesian product of the codomains 
-   by applying both function to the input 
-   and making a tuple of the 2 results."
-  [f g]
-  (fn [x] [(f x) (g x)]))
-
-;;----------------------------------------------------------------
-;; p 26
-;; why different arg names in
-;; <code>[x y z]</code> vs <code>[u v w]?
-;; did using the same names confuse students?
-
-(defn cartesian-combine [h f g]
-  (compose h (cartesian-split f g)))
 
 (scc/echo 
-  ((cartesian-combine reverse
+  ((cartesian/combine reverse
                       (fn [x] [:foo x])
                       (fn [x] [:bar x]))
     [:a :b :c])
@@ -189,19 +130,10 @@
 ;; to combine arbitrary functions and transformations between
 ;; domains;
 
-(defn diagonal-combine 
-  "Like <code>spread-combine</code>,
-   but assumes <code>(domain h)</code> is the cartesian product
-   of the codomains of <code>f</code> and <code>g</code>,
-   and the domain of the returned function is the cartesian 
-   product of the domains of <code>f</code> and <code>g</code>."
-  [h f g]
-  (compose h (cartesian-diagonal f g)))
-
 ;;----------------------------------------------------------------
 
 (scc/echo
-  ((diagonal-combine reverse reverse reverse)
+  ((cartesian/diagonal reverse reverse reverse)
     [[:a :b] [:c :d :e]])
   )
 

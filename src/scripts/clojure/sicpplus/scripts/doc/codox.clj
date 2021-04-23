@@ -4,9 +4,11 @@
 ;;----------------------------------------------------------------
 (ns sicpplus.scripts.doc.codox
   
-  {:doc "Generate codox for sicpplus."
+  {:doc "Generate codox for sicpplus.
+
+   <b>TODO: codox font choices?"
    :author "palisades dot lakes at gmail dot com"
-   :version "2021-04-20"}
+   :version "2021-04-23"}
   
   (:require [clojure.java.io :as io]
             [codox.main :as codox]))
@@ -32,7 +34,7 @@
                :html {:namespace-list :flat}
                :metadata {:doc "TODO: write docs"
                           :doc/format :markdown}
-               :themes [:default]}]
+               :themes [:hyperlegible #_:default]}]
   (codox/generate-docs options))
 ;;----------------------------------------------------------------
 
