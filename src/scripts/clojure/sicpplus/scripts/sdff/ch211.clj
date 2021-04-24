@@ -12,29 +12,15 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as s]
             [sicpplus.commons.core :as scc]
-            [sicpplus.cartesian :as cartesian]
+            [sicpplus.cartesian :as cartesian])
   (:import 
     [java.lang Math]
-    [clojure.lang IFn]
-    ))
-
-;; TODO: print macro that echos the expression being evaluated
-;; think I  have that somewhere...
+    [clojure.lang IFn]))
 
 ;;----------------------------------------------------------------
 ;; check associativity of clojure <code>comp</code>?
 
-(let [add1 (fn [x] (+ 1 x))
-      mul2 (fn [x] (* 2 x))
-      sqrt (fn [x] (Math/sqrt x))
-      c21 (comp (comp sqrt mul2) add1)
-      c12 (comp sqrt (comp mul2 add1))
-      c3 (comp sqrt mul2 add1)]
-  (scc/echo 
-    c21
-    c12
-    c3
-    (= c21 c12 c3)))  
+  
 ;;----------------------------------------------------------------
 ;; simplest translation of example p 24
 
@@ -83,14 +69,14 @@
 ;;----------------------------------------------------------------
 (defn square [^long x] (* x x))
 
-;(scc/echo 
-;  ((iterate 3 square) 5)
-;  ((iterate0 3 square) 5))
+(scc/echo 
+  ((iterate 3 square) 5)
+  ((iterate0 3 square) 5))
 
 (scc/echo 
-  ((cartesian/combine reverse
-                      (fn [x] [:foo x])
-                      (fn [x] [:bar x]))
+  ((cartesian/parallel-split reverse
+                             (fn [x] [:foo x])
+                             (fn [x] [:bar x]))
     [:a :b :c])
   )
 
@@ -133,7 +119,7 @@
 ;;----------------------------------------------------------------
 
 (scc/echo
-  ((cartesian/diagonal reverse reverse reverse)
+  ((cartesian/parallel-diagonal reverse reverse reverse)
     [[:a :b] [:c :d :e]])
   )
 

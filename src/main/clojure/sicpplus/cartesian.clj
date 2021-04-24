@@ -72,6 +72,11 @@
             cartesian product spaces as (co)domains.
             Is there a better way to think about this?
        </li>
+       <li> Some of the combinators look like map-reduce 
+            transducers. Can we come up with a unified way 
+            to talk about both, maybe better than either?
+       </li>
+       </ul>
        " 
       }
     
@@ -94,6 +99,8 @@
    <b>TODO:</b> replace with an implementation
    of <code>clojure.lang.IFn</code> that lets us get at the
    <code>factors</code>.
+
+   <b>TODO:</b> this should be a generic function. 
   "
   
   {:added "2021-04-23"}
@@ -103,24 +110,74 @@
 ;;----------------------------------------------------------------
 
 (defn tuple 
-  "Collect the <code>elements</code> into a tuple in the 
-   appropriate cartesian product space.
+  
+  "Collect the <code>elements</code> into a cartesian tuple.
+   Note that any given tuple may be an element of many
+   cartesian product sets.
    Here just using <code>vector</code> for all tuples,
    supporting only the set of all possible Java objects 
-   as the element domains." 
+   as the element domains.
+
+   <b>TODO:</b> generalize to key-value structure with 
+   any reasonable index set.
+   "
+  
   [& elements] 
+  
   (vec elements))
 
 ;; TODO: memoize this?
 
 (defn projection 
+  
   "Return the projection that selects the <code>i</code>th
-   element of a cartesian tuple."
+   element of a cartesian tuple.
+
+   <b>TODO:</b> handle <code>int</code> indexes, and
+   any reasonable index set.
+
+
+   <b>TODO:</b> Memoize? So we don't need the instances below?
+   "
   [i]
   (fn [tuple] (get tuple i)))
 
-(def project-0 (projection 0))
-(def project-1 (projection 1))
+(defn split
+  "Take 2 functions with the same domain 
+   and return a function that maps that
+   to the cartesian product of the codomains 
+   by applying both function to the input 
+   and making a tuple of the 2 results.
+
+   <b>TODO:</b> better name.
+   "
+  [f g]
+  (fn [x] (tuple (f x) (g x))))
+
+;; p 26
+
+(defn parallel-split 
+  
+  "Compose <code>h</code> with the [[split]] of
+   <code>f</code> and <code>g</code>.
+   In other words, return a function that first applies both
+   <code>f0</code> and <code>f1</code> to the input,
+   and then applies <code>h</code> to the output.
+   
+   <b>TODO:</b> figure out a way to avoid constructing a tuple
+   of the values of <code>f0</code> and <code>f1</code>.
+
+   <b>TODO:</b> figure out a way to avoid constructing a tuple
+   of the values of <code>f0</code> and <code>f1</code>.
+
+   <b>TODO:</b> better name.
+
+   <b>TODO:</b> Isn't this really just a map-reduce transducer
+   where we are mapping over a sequence of functions all applied
+   to the same value?.
+   "
+  [h f0 f1]
+  (compose h (split f0 f1)))
 
 (defn diagonal 
   "Take 2 functions and return a function that maps the 
@@ -129,36 +186,23 @@
    domain element in the input 
    and making a tuple of the 2 results."
   [f g]
-  (fn [x] 
-    [(f (project-0 x)) 
-     (g (project-1 x))]))
+  ;; same projection fns used for diagonals
+  (let [p0 (projection 0)
+        p1 (projection 1)]
+    (fn [x] 
+      (tuple
+        (f (p0 x)) 
+        (g (p1 x))))))
 
-(defn split
-  "Take 2 functions with the same domain 
-   and return a function that maps that
-   to the cartesian product of the codomains 
-   by applying both function to the input 
-   and making a tuple of the 2 results."
-  [f g]
-  (fn [x] [(f x) (g x)]))
-
-;;----------------------------------------------------------------
-;; p 26
-;; why different arg names in
-;; <code>[x y z]</code> vs <code>[u v w]?
-;; did using the same names confuse students?
-
-(defn combine [h f g]
-  (compose h (split f g)))
-
-
-(defn diagonal 
-  "Like <code>spread-combine</code>,
+(defn parallel-diagonal
+  "Like [[parallel-split]],
    but assumes <code>(domain h)</code> is the cartesian product
    of the codomains of <code>f</code> and <code>g</code>,
    and the domain of the returned function is the cartesian 
    product of the domains of <code>f</code> and <code>g</code>."
   [h f g]
   (compose h (diagonal f g)))
+
+
 
 
