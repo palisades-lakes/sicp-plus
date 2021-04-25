@@ -639,8 +639,6 @@ sometimes waiting removes options.
 %-----------------------------------------------------------------
 \begin{plSection}{1.3 Redundancy and degeneracy}
 
-
-
 Problems:
 \begin{itemize}
   
@@ -926,7 +924,7 @@ is neither necessary nor sufficient.
 %-----------------------------------------------------------------
 \begin{plSection}{2.1 Combinators}
 
-Iterated line search as a collection of better, less shallow, 
+Iterated line search optimization as a collection of better, less shallow, 
 examples.
 
 %-----------------------------------------------------------------
@@ -1206,8 +1204,6 @@ and returns another (according to some rules).
 %-----------------------------------------------------------------
 \end{plSection}%{(Procedural) Functions} 
 %-----------------------------------------------------------------
-\begin{plSection}{(Procedural) Sets} 
-%-----------------------------------------------------------------
 \begin{plSection}{Tuples} 
 
 General tuple maps indexes to values.
@@ -1282,7 +1278,9 @@ Problems:
 \end{itemize}
 
 \end{plSection}%{Tuples} 
-%-----------------------------------------------------------------
+%%-----------------------------------------------------------------
+\begin{plSection}{(Procedural) Sets} 
+-----------------------------------------------------------------
 \begin{plSection}{Cartesian products} 
 
 The elements of a cartesian product set are tuples
@@ -1322,9 +1320,22 @@ where the tuple factors are elements of the set factors.
 
 \end{plSection}%{(Procedural) Sets} 
 %-----------------------------------------------------------------
-\end{plSection}%{Foundation sketch}
-%-----------------------------------------------------------------
 \begin{plSection}{Multiple arguments}
+
+Main idea is importance of composing and factoring (de-composing)
+functions, which is greatly complicated 
+if functions take multiple arguments,
+and, especially, if the number of arguments isn't fixed. 
+
+Is there some reasonable way to separate these two concerns:
+(a) (de)composing functions that map a domain to a codomain
+and 
+(b) functions that naturally operate on two or more inputs?
+
+\TODO everything below needs to consider the case of zero
+argument function calls as well. 
+Is a zero argument function one whose domain is the empty set
+$\emptyset$?
 %-----------------------------------------------------------------
 \begin{plSection}{Currying}
 
@@ -1335,6 +1346,56 @@ where the tuple factors are elements of the set factors.
 (f a b c) $\defeq$ (((f a) b) c)
 \end{lstlisting}
 \end{plListing}
+
+The problem with currying is that, with variadic functions,
+you never know when you are done.
+
+A common example is having
+{\pseudocodeFont (add 1)} returns a function
+that adds $1$ to its argument.
+But then {\pseudocodeFont (add 1 2) $\defeq$  ((add 1) 2)}
+must return a function that adds $3$ to its argument.
+You never get a number out.
+
+One answer to this is to identify the set of the possible
+{\pseudocodeFont (add n)} with {\pseudocodeFont n},
+which is elegant, but not practical for actual computation,
+and, anyway, what then do you do about 
+{\pseudocodeFont (multiply n)}, etc?
+
+An alternative is to adopt something like the builder pattern:
+each variadic function turns into two functions, 
+a first that essentially just accumulates argument lists,
+indefinitely, and a second that finishes the actual computation.
+That is
+\begin{plListing}
+{Builder currying}
+{Builder:currying}
+\begin{lstlisting}[language=pseudocode]
+(f a b c) $\defeq$ (finish-f ((((start-f) a) b) c))
+\end{lstlisting}
+\end{plListing}
+Although it is possible {\pseudocodeFont start-f} 
+is optimizing the accumulated arguments in some way,
+it is most often going to just be accumulating the arguments,
+so we could replace the above with
+\begin{plListing}
+{Accumulate currying}
+{Accumulate:currying}
+\begin{lstlisting}[language=pseudocode]
+(f a b c) $\defeq$ (f ((((accumulate) a) b) c))
+\end{lstlisting}
+\end{plListing}
+The builder pattern requires two functions instead of one,
+but it does permit customization of argument accumulation.
+As written above, we will need additional API for
+{\pseudocodeFont accumulate} to extract the accumulated arguments.
+
+\TODO
+
+\NOTE
+the similarity to {\pseudocodeFont (reduce sum map)},
+clojure transducers.
 
 \end{plSection}%{Currying} 
 %-----------------------------------------------------------------
@@ -1354,6 +1415,8 @@ So maybe currying is the right answer.
 \end{plSection}%{Cartesian product sugar} 
 %-----------------------------------------------------------------
 \end{plSection}%{Multiple arguments} 
+%-----------------------------------------------------------------
+\end{plSection}%{Foundation sketch}
 %-----------------------------------------------------------------
 \begin{plSection}{First class functions} 
 %-----------------------------------------------------------------
