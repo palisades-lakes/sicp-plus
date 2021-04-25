@@ -58,11 +58,11 @@
     identity
     (compose f (iterate (dec n) f))))
 
-;; clojure.core.iterate returns an infinite lazy sequence
+;; clojure.core/iterate returns an infinite lazy sequence
 ;; might be worth a performance test, comparing to a more direct
 ;; implementation
 
-(defn iterate0 [^long n f]
+(defn iterate1 [^long n f]
   (fn iterated [x] 
     (last (take (inc n) (clojure.core/iterate f x)))))
 

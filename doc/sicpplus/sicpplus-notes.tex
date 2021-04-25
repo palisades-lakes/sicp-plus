@@ -1011,19 +1011,6 @@ Preview:
 \end{itemize}
 
 \begin{plListing}
-{Reinventing subtraction (checking fonts)}
-{reinventSubtraction}
-\begin{lstlisting}[language=pseudocode]
-(when (<= $b$ $c$)
-  (loop [$a$ 0]
-    (cond 
-      (= $c$ (+ $a$ $b$)) $a$
-      (< $c$ (+ $a$ $b$)) :no-solution
-      :else (recur (+ 1 $a$)))))
-\end{lstlisting}
-\end{plListing}
-
-\begin{plListing}
 {anonymous {\schemeFont compose} in Scheme}
 {composeSchemeA}
 \begin{lstlisting}[language=scheme]
@@ -1064,7 +1051,7 @@ However, in this case, a direct translation:
 
 \begin{plListing}
 {{\clojureFont compose} in Clojure}
-{composeClojure}
+{compose:Clojure}
 \begin{lstlisting}[language=clojure]
 (defn compose [f g]
   (fn the-composition [& args]
@@ -1107,18 +1094,142 @@ that \emph{all} functions in my code are generic?
 Can this be hidden in the implementation---normal functions
 overwritten with a generic one on the first occurrence
 of {\clojureFont defmethod}?
- 
+
+Straightforward translation from Scheme:
+\begin{plListing}
+{translated {\clojureFont iterate} in Clojure}
+{iterate:Clojure}
+\begin{lstlisting}[language=clojure]
+(defn iterate [^long n f]
+  (if (zero? n)
+    identity
+    (compose f (iterate (dec n) f))))
+    
+(test/is (= 390625 ((iterate 3 square) 5)))
+\end{lstlisting}
+\end{plListing}
+\TODO say something about {\clojureFont test} library.
+
+Clojure has {\clojureFont clojure.core/iterate} 
+which returns an infinite lazy sequence:
+{\clojureFont [(f x) (f (f x)) \ldots]}.
+Using that we get:
+\begin{plListing}
+{native {\clojureFont iterate} in Clojure}
+{native:iterate:Clojure}
+\begin{lstlisting}[language=clojure]
+(defn native-iterate [^long n f]
+  (fn iterated [x] 
+    (last (take (inc n) (clojure.core/iterate f x)))))
+    
+(test/is (= 390625 ((native-iterate 3 square) 5)))
+\end{lstlisting}
+\end{plListing}
+\NOTE the potential for off-by-one errors between the Scheme
+translation and the use of {\clojureFont native-iterate}.
+
 %-----------------------------------------------------------------
 \begin{plSection}{Arity}
+
+I'm going to skip this section.
+
+It is mixing two concerns that would be better separated:
+\begin{itemize}
+  \item Patterns (``combinators")
+  for combining functions into new functions.
+  Something like Clojure transducers might be a source of 
+  better examples.
+  \item Multiple arguments and return values. 
+  They are often convenient, but they greatly complicate 
+  the idea of what a function is, and, especially,
+  combining functions.
+  
+\end{itemize}
+Their first examples depend on assuming that each Scheme function
+has a specific fixed number of both inputs and outputs, 
+which is quickly exposed as false. 
+In addition, it appears that there is no standard way 
+in Scheme,
+to get at the input and output arities, even assuming they are 
+fixed.
+
+Another issue in this section is the lack of insight
+into the difference between {\schemeFont parallel-combine}
+and {\schemeFont spread-combine}. 
+
 \end{plSection}%{Arity}
 %-----------------------------------------------------------------
-\begin{plSection}{Multiple values}
+\begin{plSection}{Multiple values}\label{Multiple:values}
+
+I'm going to skip this section.
+
+Clojure doesn't have multiple value return.
+Idiomatic clojure handles this, and, to some extent,
+multiple input arities as well,
+by packaging data into nested sequences and hashmaps,
+which, as a convenience, can be parsed with destructuring
+argument specifications.
+See \citeAuthorTitle{Clojure:Destructuring}.
+
+The section also fails to provide much insight 
+into the meaning g or lack thereof 
+of allowing a function to return multiple values.
+
+\NOTE
+For symmetric functions (permuting the arguments doesn't
+change the value), multiple inputs are relatively safe
+and robust. 
+For non-symmetric functions, 
+arguments whose intended meaning is only indicated
+by their position in a list
+are brittle and dangerous.
+As code evolves, it's common for the interface to a function
+to need to support additional arguments,
+and some of the old arguments become unnecessary.
+If the only way to extend a function's arglist is by adding
+new args to the end, you end up with something non-intuitive
+and error prone.
+That's directly relevant to the topic of the book,
+and an example of the kind of insight that is missing.
+
+In Clojure, this situation is commonly handle by packaging args 
+into a hashmap. Not perfect, but much better 
+than relying on position in the arglist alone.
+
 \end{plSection}%{Multiple values}
 %-----------------------------------------------------------------
 \begin{plSection}{A small library}
+
+I'm going to skip this section.
+
+As they point out in exercise 2.4, 
+the examples here are just various domain transformations composed
+with the content functions,
+obscured by multiple inputs, multiple outputs.
+
+(\NOTE similarity 
+``empty words'' 虚词 versus ``content words" 实词
+in traditional standard Chinese grammar.)
+
 \end{plSection}%{A small library}
 %-----------------------------------------------------------------
 \end{plSection}%{2.1.1 Function combinators}
+%-----------------------------------------------------------------
+\begin{plSection}{2.1.2 Combinators and body plans}
+
+Appeal to false analogy\cite{wiki:ArgumentFromAnalogy}.
+
+On second thought, maybe there is some accidental insight here.
+The commonality of vertebrate body plans is almost surely
+a consequence of evolution painting itself into a corner.
+
+Using multiple-input multiple-output,
+without any way to indicate meaning,
+as the standard interface between functions
+leads to brittle, painted-into-a-corner systems,
+as noted in \cref{Multiple:values}.
+
+\end{plSection}%{2.1.2 Combinators and body plans}
 %-----------------------------------------------------------------
 \end{plSection}%{2.1 Combinators}
 %-----------------------------------------------------------------
@@ -1392,6 +1503,8 @@ As written above, we will need additional API for
 {\pseudocodeFont accumulate} to extract the accumulated arguments.
 
 \TODO
+Consider how to deal with families 
+of related, mutually dependent functions.
 
 \NOTE
 the similarity to {\pseudocodeFont (reduce sum map)},

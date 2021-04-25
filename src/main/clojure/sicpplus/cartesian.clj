@@ -203,6 +203,3 @@
   [h f g]
   (compose h (diagonal f g)))
 
-
-
-
