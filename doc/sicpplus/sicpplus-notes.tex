@@ -354,7 +354,7 @@ This is related in some ways to the ``Postel's law''
 mentioned later, which I would re-word as:
 functions should have large domains and small codomains.
 But I think it's not really the same thing
-(\textbf{TODO:} need a better word for problem ``domain"
+(\TODO need a better word for problem ``domain"
 that distinguishes it from function ``domain".
 And examples would be nice.)
 
@@ -483,7 +483,7 @@ I find the idea that architects are actually good at what they do,
 in any real sense, dubious.
 See for example \citeAuthorYearTitle{Rybczynski:1986:Home},
 which is a reference I just happen to have read some years ago.
-(\textbf{TODO:} quote the forward?)
+(\TODO quote the forward?)
 
 The remainder of the section is a confusing description 
 of the term ``parti''.
@@ -1095,7 +1095,7 @@ is built in.
 However, because I want to be able to do more at runtime,
 I will be implementing a parallel world of more first class
 functions, including {\clojureFont compose}
-as a generic function (see TODO: refs to relevant sections).
+as a generic function (see \TODO refs to relevant sections).
 Making {\clojureFont compose} generic allows,
 for example, optimizations in the case where we know enough
 about the internals of the factors to reduce unnecessary
@@ -1103,7 +1103,7 @@ intermediate pushing and popping in the argument/value stack,
 shared preliminary code, etc.
 See \cref{sec:Compose} for more details.
 
-\textbf{TODO:} should I adopt a naming convention to distinguish
+\TODO should I adopt a naming convention to distinguish
 generic from non-generic functions. Or should it just be assumed
 that \emph{all} functions in my code are generic?
 Can this be hidden in the implementation---normal functions
@@ -1203,13 +1203,157 @@ Ferreiros:2008:Crisis}.
 A proof is a procedure that takes a set of axiom expressions
 and returns another (according to some rules).
 
+%-----------------------------------------------------------------
 \end{plSection}%{(Procedural) Functions} 
 %-----------------------------------------------------------------
 \begin{plSection}{(Procedural) Sets} 
+%-----------------------------------------------------------------
+\begin{plSection}{Tuples} 
+
+General tuple maps indexes to values.
+
+Indexes most often in subsequence of $\Naturals$ starting from
+$0$, $0 \ldots (n-1)$.
+
+Indexes could be almost anything.
+
+Tuple constructors look like
+{\pseudocodeFont (tuple v0 v1 v2 {\ldots})} 
+or
+{\pseudocodeFont (kv-tuple k0 v0 k1 v1 k2 v2 {\ldots})}.
+
+Tuple constructors are not associative, that is,
+  {\pseudocodeFont (tuple v0 v1 v2)}
+  $\neq$
+  {\pseudocodeFont (tuple (tuple v0 v1) v2)}
+$\neq$
+  {\pseudocodeFont (tuple v0 (tuple v1 v2))}.
+
+
+Likely to permit unbounded tuples, eg, ones where
+{\pseudocodeFont (get tuple k)}
+returns a value for any {\pseudocodeFont k} in the index set.
+
+Problems:
+\begin{itemize}
+  \item What is {\pseudocodeFont (tuple x)}?
+  In other words, what is a cartesian product 
+  with only one factor and what are the elements of that set?
+  Is it just {\pseudocodeFont x}? 
+  Probably not. May be an error.
+  But I think math books generally don't consider this edge case
+  ($\times$ is assumed to a binary operator),
+  and may  be implicitly identifying the single factor case
+  with the original set.
+  
+  \TODO check the appropriate sections in,
+  for example, \citeAuthorYearTitle{Halmos:1960:NaiveSetTheory}
+  to see if he says anything explicitly of implicitly about
+  the 1 factor edge case.
+  
+  Also, what is {\pseudocodeFont (tuple)}?
+  Is there a general principle we can use to assign meaning
+  to zero and single factor version of things that are normally 
+  thought of as binary+ variadic operators?
+  
+  \item Curried constructors: 
+  {\pseudocodeFont (tuple x0 x1)} 
+  $\defeq$ 
+  {\pseudocodeFont ((tuple x0) x1)},
+  ie, {\pseudocodeFont (tuple x0)} is a constructor function
+  that adds the next factor to the tuple.
+  
+  Note that we need to be careful about the difference between
+  {\pseudocodeFont (((tuple x0) x1) x2) -> [x0 x1 x2]}
+  and 
+  {\pseudocodeFont (tuple (tuple (tuple x0) x1) x2) 
+  -> [[[x0] x1] x2]}
+  
+  \item {\pseudocodeFont (get the-tuple k)}
+   is a 2 argument function.
+  We could try {\pseudocodeFont ((the-tuple k)}, treating the
+  tuple as a function on its index set.
+  
+  However, this conflicts with currying the tuple constructor.
+  Could be fixed with ``builder'' pattern:
+  {\pseudocodeFont (finish-tuple ((((start-tuple) x0) x1) x2)) 
+  -> [x0 x1 x2]}
+  
+\end{itemize}
+
+\end{plSection}%{Tuples} 
+%-----------------------------------------------------------------
+\begin{plSection}{Cartesian products} 
+
+The elements of a cartesian product set are tuples
+whose factors are elements of the corresponding set factors.
+Out of all possible sets of tuples, cartesian product sets
+are those that can be defined with a \emph{diagonal} predicate.
+In other words, something like:
+{\pseudocodeFont contains?} closure that looks like: 
+\begin{plListing}
+{{\pseudocodeFont contains?} closure}
+{contains:clojure}
+\begin{lstlisting}[language=pseudocode]
+(defn contains?-method [set-tuple]
+  (fn contains? [tuple]
+    (reduce 
+      and 
+      (map 
+        (fn [k] (contains? (set-tuple k) (tuple k)))
+        (indexes set-tuple)))))
+\end{lstlisting}
+\end{plListing}
+\TODO above not quite right until we deal with generic functions
+and method definition/lookup. 
+
+\NOTE {\pseudocodeFont contains?} is a 2-in function.
+Maybe making everything 1-in is too much trouble?
+
+Could be viewed as a tuple whose values are sets.
+
+Note that a tuple doesn't doesn't \emph{belong} to any
+particular cartesian product set; 
+it is an element of any cartesian product set 
+where the tuple factors are elements of the set factors.
+
+\end{plSection}%{Cartesian products} 
+%-----------------------------------------------------------------
 
 \end{plSection}%{(Procedural) Sets} 
 %-----------------------------------------------------------------
 \end{plSection}%{Foundation sketch}
+%-----------------------------------------------------------------
+\begin{plSection}{Multiple arguments}
+%-----------------------------------------------------------------
+\begin{plSection}{Currying}
+
+\begin{plListing}
+{Currying}
+{Currying}
+\begin{lstlisting}[language=pseudocode]
+(f a b c) $\defeq$ (((f a) b) c)
+\end{lstlisting}
+\end{plListing}
+
+\end{plSection}%{Currying} 
+%-----------------------------------------------------------------
+\begin{plSection}{Cartesian product sugar}
+
+\begin{plListing}
+{Cartesian product sugar}
+{Cartesian:product:sugar}
+\begin{lstlisting}[language=pseudocode]
+(f a b c) $\defeq$ (f (tuple a b c))
+\end{lstlisting}
+\end{plListing}
+which begs the question of how to interpret
+{\pseudocodeFont (tuple a b c)}.
+So maybe currying is the right answer.
+
+\end{plSection}%{Cartesian product sugar} 
+%-----------------------------------------------------------------
+\end{plSection}%{Multiple arguments} 
 %-----------------------------------------------------------------
 \begin{plSection}{First class functions} 
 %-----------------------------------------------------------------
