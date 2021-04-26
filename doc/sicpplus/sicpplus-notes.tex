@@ -90,9 +90,28 @@ VanderhartSierra:2009:Clojure,}.
 %-----------------------------------------------------------------
 \end{plSection}%{Introduction}
 %-----------------------------------------------------------------
-\begin{plSection}{Reading}
+\begin{plSection}{\citeAuthorYearTitle{AbelsonSussman:1996:SICP}}
+
+I have worked thru this book in Common Lisp and Clojure.
+It changed my life, and it's my reason for trying the others here.
+
+However, I'm not going to work thru it again, 
+at least for the moment,
+though it might be worth a pass later, to collect ideas 
+for my own writing.
+
+\end{plSection}%{\citeAuthorYearTitle{AbelsonSussman:1996:SICP}}
+%-----------------------------------------------------------------
+\begin{plSection}{\citeAuthorYearTitle{SussmanWisdom:2013:FunctionalDifferentialGeometry}}
+\end{plSection}%{\citeAuthorYearTitle{SussmanWisdom:2013:FunctionalDifferentialGeometry}
+%-----------------------------------------------------------------
+\begin{plSection}{\citeAuthorYearTitle{SussmanWisdom:2015:SICM2}}
+\end{plSection}%{\citeAuthorYearTitle{SussmanWisdom:2015:SICM2}
 %-----------------------------------------------------------------
 \begin{plSection}{\citeAuthorYearTitle{HansonSussman:2021:SDFF}}
+This is the latest book chronologically,
+but perhaps the content would place it between SICP
+and the others?
 %-----------------------------------------------------------------
 \begin{plSection}{Short preview}
 
@@ -1233,12 +1252,104 @@ as noted in \cref{Multiple:values}.
 %-----------------------------------------------------------------
 \end{plSection}%{2.1 Combinators}
 %-----------------------------------------------------------------
+\begin{plSection}{2.2 Regular expressions}
+
+I'm going to skip re-doing this in Clojure, at least for now.
+It seems like a bad choice of example---a mess with no useful
+insights that I can see.
+
+Standard (eg POSIX) regular expressions an example of a bad DSL.
+Complaint seems to be that syntax is bad, rather than ideas.
+But there very little discussion of what the ideas are.
+
+Section proposes to improve syntax by writing a translator
+of an (implied, but not discussed) better Scheme syntax
+to a small subset of POSIX regexp strings.
+Not clear what the point of that is supposed to be.
+Would be more convincing 
+if they actually implemented a pattern matcher.
+Orr  at least had some application that demonstrated the 
+advantages of their regexp syntax over POSIX.
+
+Missing any discussion of what the purpose of pattern matching 
+might be in a more general setting.
+No big ideas.
+No real analysis of what's wrong with POSIX syntax.
+%-----------------------------------------------------------------
+\begin{plSection}{2.2.1 A regular expression combinator language}
+
+Lists a bunch of functions what the inputs and outputs are.
+Describes what they do as ``matching'' 
+without any explanation of what that means.
+
+\end{plSection}%{2.2.1 A regular expression combinator language}
+%-----------------------------------------------------------------
+\begin{plSection}{2.2.2 Implementation of the translator}
+
+Skipping for now. Messy. Not clear what the point is.
+Bad choice of problem doesn't offer any useful insights 
+into ``combinators'' or how to go about designing
+a ``combinator language''.
+Don't use it for anything in the end.
+
+\begin{plSection}{The moral of the story}
+
+``The moral of this story is that regular expression are 
+a beautiful example of how \emph{not} to build build a system.
+Using composable parts and combinators to make new parts
+by combining others leads to simpler and more robust
+implementations.''[p 43]
+
+The problem with this statement is that the section doesn't
+provide the substance to back it up.
+To do that, they would need something like
+(a) some analysis of what the real problem is, with non-trivial
+motivating application,
+(b) a sufficiently detailed design discussion covering choices
+and their resolution,
+and (c) a comparison with POSIX giving evidence of where it went
+wrong.
+
+\end{plSection}%{The moral of the story}
+\end{plSection}%{2.2.2 Implementation of the translator}
+%-----------------------------------------------------------------
+\end{plSection}%{2.2 Regular expressions}
+%-----------------------------------------------------------------
+\begin{plSection}{2.3 Wrappers}
+
+This application is much better than the previous one.
+However, I think there are significant flaws 
+in how they approach it.
+
+Issues:
+\begin{itemize}
+  \item The data consists of bare numbers. It's up to the user
+  to know what units of measurement a function expects,
+  and what units it outputs, because there's no way to tell
+  from the values themselves.
+  They rely naming conventions to document what's intended
+  (eg {\schemeFont celsius-to-fahrenheit}), asking for trouble.
+  You can get by with that for simple conversions,
+  but when you construct new ones via composition and inverse,
+  watch out.
+  \item  
+\end{itemize}
+%-----------------------------------------------------------------
+\begin{plSection}{2.3.1 Specialization wrappers}
+\end{plSection}%{2.3.1 Specialization wrappers}
+%-----------------------------------------------------------------
+\begin{plSection}{2.3.2 Implementing specializers}
+\end{plSection}%{2.3.2 Implementing specializers}
+%-----------------------------------------------------------------
+\begin{plSection}{2.3.3 Adapters}
+\end{plSection}%{2.3.3 Adapters}
+%-----------------------------------------------------------------
+\end{plSection}%{2.3 Wrappers}
+%-----------------------------------------------------------------
 \end{plSection}%{2 Domain Specific Languages}
 %-----------------------------------------------------------------
 %-----------------------------------------------------------------
 \end{plSection}%{\citeAuthorYearTitle{HansonSussman:2021:SDFF}}
-%-----------------------------------------------------------------
-\end{plSection}%{Reading}
 %-----------------------------------------------------------------
 \begin{plSection}{Implementation}
 I am stretching the work ``implementation'' to cover both
