@@ -118,17 +118,31 @@ and the others?
 The strengths of SICP were substantive ideas, elegant code,
 simple but real-enough applications.
 
-This book on the other hand (at least up to 2.1.1)
+This book on the other hand (at least up to 2.3)
 has flaws similar to many software design books:
 instead of real evidence in the form of convincing examples,
-resort to logical fallacies (particularly appeal to
+they resort to logical fallacies (particularly appeal to
 false authority/analogy)
-and allusions to shallow fads.
+and allusions to shallow software fads.
 
 I wonder if this is somehow due SICP falling from favor
 and being replaced by Python at MIT.
 And, if somehow therefore, they are descending to a level of
 argument they think might appeal to mediocre students?
+
+One thing in particular that seems to be lacking is 
+any substantial discussion of \emph{design}.
+They present (as of 2.3) a series of fait accompli examples.
+What would be better is a more in depth discussion 
+of the initial problem specification/preliminary ``requirements'',
+including example of inconsistencies 
+in the initial ``requirements'',
+followed by some specific ideas about how those ``requirements''
+might change,
+followed abstraction/generalization that handles the specific
+changes as well as others,
+followed by a demonstration of what has to change in the code
+when you do encounter a new ``use case'' to handle.
 
 \end{plSection}%{Short preview}
 %-----------------------------------------------------------------
@@ -1310,6 +1324,11 @@ and their resolution,
 and (c) a comparison with POSIX giving evidence of where it went
 wrong.
 
+And if the big goal is ``design for flexibility'',
+they need to show how their regexp syntax is more ``flexible'',
+in whatever sense they want, but usually that would mean
+able to handle some new problem the POSIX syntax can't.
+
 \end{plSection}%{The moral of the story}
 \end{plSection}%{2.2.2 Implementation of the translator}
 %-----------------------------------------------------------------
@@ -1323,6 +1342,47 @@ in how they approach it.
 
 Issues:
 \begin{itemize}
+  \item The basic failing is the lack of thought in 
+  problem formulation. If you want software that can be smoothly
+  adapted to future changes in ``requirements'',
+  then you need to abstract, generalize whatever you happen to
+  thing the ``requirements'' are at present.
+  And you need to have at least some specific ideas of how the
+  ``requirements'' might change.
+  
+  \item They make the classic mistake of failing to separate
+  the ``space'' and the ``coordinate system'': 
+  
+  The space here consists of what I will call \emph{measurables}:
+  abstract quantities like length, weight, time (duration),
+  temperature, 
+  electric current, {\ldots}. 
+  (\TODO Is there some more standard word for this?)
+  New measurables can be constructed from base ones via 
+  \emph{measurable algebra:}
+  $\Pseudocode{velocity} = 
+  \Pseudocode{length} / \Pseudocode{time}$
+   
+  To record a value for some measurable, we need to choose
+  coordinates, aka, units of measurement, like meters, grams, 
+  seconds, degrees kelvin, amperes, {\ldots}.
+  
+  \item To demonstrate the ``flexibility'' or ``robustness''
+  of an approach to units of measurement, you need to, at least,
+  show what's involved in 
+  \begin{itemize}
+    \item Adding new units for a given measurable. They get close
+    to this in the discussion of 
+    $\Pseudocode{fahrenheit} \leftrightarrow \Pseudocode{kelvin}$
+    conversion, but it's not explicitly described in terms
+    of adding new units.
+    \item Adding a new measurable.
+  \end{itemize} 
+  And they need to at least give some argument for why their 
+  approach means less work, more safety, whatever, 
+  when you handle these two obvious ways in which a 
+  units-of-measurement is likely to evolve over time.
+  
   \item The data consists of bare numbers. It's up to the user
   to know what units of measurement a function expects,
   and what units it outputs, because there's no way to tell
@@ -1332,7 +1392,32 @@ Issues:
   You can get by with that for simple conversions,
   but when you construct new ones via composition and inverse,
   watch out.
-  \item  
+  
+  \item The more subtle problem is due to the failure to reify
+  measurables: nothing prevents you from converting, eg, 
+  $\Pseudocode{meters}  \leftrightarrow  \Pseudocode{seconds}$.
+\end{itemize}
+
+Rather than just translate this section into Clojure,
+I'm going to start over and try to fix the issues listed above.
+To start, I'll implement SI units (see
+\citeAuthorTitle{wiki:UnitOfMeasurement,wiki:SIUnits}).
+
+The design tests may include:
+\begin{itemize}
+  \item adding a new measurable
+  \item conversion to some other unit system with the
+  same measurables but different units.
+  \item date/time systems as additional measurables.
+  Dates (yyyy-mm-dd) in particular stress the design 
+  because they aren't continuous, so many conversions won't be
+  invertible any more, and add lots of possibilities 
+  for off-by-one fencepost errors.
+  Dates also depend on location.
+  \item add money/currency as a measurable. 
+  This stresses the original design because the unit conversions
+  are time and place (and something like conversion agent) 
+  dependent.
 \end{itemize}
 %-----------------------------------------------------------------
 \begin{plSection}{2.3.1 Specialization wrappers}
