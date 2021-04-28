@@ -205,7 +205,7 @@ I think I have always been more likely than most
 and in my experience I've been too conservative in that direction.
 The cause may be over-estimating the cost of something new
 relative to the costs of maintaining/updating something that
-already exists. THe reasons for that may have something to do
+already exists. The reasons for that may have something to do
 with the difficulty of associating costs to a design decision
 that was made long ago.
 
@@ -270,7 +270,8 @@ chapter.
 
 In the perhaps more common version of this, the authors set 
 themselves, or some other software ``guru'' as the authority, 
-usually accompanied by oracular pronouncements left to the reader
+usually accompanied by opaque oracular pronouncements 
+left to the reader
 to interpret.
 This book is thankfully free from that.
 
@@ -288,7 +289,7 @@ quantification.
 In other words, pick some single criterion that is
 easy to measure, easy to compare, and, ideally,
 provides a total ordering. 
-THe classic example is thinking more money is always better;
+The classic example is thinking more money is always better;
 easy to tell that job A pays more than job B;
 hard to tell which one really makes your life ``better''.
 
@@ -311,11 +312,14 @@ They are missing, what I think is one of the strongest arguments
 in favor of their approach---the need for 
 \emph{experimental/exploratory programming}.
 \begin{itemize}
+
   \item Situations where you can fully specify what you need
   ahead of time---where you even understand what's 
   possible---are extremely rare.
+
   \item The faster and further you explore possibilities,
   the better the final result.
+
   \item If you don't do this, you are giving up one of the
   biggest advantages software has over other kinds of engineering:
   it is really easy to try different things.
@@ -325,8 +329,6 @@ in favor of their approach---the need for
   In physical engineering, say airplane design, you would have
   to scrap a $10^{6}$ dollar prototype and build another
   (and another and another {\ldots}).
-  
-  \item Sometimes people advocate 
   
   \item There is no final result. Context keeps changing.
   
@@ -406,6 +408,7 @@ it isn't invoked accidentally.
 
 In either case, proper abstraction makes it less likely
 an update will break something that currently works.
+(\TODO give some argument for why this is true.)
 
 What they advocate (p~2--3)
 \begin{itemize}
@@ -445,7 +448,8 @@ More concrete recommendations (p~3--5):
   \item \emph{domain specific languages}, 
   which they equate to a family
   of ``mix-and-match parts''. I don't think that's 
-  what most people mean by DSL, rather something more like
+  what most people mean by DSL. 
+  I think it is rather something more like
   syntactic sugar to make it easier to type common expressions
   in a problem domain. I've never been a fan of that notion of
   DSLs. Needing one is a symptom that you haven't gotten the
@@ -478,7 +482,7 @@ More concrete recommendations (p~3--5):
   thing, rather than multiple sources of data.
   (I really hate it when people use ``dual'' with specifying
   what they mean, in a way that seems like they just
-  think it sounds cool, 
+  think it sounds like a cool mathy words, 
   and haven't thought thru what the point is.)
 \end{itemize}
 
@@ -513,14 +517,14 @@ by software design is questionable at best.
 As one who has had to deal with many heavily designed
 and consequently dysfunctional buildings,
 I find the idea that architects are actually good at what they do,
-in any real sense, dubious.
+in any real sense, dubious, if not laughable.
 See for example \citeAuthorYearTitle{Rybczynski:1986:Home},
 which is a reference I just happen to have read some years ago.
 (\TODO quote the forward?)
 
 The remainder of the section is a confusing description 
 of the term ``parti''.
-And I don't think there is anything that wouldn't have been 
+I don't think there is anything that wouldn't have been 
 clearer if given directly in terms of software,
 without the appeal to (physical) architecture as a model. 
 
@@ -565,9 +569,9 @@ all of which conflict. depending on the meaning of those
 undefined terms. 
 The analogy to biological systems falls apart with another
 moment's thought: 
-individual cells might be considered ``general'',
-at least when they are stem cells,
-but I don't think many would accept calling them ``simple''
+individual cells are really only``general''
+when they are stem cells,
+and I don't think many would accept calling them ``simple''
 or ``smart''.
 
 This is followed by another false analogy to social systems:
@@ -594,8 +598,10 @@ rather than just a contingent effect of
 evolution and constraints of biological development.
 Rather than being an example of flexible design,
 the shared body plan of vertebrates
-is as or more likely evidence of natural selection
+is more likely evidence of natural selection
 ``painting itself into a corner''.
+(Because of the way development works in vertebrates,
+adding parts is much less likely than deleting them.)
 
 They then turn to design of radio receivers as another analogy.
 The problem with this analogy is that all radio receivers
@@ -622,7 +628,7 @@ and they can be further combined, ad infinitum {\ldots}.
 I don't think you need any of the analogies to explain this
 or justify it; I think they just get in the way.
 And biological system don't have the same elegant recursive
-structure, so if you took that as you model, 
+structure, so if you took that as your model, 
 you would miss something critical.
 
 ``Biological systems are universal in that each component can,
@@ -652,7 +658,7 @@ different from
 ``a bespoke component''? 
 The stem cell analogy doesn't work, and obscures whatever
 advantages and disadvantages an evaluator strategy might have.
-THere are many stem cells,
+There are many stem cells,
 and each re-configures itself
 into something distinct and more specialized, 
 in a one-way process.
@@ -723,9 +729,14 @@ the problem at the right level of abstraction,
 and consider the choice between 
 multiple representations/parameterizations of that abstraction
 a computational detail.
+The failure to separate a \emph{space} 
+from multiple \emph{coordinate systems} for specifying
+elements of that space is a common mistake 
+in scientific computing.
+THey repeat this later in the book when they mention tensors.
 (I think this may be why I never got very far 
 in the first edition of SICM.)
-For example:
+Here's my appleal to authority on this topic::
 \begin{plQuote}
 {\citeAuthorYearTitle{MacLane:1954:Courses}}
 {maclane:vspace}
@@ -791,7 +802,7 @@ further in ch 4 and 5.
 
 Better than the previous sections,
 because they mostly drop 
-the appeals to false authority/analogy fallacies.
+the false authority/analogy fallacies.
 
 Starts by saying general and evolvable systems,
  that use the techniques described (very poorly!) 
@@ -799,7 +810,7 @@ Starts by saying general and evolvable systems,
 Not clear to me that that is true, at least not always,
 and nothing concrete to justify it.
 
-``Part of the problem is that we are thinking abut cost
+``Part of the problem is that we are thinking about cost
 in the wrong terms.''[p~17]
 Good as far as it goes, but I think they are missing something
 important.
@@ -832,7 +843,7 @@ quantification.
 In other words, pick some criterion that is
 easy to measure, easy to compare, and, ideally,
 provides a total ordering. 
-THe classic example is thinking more money is always better;
+The classic example is thinking more money is always better;
 easy to tell that job A pays more than job B;
 hard to tell which one really makes your life ``better''.
 
@@ -877,7 +888,7 @@ read and verify the specification by eye.
 
 Some misleading/confusing  (in my opinion)
 vocabulary, chosen, perhaps, beacuse 
-each of these things has been something of a fad,
+each of these things has been something of a fad
 in certain subsets of the software world:
 \begin{description}
 \item[DSL]
@@ -886,8 +897,10 @@ their description of ``DSL'' doesn't match
 what the term suggests to me
 (and, I think, to most software developers):
 restrictive syntactic sugar that reduces 
-the unnecessary baroque boilerplate code, 
-that results from choosing a bad base language.
+the unnecessary baroque boilerplate code. 
+When it is useful, it is primarily evidence 
+of a bad base language,
+rather than being a good idea in its own right.
 
 \item[Nouns and verbs]
 In \cref{sec:AdditiveProgramming},
@@ -957,8 +970,9 @@ is neither necessary nor sufficient.
 %-----------------------------------------------------------------
 \begin{plSection}{2.1 Combinators}
 
-Iterated line search optimization as a collection of better, less shallow, 
-examples.
+Iterated line search optimization would provide 
+a collection of better, less shallow, 
+examples?
 
 %-----------------------------------------------------------------
 \begin{plSection}{2.1.1 Function combinators}
@@ -975,7 +989,7 @@ Preview:
   \item What's particularly missing is any thought about
   what a ``function'' is, eg, domain, codomain, etc.
   \item All the input/output arity stuff doesn't 
-  work, certainly not in Clojure, and I'm pretty sure, 
+  work, certainly not in Clojure, and, I'm pretty sure, 
   not in Scheme, because functions don't have a specific input
   arity in either, Clojure doesn't have multiple value return,
   and I don't think Scheme necessarily has a fixed number of
@@ -1205,7 +1219,7 @@ argument specifications.
 See \citeAuthorTitle{Clojure:Destructuring}.
 
 The section also fails to provide much insight 
-into the meaning g or lack thereof 
+into the meaning or lack thereof 
 of allowing a function to return multiple values.
 
 \NOTE
@@ -1282,7 +1296,7 @@ to a small subset of POSIX regexp strings.
 Not clear what the point of that is supposed to be.
 Would be more convincing 
 if they actually implemented a pattern matcher.
-Orr  at least had some application that demonstrated the 
+Or  at least had some application that demonstrated the 
 advantages of their regexp syntax over POSIX.
 
 Missing any discussion of what the purpose of pattern matching 
@@ -1292,7 +1306,8 @@ No real analysis of what's wrong with POSIX syntax.
 %-----------------------------------------------------------------
 \begin{plSection}{2.2.1 A regular expression combinator language}
 
-Lists a bunch of functions what the inputs and outputs are.
+Lists a bunch of functions 
+but doesn't says what the inputs and outputs are.
 Describes what they do as ``matching'' 
 without any explanation of what that means.
 
@@ -1334,7 +1349,7 @@ able to handle some new problem the POSIX syntax can't.
 %-----------------------------------------------------------------
 \end{plSection}%{2.2 Regular expressions}
 %-----------------------------------------------------------------
-\begin{plSection}{2.3 Wrappers}
+\begin{plSection}{2.3 Wrappers}\label{sec:SDFF:Wrappers}
 
 This application is much better than the previous one.
 However, I think there are significant flaws 
@@ -1357,15 +1372,24 @@ Issues:
   abstract quantities like length, weight, time (duration),
   temperature, 
   electric current, {\ldots}. 
-  (\TODO Is there some more standard word for this?)
+  (\TODO Is there some more standard word for this?
+  I see ``quantity'' used a lot, but that's seems too general and
+  likely to be confusing.)
   New measurables can be constructed from base ones via 
   \emph{measurable algebra:}
   $\Pseudocode{velocity} = 
-  \Pseudocode{length} / \Pseudocode{time}$
+  \Pseudocode{length} / \Pseudocode{time}$.
+  Note that this is a commutative group whose generators
+  are the base measurables.
    
   To record a value for some measurable, we need to choose
   coordinates, aka, units of measurement, like meters, grams, 
   seconds, degrees kelvin, amperes, {\ldots}.
+  
+  \item What are we assuming about coordinate transformations?
+  Continuous? Invertible? Affine? Linear?
+  Need to be able to generate the transform for any 
+  measurable expression given the transforms for the generators.
   
   \item To demonstrate the ``flexibility'' or ``robustness''
   of an approach to units of measurement, you need to, at least,
@@ -1418,7 +1442,14 @@ The design tests may include:
   This stresses the original design because the unit conversions
   are time and place (and something like conversion agent) 
   dependent.
+  \item multi-dimensional measurables, particularly ones that
+  are not assumed 
+  elements of linear spaces, eg, position on globe as measurable,
+  with {\pseudocodeFont [latitude longitude]} vs
+  other spherical coordinate systems or flat map projections.
 \end{itemize}
+
+For my takes on the example in this section see \cref{sec:UOM}.
 %-----------------------------------------------------------------
 \begin{plSection}{2.3.1 Specialization wrappers}
 \end{plSection}%{2.3.1 Specialization wrappers}
@@ -1457,11 +1488,13 @@ See:
 
 \citeAuthorYearTitle{Feferman:1989:IsCantorNecessary}
 
+\citeAuthorYearTitle{Feferman:1992:ALittleBit}
+
+Reprinted, updated in:
+
 \citeAuthorYearTitle[ch.~2 ``Is Cantor necessary?'']{Feferman:1998:LightOfLogic}
 
 \citeAuthorYearTitle[ch.~12 ``Is Cantor necessary? (Conclusion)'']{Feferman:1998:LightOfLogic}
-
-\citeAuthorYearTitle{Feferman:1992:ALittleBit}
 
 \citeAuthorYearTitle[ch~14 ``Why a little bit goes a long way:
 logical foundations of scientifically applicable mathematics'']{Feferman:1998:LightOfLogic}
@@ -1477,7 +1510,8 @@ logical foundations of scientifically applicable mathematics'']{Feferman:1998:Li
   equivalent,
   but more ``convenient''.
   \item unbounded (but not infinite)
-  \item deterministic (?)
+  \item deterministic?
+  \item single threaded?
   \item references with tagged values
   \item write-once memory (but maybe that's not ``convenient'')?
   \item Primitive values plus data structures built out of tagged
@@ -1496,14 +1530,6 @@ Everything must handle the possible of non-terminating procedures
 \end{plSection}%{An ideal language}
 %-----------------------------------------------------------------
 \begin{plSection}{(Procedural) Functions} 
-
-A set is a procedure that returns true or false for any input
-value.
-As opposed to axiomatic set theory.
-I think this eliminates the set paradoxes
-that led to the ``crisis in mathematics'' circa 1900~\cite{
-Feferman:2000:ConstructivePredicativeClassicalAnalysis,
-Ferreiros:2008:Crisis}.
 
 A proof is a procedure that takes a set of axiom expressions
 and returns another (according to some rules).
@@ -1585,9 +1611,37 @@ Problems:
 \end{itemize}
 
 \end{plSection}%{Tuples} 
-%%-----------------------------------------------------------------
+%-----------------------------------------------------------------
 \begin{plSection}{(Procedural) Sets} 
------------------------------------------------------------------
+
+A set is a procedure that returns true or false for any input
+value (or fails to halt).
+
+As opposed to axiomatic set theory.
+
+I think this eliminates the set paradoxes
+that led to the ``crisis in mathematics'' circa 1900~\cite{
+Feferman:2000:ConstructivePredicativeClassicalAnalysis,
+Ferreiros:2008:Crisis}.
+The paradoxes correspond to inputs where the set membership
+function fails to halt.
+
+Russell paradox: 
+$\Set{R}$ is the set of all sets that don't contain themselves.
+{\pseudocodeFont (not (contains? $\Set{R}$ $\Set{R}$))}
+calls 
+{\pseudocodeFont (contains? $\Set{R}$ $\Set{R}$)}
+calls
+{\pseudocodeFont (not (contains? $\Set{R}$ $\Set{R}$))}
+{\ldots}.
+
+Hilbert hotel: countably infinite number of rooms, all occupied.
+Can always find room for a new customer by moving everyone
+to the next higher room number.
+But the moving never terminates, 
+unless you assume an infinite number of threads.
+
+%-----------------------------------------------------------------
 \begin{plSection}{Cartesian products} 
 
 The elements of a cartesian product set are tuples
@@ -1737,6 +1791,21 @@ So maybe currying is the right answer.
 %-----------------------------------------------------------------
 %-----------------------------------------------------------------
 \end{plSection}%{Implementation}
+%-----------------------------------------------------------------
+\begin{plSection}{Applications}
+%-----------------------------------------------------------------
+\begin{plSection}{Units of measurement}\label{sec:UOM}
+
+This is my take on the application discussed in SDFF section 2.3
+(see \cref{sec:SDFF:Wrappers}).
+
+I think this is a good example---something encountered
+frequently enough, which initially seems easy,
+but with many pitfalls if you fail to stop and think.
+ 
+\end{plSection}%{Units of measurement}\label{sec:UOM}
+%-----------------------------------------------------------------
+\end{plSection}%{Applications}
 %-----------------------------------------------------------------
 \BeginAppendices
 \input{typesetting}
