@@ -1802,6 +1802,22 @@ This is my take on the application discussed in SDFF section 2.3
 I think this is a good example---something encountered
 frequently enough, which initially seems easy,
 but with many pitfalls if you fail to stop and think.
+
+Issues:
+\begin{itemize}
+  \item What's convertible to what? 
+  \emphj{Measurable} as a element of some space independent of
+  units == coordinate system.
+  \item linear vs affine; absolute vs change in units.
+  eg: heat capacity J/(g.C) to kCalorie/(lb.F),
+  use linear dC->dF rather than affine C->F.
+  \item non-linear conversions: A->B needs dB/dA at some point.
+  \item multi-dimensional units: eg (lat,lon)
+  \item non-continuous units: eg dates
+  \item more general non-invertible
+  \item conversions that are time/place dependent: 
+  currency conversions
+\end{itemize}
  
 \end{plSection}%{Units of measurement}\label{sec:UOM}
 %-----------------------------------------------------------------
