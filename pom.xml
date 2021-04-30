@@ -62,6 +62,11 @@
  </build>
  <dependencies>
   <dependency>
+   <groupId>org.clojure</groupId>
+   <artifactId>math.numeric-tower</artifactId>
+   <version>${math-numeric-tower-version}</version>
+  </dependency>
+  <dependency>
    <groupId>org.apache.commons</groupId>
    <artifactId>commons-math3</artifactId>
    <version>${commons-math3-version}</version>
@@ -76,37 +81,14 @@
    <artifactId>commons-rng-simple</artifactId>
    <version>${commons-rng-version}</version>
   </dependency>
-  <!-- dependency>
-   <groupId>org.apache.commons</groupId>
-   <artifactId>commons-rng-examples</artifactId>
-   <version>${commons-rng-version}</version>
-   <type>pom</type>
-  </dependency -->
-  <!-- 
-  <dependency>
-   <groupId>io.gatling.uncommons.maths</groupId>
-   <artifactId>uncommons-maths</artifactId>
-   <version>${uncommons-maths-version}</version>
-   <exclusions>
-    <exclusion>
-     <groupId>org.jfree</groupId>
-     <artifactId>jcommon</artifactId>
-    </exclusion>
-    <exclusion>
-     <groupId>org.jfree</groupId>
-     <artifactId>jfreechart</artifactId>
-    </exclusion>
-    <exclusion>
-     <groupId>jfree</groupId>
-     <artifactId>jcommon</artifactId>
-    </exclusion>
-    <exclusion>
-     <groupId>jfree</groupId>
-     <artifactId>jfreechart</artifactId>
-    </exclusion>
-   </exclusions>
-  </dependency>
-   -->
+  <!-- dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-rng-examples</artifactId> 
+   <version>${commons-rng-version}</version> <type>pom</type> </dependency -->
+  <!-- <dependency> <groupId>io.gatling.uncommons.maths</groupId> <artifactId>uncommons-maths</artifactId> 
+   <version>${uncommons-maths-version}</version> <exclusions> <exclusion> <groupId>org.jfree</groupId> 
+   <artifactId>jcommon</artifactId> </exclusion> <exclusion> <groupId>org.jfree</groupId> 
+   <artifactId>jfreechart</artifactId> </exclusion> <exclusion> <groupId>jfree</groupId> 
+   <artifactId>jcommon</artifactId> </exclusion> <exclusion> <groupId>jfree</groupId> 
+   <artifactId>jfreechart</artifactId> </exclusion> </exclusions> </dependency> -->
   <dependency>
    <groupId>com.google.guava</groupId>
    <artifactId>guava</artifactId>

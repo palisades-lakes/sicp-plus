@@ -1351,6 +1351,9 @@ able to handle some new problem the POSIX syntax can't.
 %-----------------------------------------------------------------
 \begin{plSection}{2.3 Wrappers}\label{sec:SDFF:Wrappers}
 
+%-----------------------------------------------------------------
+\begin{plSection}{2.3 Wrappers preview}
+
 This application is much better than the previous one.
 However, I think there are significant flaws 
 in how they approach it.
@@ -1422,10 +1425,6 @@ Issues:
   $\Pseudocode{meters}  \leftrightarrow  \Pseudocode{seconds}$.
 \end{itemize}
 
-Rather than just translate this section into Clojure,
-I'm going to start over and try to fix the issues listed above.
-To start, I'll implement SI units (see
-\citeAuthorTitle{wiki:UnitOfMeasurement,wiki:SIUnits}).
 
 The design tests may include:
 \begin{itemize}
@@ -1449,7 +1448,101 @@ The design tests may include:
   other spherical coordinate systems or flat map projections.
 \end{itemize}
 
-For my takes on the example in this section see \cref{sec:UOM}.
+Rather than just translate this section into Clojure,
+I'm also going to start over and 
+try to fix the issues listed above.
+To start, I'll implement SI units (see
+\citeAuthorTitle{wiki:UnitOfMeasurement,wiki:SIUnits}).
+See \cref{sec:UOM}.
+
+\end{plSection}%{2.3 Wrappers preview}
+%-----------------------------------------------------------------
+\begin{plSection}{2.3 Wrappers initial code}
+
+Problem posed as: 
+compute the radius of a sphere of gas 
+as a function of temperature,
+holding pressure constant.
+
+Not a very compelling example,
+without some idea about why you might want to do this.
+Without knowing ``why'', 
+it's impossible to guess how the problem specification might
+change in the future,
+or how to generalize the problem definition
+and decide what appropriate abstractions are.  
+
+It is interesting that they write the ideal gas law 
+in math notation:
+\begin{equation}
+PV \; = \; nRT 
+\end{equation}
+but don't do the same for sphere volume:
+\begin{eqnarray}
+v \, & = & \, \frac{4\pi}{3} r^{3} \\  
+& \Updownarrow & \nonumber \\
+r \, & = & \, \left[ \frac{3}{4\pi} v\right]^{\frac{1}{3}}
+\end{eqnarray}
+They don't say anything about equations vs procedures
+and, in particular, representing equations in code.
+The failure to reify equations leads to an implicit
+assumption---that conversion procedures 
+(and the procedures extracted from the gas law and sphere volume
+formula) are \emph{invertible}.
+
+In fact, at least one of these, the sphere radius from volume
+function, isn't invertible, and that fact is hidden by the
+failure to consider what numbers are being used.
+They mention explicitly that the {\schemeFont 4/3} 
+and {\schemeFont 1/3}
+are rational numbers ($\Space{Q}$), implying, but not stating,
+that there is some arbitrary precision implementation of
+$\Space{Q}$ in Scheme.
+But {\schemeFont (define pi (* 4 (atan 1 1)))}
+and {\schemeFont (expt $x$ 1/3)}
+can only be an approximation---unless Scheme includes some version
+of computable $\Space{R}$.
+(See \citeAuthorYearTitle{Bridger:2019,Henle:2012:RealNumbers}.)
+
+Clojure translations:
+Note that I am using {\javaFont double} for all the numbers,
+rather than ratios for some of the numbers,
+as in the original Scheme version.
+A closer translation might use {\clojureFont clojure.lang.Ratio}
+for, eg, {\clojureFont 4/3}
+However, though I haven't checked for several year,
+I in the past have found enough problems in the 
+{\clojureFont clojure.lang.Ratio} implementation to distrust it
+(eg {\clojureFont double -> Ratio -> double} is \emph{not}
+an identity transformation).
+All the other Java or Clojure rational number implementations
+I have tried have been broken, except for 
+\citeAuthorTitle{Occil:2021:NumbersJava}.
+I may try that or my own implementation some time in the future.
+\begin{plListing}
+{Gas law and sphere radius}
+{Gas:law}
+\texttt{J/(K*mol)}
+\begin{lstlisting}[language=clojure]
+(def gas-constant "J/(K*mol)" (double 8.3144621))
+
+(defn gas-law-volume ^double [^double pressure 
+                              ^double temperature 
+                              ^double amount]
+  (/ (* gas-constant amount temperature)
+     pressure))
+
+(def one-third (/ 1.0 3.0))
+(def three-over-4PI (/ 3.0 (* 4 Math/PI)))
+
+(defn sphere-radius ^double [^double volume]
+  (Math/pow (* three-over-4PI volume) one-third)) 
+  
+(sphere-radius (/ (* 4 Math/PI) 3)) -> 1.0
+\end{lstlisting}
+\end{plListing}
+
+\end{plSection}%{2.3 Wrappers initial code}
 %-----------------------------------------------------------------
 \begin{plSection}{2.3.1 Specialization wrappers}
 \end{plSection}%{2.3.1 Specialization wrappers}
@@ -1806,7 +1899,7 @@ but with many pitfalls if you fail to stop and think.
 Issues:
 \begin{itemize}
   \item What's convertible to what? 
-  \emphj{Measurable} as a element of some space independent of
+  \emph{Measurable} as a element of some space independent of
   units == coordinate system.
   \item linear vs affine; absolute vs change in units.
   eg: heat capacity J/(g.C) to kCalorie/(lb.F),
