@@ -11,7 +11,7 @@
 % % arara: clean: { extensions: [ idx, ilg, ind, xdy, ] }
 % % arara: clean: { extensions: [ plCode, plData, plMath, plExercise, plNote, plQuote, ] }
 %-----------------------------------------------------------------
-\documentclass[11pt]{PalisadesLakesBook}
+\documentclass[12pt]{PalisadesLakesBook}
 % \geomHDTV
 % \geomLandscape
 \geomHalfDTV
@@ -143,6 +143,20 @@ followed abstraction/generalization that handles the specific
 changes as well as others,
 followed by a demonstration of what has to change in the code
 when you do encounter a new ``use case'' to handle.
+
+Using a questionable analogy myself:
+
+If you want to avoid painting yourself into a corner,
+you need to look at the room first, and come up with a plan
+for painting the floor that ends at an exit.
+And you also want to think about everything else 
+you are might need to paint. 
+You don't want to paint the floor,
+and then be stuck waiting for it to dry before you can get
+to the walls and the ceiling,
+and possibly have extra work keeping the freshly painted floor
+clean, which wouldn't have been necessary if you had painted
+top down.
 
 \end{plSection}%{Short preview}
 %-----------------------------------------------------------------
@@ -1522,7 +1536,8 @@ I may try that or my own implementation some time in the future.
 \begin{plListing}
 {Gas law and sphere radius}
 {Gas:law}
-\texttt{J/(K*mol)}
+FiraCode as texttt: \texttt{J/(K*mol)
+ (sphere-radius (/ (* 4 Math/PI) 3)) -> 1.0}
 \begin{lstlisting}[language=clojure]
 (def gas-constant "J/(K*mol)" (double 8.3144621))
 
