@@ -29,7 +29,7 @@
 %\LegibleFonts
 %\LibertinusFonts
 %\NewComputerModernFonts
-%\STIXTwoFonts
+%\STIXTwoFonts\Spoa
 %\BonumFonts % most pages
 %\PagellaFonts
 %\ScholaFonts
@@ -1472,6 +1472,7 @@ See \cref{sec:UOM}.
 \end{plSection}%{2.3 Wrappers preview}
 %-----------------------------------------------------------------
 \begin{plSection}{2.3 Wrappers initial code}
+\label{sec:Wrappers:initial}
 
 Problem posed as: 
 compute the radius of a sphere of gas 
@@ -1487,16 +1488,21 @@ or how to generalize the problem definition
 and decide what appropriate abstractions are.  
 
 It is interesting that they write the ideal gas law 
-in math notation:
-\begin{equation}
-PV \; = \; nRT 
-\end{equation}
-but don't do the same for sphere volume:
-\begin{eqnarray}
-v \, & = & \, \frac{4\pi}{3} r^{3} \\  
+in math notation (\cref{eq:PVnRT}),
+but ignore the re-arrangement needed to get volume out:
+\begin{align}
+\label{eq:PVnRT}
+PV \; & = \; nRT \\
 & \Updownarrow & \nonumber \\
-r \, & = & \, \left[ \frac{3}{4\pi} v\right]^{\frac{1}{3}}
-\end{eqnarray}
+V \; & = \; \frac{nRT}{P} 
+\end{align}
+and don't write out the sphere volume-radius constraint 
+in any form:
+\begin{align}
+v \, & = \, \frac{4\pi}{3} r^{3} \\  
+& \Updownarrow & \nonumber \\
+r \, & = \, \left[ \frac{3}{4\pi} v\right]^{\frac{1}{3}}
+\end{align}
 They don't say anything about equations vs procedures
 and, in particular, representing equations in code.
 The failure to reify equations leads to an implicit
@@ -1524,20 +1530,19 @@ rather than ratios for some of the numbers,
 as in the original Scheme version.
 A closer translation might use {\clojureFont clojure.lang.Ratio}
 for, eg, {\clojureFont 4/3}
-However, though I haven't checked for several year,
-I in the past have found enough problems in the 
-{\clojureFont clojure.lang.Ratio} implementation to distrust it
+However, though I haven't checked for several years,
+I have, in the past, found enough problems in the 
+{\clojureFont Ratio} implementation to distrust it
 (eg {\clojureFont double -> Ratio -> double} is \emph{not}
 an identity transformation).
 All the other Java or Clojure rational number implementations
 I have tried have been broken, except for 
 \citeAuthorTitle{Occil:2021:NumbersJava}.
-I may try that or my own implementation some time in the future.
+I may try that or my own implementation 
+of computable $\Space{R}$ some time in the future.
 \begin{plListing}
 {Gas law and sphere radius}
 {Gas:law}
-FiraCode as texttt: \texttt{J/(K*mol)
- (sphere-radius (/ (* 4 Math/PI) 3)) -> 1.0}
 \begin{lstlisting}[language=clojure]
 (def gas-constant "J/(K*mol)" (double 8.3144621))
 
@@ -1557,6 +1562,124 @@ FiraCode as texttt: \texttt{J/(K*mol)
 \end{lstlisting}
 \end{plListing}
 
+\NOTE {\schemeFont make-unit-conversion} seems to be missing
+in the book.
+
+A quick and dirty Clojure closure
+implementation follows.
+
+\TODO Probably a {\clojureFont deftype}
+implementing {\clojureFont clojure.lang.IFn}
+and some {\clojureFont Invertible} interface would be better.
+A minimally reasonable version would just be an 
+{\clojureFont Invertible}
+function, nothing about "unit converters" required.
+An {\clojureFont Invertible} function interface would 
+have an explicit domain and codomain, 
+at least one (pseudo-random) generator for the domain and
+an equivalence relation for the codomain, to used used in
+testing whether the 'inverse' really is one.
+ 
+\begin{plListing}
+{First pass at invertible converters}
+{First:invertible:converter}
+\begin{lstlisting}[language=clojure]
+(defn make-unit-conversion ^IFn [^IFn$DD f ^IFn$DD f-inverse]
+  (fn "zero arity call returns inverse converter."
+    (^IFn []  (make-unit-conversion f-inverse f))
+    (^double [^double x] (f x))))
+
+(defn invert ^IFn [^IFn converter] (converter))
+\end{lstlisting}
+\end{plListing}
+
+\NOTE this is the affine conversion for absolute temperature.
+The book does not consider the difference between (affine) 
+absolute temperature and (linear) change in temperature.
+Could do these as general 'affine' 
+{\javaFont double} $\rightarrow$ {\javaFont double} functions,
+with inverse (and linear derivative) generated automatically.
+Could also implement with some {\clojureFont Rational}
+ or {\clojureFont RationalFloat}
+for exact results.
+
+\TODO Is there some general principle that would suggest which
+rearrangements of these float expressions would give 
+the most accurate results? In particular, which would make
+the inverses closer to real inverses, even if the forward
+transformation isn't perfect? 
+
+\begin{plListing}
+{First pass at 
+fahrenheit $\leftrightarrow$ celsius $\leftrightarrow$ kelvin}
+{First:fahrenheit:celsius}
+\begin{lstlisting}[language=clojure]
+(def ^IFn fahrenheit-to-celsius
+  (make-unit-conversion 
+    (fn ^double [^double f] (/ (* 5 (- f 32)) 9))
+    (fn ^double [^double c] (+ (/ (* 9 c) 5) 32))))
+
+(def ^IFn celsius-to-kelvin
+  (let [zero-celsius 273.15] ; kelvin degrees
+    (make-unit-conversion 
+      (fn ^double [^double c] (+ c zero-celsius))
+      (fn ^double [^double k] (- k zero-celsius)))))
+
+(fahrenheit-to-celsius -40) -> -40.0
+(fahrenheit-to-celsius 32) -> 0.0
+((invert fahrenheit-to-celsius) 20) -> 68.0
+((comp celsius-to-kelvin fahrenheit-to-celsius) 80)
+-> 299.81666666666666
+\end{lstlisting}
+\end{plListing}
+
+Finally the radius calculation, 
+still with no indication why anyone would want to do this,
+which means you can't reasonably for future variations.
+
+Note that {\schemeFont psi-to-nsm} is not implemented in the 
+text as an invertible converter (did they just get tired?).
+
+\begin{plListing}
+{First pass at radius calculation}
+{First:radius}
+\begin{lstlisting}[language=clojure]
+(def ^IFn pound-to-newton
+  (make-unit-conversion 
+    (fn ^double [^double pounds] (/ pounds 0.22480894387))
+    (fn ^double [^double newtons] (* newtons 0.22480894387))))
+
+(def ^IFn inch-to-meter
+  (make-unit-conversion 
+    (fn ^double [^double inches] (/ inches 39.3700787))
+    (fn ^double [^double meters] (* meters 39.3700787))))
+
+(def ^IFn psi-to-nsm
+  (make-unit-conversion 
+    (comp pound-to-newton
+          (invert inch-to-meter)
+          (invert inch-to-meter))
+    (comp inch-to-meter 
+          inch-to-meter 
+          (invert pound-to-newton))))
+
+((invert inch-to-meter)
+    (sphere-radius
+      (gas-law-volume
+        (psi-to-nsm 14.7)
+        ((comp celsius-to-kelvin fahrenheit-to-celsius) 68)
+        1)))
+-> 7.049624642536843
+\end{lstlisting}
+\end{plListing}
+
+\TODO my answer only agrees with the text in the first 8 out of
+15 digits. 
+Odds are different constants in the {\schemeFont pound-to-newton}
+and {\schemeFont inch-to-meter} converters, 
+but it could also be the use of rationals in the Scheme code.
+Not really worth tracking down, but a good example
+of floating point and approximate data input issues.
 \end{plSection}%{2.3 Wrappers initial code}
 %-----------------------------------------------------------------
 \begin{plSection}{2.3.1 Specialization wrappers}
