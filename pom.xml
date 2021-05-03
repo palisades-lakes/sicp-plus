@@ -64,8 +64,13 @@
   <dependency>
    <groupId>org.clojure</groupId>
    <artifactId>math.numeric-tower</artifactId>
-   <version>${math-numeric-tower-version}</version>
+   <version>${clojure-math-numeric-tower-version}</version>
   </dependency>
+  <dependency>
+  <groupId>org.clojure</groupId>
+  <artifactId>core.memoize</artifactId>
+  <version>${clojure-core-memoize-version}</version>
+</dependency>
   <dependency>
    <groupId>org.apache.commons</groupId>
    <artifactId>commons-math3</artifactId>

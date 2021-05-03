@@ -43,7 +43,7 @@ import sicpplus.java.exceptions.Exceptions;
  * depends on the two terms. Which means 
  * we need at least 3 implementation classes for the output of
  * <code>compose</code>.
- * THe same will be true of any other property of a function that
+ * The same will be true of any other property of a function that
  * might or might not be true of a composition, or a sum, leading 
  * to a * combinatorial explosion of implementation classes.
  * </ul>

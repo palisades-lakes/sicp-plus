@@ -24,7 +24,7 @@ import sicpplus.java.exceptions.Exceptions;
  * domains. Whether the cartesian product has a dimension depends
  * on whether the 2 component domains have dimensions. Which means
  * we need at least 2 implementation classes.
- * THe same will be true of any other property of a domain that
+ * The same will be true of any other property of a domain that
  * might or might not be true of cartesian products, leading to a
  * combinatorial explosion of implementation classes.
  * </ul>

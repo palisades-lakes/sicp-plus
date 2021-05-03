@@ -19,7 +19,7 @@ import sicpplus.java.test.sets.SetTests;
 /** Common code for testing sets. 
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-01
+ * @version 2021-05-03
  * 
  * mvn test -Dtest=sicpplus.java.test.algebra.AlgebraicStructureTests
  */
@@ -30,8 +30,8 @@ public final class AlgebraicStructureTests {
 //  private static final int TRYS = 1000;
 //  static final int LINEARSPACE_TRYS = 127;
   // speed up this test while focusing on other things
-  private static final int TRYS = 100;
-  static final int LINEARSPACE_TRYS = 15;
+  private static final int TRYS = 64;
+  static final int LINEARSPACE_TRYS = 8;
 
   // TODO: should each structure know what laws it obeys?
   // almost surely.
