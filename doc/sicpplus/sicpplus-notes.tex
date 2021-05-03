@@ -1683,6 +1683,105 @@ of floating point and approximate data input issues.
 \end{plSection}%{2.3 Wrappers initial code}
 %-----------------------------------------------------------------
 \begin{plSection}{2.3.1 Specialization wrappers}
+
+Poor choice of words, I think.
+Neither ``specialization'' nor ``wrapper'' seem to fit.
+
+What they are really doing is a standard coordinate transform:
+\begin{equation}\label{eq:CoordTranform}
+f_{1} = g^{-1} \circ f_{0} \circ g
+\end{equation}
+where $f_{0}$ computes something of interest,
+in a given coordinate system $C_{0}$,
+for both $f_{0}$'s domain and codomain.
+If we want to compute the same thing,
+but use different coordinates, $C_{1}$, for input and output,
+we need an invertible $g : C_{1} \rightarrow C_{0}$,
+and we get the equivalent computation via the double
+composition in \cref{eq:CoordTranform}.
+
+There are some interesting issues here the difference between
+the domain and codomain as \emph{sets}
+and the possibility of multiple \emph{representations}
+for the elements of those sets, 
+with coordinate systems being just one way
+in which representations might vary.
+If we think about it that way,
+then coordinate transformations are more-or-less a special case
+of method generation/lookup.
+In the more general case, a different algorithm might be
+used for different coordinate systems,
+so there really is a different method
+not one that can generated trivially via composition.
+
+It's easy to get confused. 
+Sometimes the sets in question
+are sets of representation instances of a certain kind,
+so there is no distinction between the elements 
+and their representations.
+There is only one representation; 
+the element is its representation; etc.
+
+The point of this section is generating the coordinate transforms
+automatically from a set of base unit transforms,
+a specification for how the coordinates are constructed
+from the base units,
+and specifications for the expected and provided coordinates.
+
+Missed opportunities: 
+\begin{itemize}
+  \item They don't distinguish the ``quantity''
+  ({\pseudocodeFont length}, {\pseudocodeFont time}, 
+  {\pseudocodeFont mass}, {\ldots}) being measured
+  from the units used to record the measurement.
+  Easy to accidentally convert inches to kilograms.
+
+  \item the possible ``quantities' to be measured are 
+  a commutative group generated from the base quantities.
+  For example, {\pseudocodeFont length} and 
+  {\pseudocodeFont time} are base quantities.
+  The group operation is just symbolic multiplication:
+  \begin{equation}
+  \text{\pseudocodeFont area} = 
+  \text{\pseudocodeFont length} \ast \text{\pseudocodeFont length} 
+  = \text{\pseudocodeFont length}^2 
+  \end{equation}
+  The group inverse is symbolic division:
+  \begin{equation}
+  \text{\pseudocodeFont frequency} = 
+  \frac{1}{\text{\pseudocodeFont time}} 
+  \end{equation}
+  and, for example,
+  \begin{equation}
+  \text{\pseudocodeFont acceleration} = 
+  \frac{\text{\pseudocodeFont length}}
+       {\text{\pseudocodeFont time}^2} 
+  \end{equation}
+  
+  \item The domains and codomains of the kind of
+  chemistry/physics calculations are constructed from the
+  ``quantity'' group. Note that these domains may refer to a
+  given quantity multiple times. For example, position in space
+  will have 3 {\pseudocodeFont length} quantities 
+  
+  (\TODO this isn't right, 3d ``length" isn't
+  really the same as 3 lengths.
+  More like 
+  $\text{\pseudocodeFont length} \times 
+  \text{\pseudocodeFont length} \times 
+  \text{\pseudocodeFont length}$.
+  Then spacetime would $(\times^{3} \text{\pseudocodeFont length})
+  \times \text{\pseudocodeFont time}$?
+  Is this a ring rather than a group?
+  We also have the issue of affine quantities,
+  eg {\pseudocodeFont instant-in-time} vs
+  {\pseudocodeFont change-in-time}.). 
+  
+  \end{itemize}
+
+I'm not showing any Clojure translations here, since they 
+require functions defined later.
+
 \end{plSection}%{2.3.1 Specialization wrappers}
 %-----------------------------------------------------------------
 \begin{plSection}{2.3.2 Implementing specializers}
