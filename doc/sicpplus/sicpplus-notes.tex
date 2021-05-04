@@ -1774,12 +1774,12 @@ Missed opportunities:
   \times \text{\pseudocodeFont time}$?
   Is this a ring rather than a group?
   We also have the issue of affine quantities,
-  eg {\pseudocodeFont instant-in-time} vs
+  eg 
+  {\pseudocodeFont instant-in-time} vs
   {\pseudocodeFont change-in-time},
   {\pseudocodeFont temperature} vs
   {\pseudocodeFont change-in-temperature}
-  
-  
+    
   \end{itemize}
 
 I'm not showing any Clojure translations here, since they 
@@ -2009,9 +2009,108 @@ representations of the same abstract entity.
 \end{plSection}%{2.3.3 Adapters}
 %-----------------------------------------------------------------
 \end{plSection}%{2.3 Wrappers}
+%----------------------------------------------------------------
+\begin{plSection}{Aside}
+\NOTE 
+I should have checked the book's appendices more carefully.
+It is only at this point that I discovered
+\citeAuthorYearTitle{HansonSussman:2021:SDFFSource}
+mentioned in 
+\citeAuthorYearTitle[Appendix A]{HansonSussman:2021:SDFF}.
+At some point I may go back and compare my code, 
+but for now I'll just refer to the provided code going forwards.
+\end{plSection}%{Aside}
 %-----------------------------------------------------------------
 \begin{plSection}{2.4 Abstracting a domain}
+
+``{\ldots} a domain specific language layer can be created
+as a basis for software about board games.''
+
+I think boards games is a pretty good example.
+Simple enough, but also not unrealistic.
+Well understood by most readers to support non-trivial
+consideration of alternate problem formulations
+without requiring many pages of background.
+
+Not happy about ``domain specific language'',
+and, especially, ``layer'',
+which I think are at best poor choices of words,
+and likely misleading for most.
+
+I think the analysis of the problem is lacking.
+They jump too quickly from talking about ``abstracting a domain''
+for all board games, 
+to just implementing 
+``a referee for checkers that will compute all legal moves 
+for a player at a given state of play''.
+I think this is exactly how you get into trouble.
+Without some clear ideas of how that referee might be used
+you are likely to make unconscious assumptions.
+In this case, their specification of what a ``referee'' is
+seems obviously wrong.
+Though a board game needs some way to validate legal moves, 
+that doesn't require generating a list of all of them, 
+and it seems reasonably likely that approaching it that way
+could lead to something unusable. 
+
+There are many obvious questions they should have considered,
+even if just eliminating some options out of hand,
+to keep the example to a feasible size.
+For example:
+\begin{itemize}
+  \item How are the board game implementations meant to be used?
+  \item In what ways are board games allowed to vary?
+  3d chess? Hexagonal grids? Continuous position and movement?
+  General graphs (eg Risk, Diplomacy,Clue)? 
+  What about Monopoly like games?
+  \item Randomization?
+  \item How many players? 
+  Black, white, red, green, blue, {\ldots}
+  Teams (multiple players share eg the black pieces)?
+  \item Are there going to be human players? 
+  \item Are there algorithm players?
+  \item What is the ``player'' API?
+  \item Do you want to be able to provide hints to human players?
+  Look-ahead for checkmate, etc.?
+  \item What kind of UI?
+  I suspect a graphical UI, or at least a board display,
+  would make this more appealing to students, and make it easier
+  to discover problems.
+  \item What about turn-based vs concurrent moves?
+  \item What about time-limited moves (eg blitz chess)?
+  \item What does each player get to know about the current 
+  position (eg battleship-like games)?
+  \item What are the speed requirements?
+  \item How about space? 
+  \item Do you need history and undo?
+  \item Scoring and accumulating points, with game play
+  affected by scores? 
+\end{itemize}
+
+%-----------------------------------------------------------------
+\begin{plSection}{2.4.1 A monolithic implementation}
+
+\NOTE This
+I think starting with ``A monolithic implementation'' 
+is probably a mistake.
+A lot of code to wade thru only to be told it's the wrong way
+to do thing.
+
+
+
+\end{plSection}%{2.4.1 A monolithic implementation}
+%-----------------------------------------------------------------
+\begin{plSection}{2.4.2 Factoring out the domain}
+
+
+\end{plSection}%{2.4.2 Factoring out the domain}
+%-----------------------------------------------------------------
 \end{plSection}%{2.4 Abstracting a domain}
+%-----------------------------------------------------------------
+\begin{plSection}{2.5 Summary}
+
+
+\end{plSection}%{2.5 Summary}
 %-----------------------------------------------------------------
 \end{plSection}%{2 Domain Specific Languages}
 %-----------------------------------------------------------------
