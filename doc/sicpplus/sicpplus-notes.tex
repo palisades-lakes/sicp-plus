@@ -2087,29 +2087,122 @@ For example:
   affected by scores? 
 \end{itemize}
 
-Even if they want to focus on the referee to keep things
-small, it would be better to provide
-an enclosing,
-working game framework in which to embed it.
-
+Even if they want to focus on move validation,
+to keep the example small, it would be better to provide
+an enclosing, working game framework in which to embed it.
+But the most value would come from considering,
+in reasonable depth,
+how a game framework could be structured.
 
 %-----------------------------------------------------------------
 \begin{plSection}{2.4.1 A monolithic implementation}
 
-\NOTE This
 I think starting with ``A monolithic implementation'' 
 is probably a mistake.
 A lot of code to wade thru only to be told it's the wrong way
 to do thing.
 
+A better strategy might be to do two reasonable implementations,
+one of checkers, one of chess, or maybe go.
+Then look and see what could be shared and 
+what is specific to each.
+And, most important, reflect on how that illuminates 
+what the structure of a game problem domain might be.
 
+Of course, the big failing here is defining the task as 
+implementing
+``a referee {\ldots} that will compute all legal moves'',
+which doesn't need deep thought to see that it makes no sense
+as a part of a game implementation.
+In fact, their approach would make a good example of how
+people end up ``programming themselves into a corner'':
 
+Another complaint: I am noticing consistently bad naming,
+both in the English text and the code.
+I missed the fact that the ``referee'' was in fact a move
+generator on first read, because ``referee'' sounds
+like ``move validator'', which would actually make sense,
+and not like ``move generator'', which doesn't.
+
+I'm not going to translate the ``monolithic implementation''
+into Clojure---what would be the point?
+But it is filled with a number of other, unexamined
+bad choices, that aren't
+addressed in the ``factored'' version.
+I want to comment on them and point out better options,
+and then do a decent alternative to the factored version
+(though I will probably just do a move validator).
+
+%-----------------------------------------------------------------
+\begin{plSection}{A checkers domain model}
+
+They assume, without justification, a domain model based
+on 3 ``abstract types'': 
+{\schemeFont board}, {\schemeFont piece},
+and position $\defeq$ {\schemeFont coords}.
+They provide a (poorly specified) API for 
+{\schemeFont board} and {\schemeFont piece},
+but nothing separately for {\schemeFont coords}.
+The {\schemeFont board} API refers to {\schemeFont coords},
+so it's really a joint API.
+There is some vague discussion about 
+absolute vs relative coordinates,
+vs directions, but
+``We won't define the procedures for manipulating coordinates;
+they should be self-explanatory.''
+(My ``painting yourself into a corner thru unexamined 
+assumptions'' alarm is going WHOOP! WHOOP! WHOOP!.)
+
+They refer to a ``player'' and ``color'', but don't reify them.
+There is apparently a mutable ``current player'' 
+and many of the {\schemeFont board} and {\schemeFont piece}
+API functions depend on who the ``current player'' is,
+but nothing to access that (let alone do it safely under 
+concurrent operations).
+
+\end{plSection}%{A checkers domain model}
+%-----------------------------------------------------------------
+\begin{plSection}{A checkers referee}
+
+\end{plSection}%{A checkers referee}
+%-----------------------------------------------------------------
+\begin{plSection}{Critique}
+
+\end{plSection}%{Critique}
+%-----------------------------------------------------------------
 \end{plSection}%{2.4.1 A monolithic implementation}
 %-----------------------------------------------------------------
 \begin{plSection}{2.4.2 Factoring out the domain}
 
+%-----------------------------------------------------------------
+\begin{plSection}{A domain model}
 
+\end{plSection}%{A domain model}
+%-----------------------------------------------------------------
+\begin{plSection}{An executive}
+
+\end{plSection}%{An executive}
+%-----------------------------------------------------------------
+\begin{plSection}{Rules of checkers}
+
+\end{plSection}%{Rules of checkers}
+%-----------------------------------------------------------------
+\begin{plSection}{Critique}
+
+\end{plSection}%{Critique}
+%-----------------------------------------------------------------
 \end{plSection}%{2.4.2 Factoring out the domain}
+%-----------------------------------------------------------------
+\begin{plSection}{A sketch of something better}
+
+\begin{description}
+\item[Board]
+\item[Piece]
+\item[Position]
+\end{description}
+
+
+\end{plSection}%{A sketch of something better}
 %-----------------------------------------------------------------
 \end{plSection}%{2.4 Abstracting a domain}
 %-----------------------------------------------------------------
