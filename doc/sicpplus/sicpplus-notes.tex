@@ -1780,7 +1780,7 @@ Missed opportunities:
   {\pseudocodeFont temperature} vs
   {\pseudocodeFont change-in-temperature}
     
-  \end{itemize}
+\end{itemize}
 
 I'm not showing any Clojure translations here, since they 
 require functions defined later.
@@ -2115,7 +2115,10 @@ implementing
 which doesn't need deep thought to see that it makes no sense
 as a part of a game implementation.
 In fact, their approach would make a good example of how
-people end up ``programming themselves into a corner'':
+people end up ``programming themselves into a corner''
+by following a bottom-up approach,
+seizing on the first task you can think of, 
+without fully considering the big picture.
 
 Another complaint: I am noticing consistently bad naming,
 both in the English text and the code.
@@ -2151,7 +2154,14 @@ vs directions, but
 ``We won't define the procedures for manipulating coordinates;
 they should be self-explanatory.''
 (My ``painting yourself into a corner thru unexamined 
-assumptions'' alarm is going WHOOP! WHOOP! WHOOP!.)
+assumptions'' alarm is going 
+WHOOP! WHOOP! WHOOP!.)
+It's reasonable to not show the code here,
+but they could at least refer to the book's code link,
+and give the details there.
+However, as it is, the associated scheme code it almost entirely
+comment and documentation-free, providing another example
+of how not to do things.
 
 They refer to a ``player'' and ``color'', but don't reify them.
 There is apparently a mutable ``current player'' 
@@ -2160,13 +2170,202 @@ API functions depend on who the ``current player'' is,
 but nothing to access that (let alone do it safely under 
 concurrent operations).
 
+The mis-named ``referee" task is defined as generating all legal
+moves, but moves are not reified!
+Probably a ``move'' should be anything that changes the
+``state of play'', 
+which is also clearly essential and also not reified,
+instead it is dispersed and hidden in the board and pieces.
+
+They are missing something that is probably more important 
+than anything in the book:
+One of the first things to do when designing for robustness and
+flexibility is to consider what state you need,
+how that state changes over time, 
+and how to partition it to minimize dependencies on changes.
+(Note that state changing over tine doesn't necessarily require
+mutable data; growing immutable data is also a change.)
+
+%-----------------------------------------------------------------
+\begin{plSection}{Comments on monolithic ``board'' API}
+
+Poorly chosen, misleading names.
+
+Really a joint {\schemeFont coords} $\times$ {\schemeFont board}
+interface.
+
+Redundant: Seven functions in total, 
+but five could be collapsed into the single function, 
+{\schemeFont (board-get {\itshape coords board})},
+if the API for the returned {\schemeFont piece} included
+an obvious {\schemeFont piece-owner} function.
+ 
+The remaining functions, 
+{\schemeFont (current-pieces {\itshape board})} and 
+{\schemeFont (is-position-on-board? {\itshape coords board})},
+would be unnecessary if we had a straightforward way to iterate
+over all valid values of {\schemeFont coords},
+though we would probably want some convenient way to iterate
+over \emph{all} {\schemeFont pieces}.
+(Best to iterate over all pieces and interrogate whether each is 
+on the board or not---some games might permit moving pieces
+back to the board.)
+
+The biggest problem with the {\schemeFont board} API is 
+the unconsidered assumption that it is a rectangular grid.
+This make a really good example of how lack of a little thought
+paints the resulting system into a corner!
+Even a brief glance at a few relevant Wikipedia pages
+(eg \citeAuthorTitle{wiki:Checkers,wiki:ChessVariants})
+would make it clear how bad this choice is.
+I actually think most SDEs, if given time to consider
+a handful of different games, would see that a directed graph
+is both simpler and a more general way to implement both the game  
+``board'' and the sets of possible moves.
+
+One good thing about the {\schemeFont board} API is that
+it doesn't assume much that is specific to checkers alone;
+it probably works for all (?) games played on rectangular grids,
+and seems like it would support chess without changes.
+
+\end{plSection}%{Comments on monolithic ``board'' API}
+%-----------------------------------------------------------------
+\begin{plSection}{Comments on monolithic ``piece'' API}
+
+{\schemeFont piece-coords} is bad naming.
+({\schemeFont piece-position}, for example,
+wouldn't imply a rectangular grid),
+but we probably need piece$\rightarrow$position
+and position$\rightarrow$piece functions, whatever a ``position''
+is.
+
+{\schemeFont should-be-crowned?} seems like a strawman,
+obviously checkers-only, and only for variants were crowning is
+required. 
+Probably crowning should be considered a move,
+like anything that changes the state-of-play;
+some moves may be required, depending on the game rules.
+
+{\schemeFont (crown-piece {\itshape piece})} is misleading.
+The description says that it just returns a ``king'',
+which wouldn't be very useful.
+One has to guess that it really means creating a new ``king''
+piece belonging to the same owner as the
+{\schemeFont {\itshape piece}} argument,
+removing the {\schemeFont {\itshape piece}} from its current
+location and putting the ``king'' there.
+
+{\schemeFont (possible-directions {\itshape piece})}
+is also badly named, particularly since there is nothing
+about what a ``direction'' is and how or even whether it differs
+from a ``move''.
+The description is very confusing:
+``directions a piece may consider for a move''
+but 
+``not {\ldots} whether moving in that direction is permissible.''
+
+\end{plSection}%{Comments on monolithic ``piece'' API}
+%-----------------------------------------------------------------
 \end{plSection}%{A checkers domain model}
 %-----------------------------------------------------------------
 \begin{plSection}{A checkers referee}
 
+``We need a data structure to represent each move.''
+Described as a ``path'' which is a list of ``steps'',
+in reverse order.
+
+They justify ``reverse order'' because that makes it easier
+to share partial paths, which is only true because they are 
+implicitly assuming the use of {\schemeFont car/cdr} linked lists.
+To the extent that there is an idea here, it's that the set of
+possible paths form a tree. 
+But using {\schemeFont car/cdr} linked lists for this gives you
+trees that are only good for iterating from leaf to root,
+the wrong direction for most uses.
+And the set of paths actually form a directed graph, not a tree,
+because multiple partial paths can lead to the same intermediate
+state (eg [left, forward, right] is the same as 
+[right, forward, left] is the same as [forward],
+in some rectangular game where all 8 directions are allowed).
+ 
+This is an excellent example of 
+``programming yourself into a corner'' 
+thru premature optimization.
+Perhaps this is meant as a strawman to be criticized later?
+Remains to be seen.
+
+{\schemeFont (step-to {\itshape step})}\\
+makes no sense.
+It is supposed to return some piece, but which piece?
+Why would stepping a piece change it, and if it isn't changed,
+why would you need to return it?
+
+{\schemeFont (step-board {\itshape{step}})}\\
+is worse.
+It must be making a reference to a globally visible 
+{\schemeFont board}, and seems to assume that global board
+is mutated by the step.
+It's also returning a board, and if that's a new board,
+how do you control which board gets stepped next?
+
+Worst of all, it appears that you have to make 2 calls
+to execute a step---one on the piece, and one on the board.
+What happens if you only make one of these?
+
+{\schemeFont (make-simple-move {\itshape coords piece board})}\\
+creates a step; why isn't it called {\schemeFont make-step}?
+The description implies the step moves the piece to the
+absolute position {\schemeFont {\itshape coords}},
+and the returned object contains references to the 
+{\schemeFont {\itshape coords}},
+{\schemeFont {\itshape piece}},
+and {\schemeFont {\itshape board}}.
+It seems like passing in a change in position 
+would make more sense;
+in any case, you will need the current position to tell
+whether the move is legal.
+
+{\schemeFont 
+(make-jump {\itshape new-coords jumped-coords piece board})}:\\
+the two coordinate arguments are redundant.
+Both are determined by the direction of the step,
+whether you want to consider it a two square step to the final
+position, or a one square step, followed by a ``capture'' step,
+which forces another one square step in the same direction.
+Almost surely better break down a jump into 3 steps in that way
+(would be necessary for chess for example)
+and separate out the notion that certain steps 
+force the next step.
+
+{\schemeFont (replace-piece {\itshape new-piece old-piece board})}:\\
+They describe this as a ``step'', 
+which expands the concept of ``step'',
+probably in a good way, but it exposes their failure to consider 
+what they mean by ``step'' in the first place.
+Almost better to break this up into {\schemeFont add-piece}
+and {\schemeFont remove-piece}.
+In any case, 
+we need the missing{\schemeFont remove-piece} for jumping.
+
+{\schemeFont (path-contains-jumps? {\itshape path})}:\\
+Not very useful without any API for paths.
+Simpler and more flexible if we 
+just test for {\schemeFont remove-piece}
+steps in a path, and dispense with ``jump''
+as a separate step type.
+
+Given the problems with the APIs, I don't think it's worth
+the move generation code in more detail.
+
 \end{plSection}%{A checkers referee}
 %-----------------------------------------------------------------
 \begin{plSection}{Critique}
+
+For a ``critique'', this is pretty self-congratulatory.
+The only problem they recognize is the fact that the rules
+of checkers are distributed throughout the code,
+but nothing about how this may be a consequence 
+of bad API design.
 
 \end{plSection}%{Critique}
 %-----------------------------------------------------------------
@@ -2174,8 +2373,21 @@ concurrent operations).
 %-----------------------------------------------------------------
 \begin{plSection}{2.4.2 Factoring out the domain}
 
+Another abuse of English: should be ``Factoring the domain''.
+``Factoring out'' would mean removing the domain,
+or at least redoing the code so that any domain can be plugged in
+to whatever is left without it.
+The point here is actually factoring out the game rules and 
+from the domain and play execution, so that other rules can
+be plugged in.
+
 %-----------------------------------------------------------------
 \begin{plSection}{A domain model}
+
+``we can reuse the coordinates, pieces, and board from our
+monolithic implementation {\ldots}.''
+So most of the problems won't be addressed.
+
 
 \end{plSection}%{A domain model}
 %-----------------------------------------------------------------
@@ -2196,9 +2408,12 @@ concurrent operations).
 \begin{plSection}{A sketch of something better}
 
 \begin{description}
-\item[Board]
-\item[Piece]
-\item[Position]
+\item[Players]
+\item[State of play]
+\item[Pieces]
+\item[Board (graph?)]
+\item[Positions]
+\item[Actions/Moves]
 \end{description}
 
 
