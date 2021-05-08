@@ -62,15 +62,17 @@
 
 \citeAuthorYearTitle{HansonSussman:2021:SDFF}
 
-The strengths of SICP were substantive ideas, elegant code,
+The strengths of SICP 
+(\citeAuthorYearTitle{AbelsonSussman:1996:SICP})
+were substantive ideas, elegant code,
 simple but real-enough applications.
 
-This book on the other hand (at least up to 2.3)
+This book on the other hand (at least thru chapter 2)
 has flaws similar to many software design books:
 instead of real evidence in the form of convincing examples,
 they resort to logical fallacies (particularly appeal to
 false authority/analogy)
-and allusions to shallow software fads.
+and allusions to shallow software fads/buzzwords.
 
 I wonder if this is somehow due SICP falling from favor
 and being replaced by Python at MIT.
@@ -106,6 +108,8 @@ clean, which wouldn't have been necessary if you had painted
 top down.
 
 \end{plSection}%{Short preview}
+%-----------------------------------------------------------------
+\begin{plSection}{Front matter}
 %-----------------------------------------------------------------
 \begin{plSection}{Forward (Guy Steele)}
 
@@ -189,6 +193,8 @@ Sussman acknowledges discussions (in graduate school?)
 with Minsky and fellow students---possibly a source for the
 biologically motivated old-style AI ideas that appear.
 \end{plSection}%{Acknowledgements}
+%-----------------------------------------------------------------
+\end{plSection}%{Front matter}
 %-----------------------------------------------------------------
 \begin{plSection}{1 Flexibility in nature and design}
 %-----------------------------------------------------------------
@@ -2262,6 +2268,14 @@ What happens if you only make one of these?
 
 {\schemeFont (make-simple-move {\itshape coords piece board})}\\
 creates a step; why isn't it called {\schemeFont make-step}?
+
+This appears to be name leakage from the implementation
+in \cref{sec:FactoringCheckers}---an indication of the lack 
+of critical editing or serious proofreading.
+I don't think much of the book would have survived
+even a cursory code review of the kind typically required
+in industrial software development.
+
 The description implies the step moves the piece to the
 absolute position {\schemeFont {\itshape coords}},
 and the returned object contains references to the 
@@ -2320,6 +2334,7 @@ of bad problem formulation.
 \end{plSection}%{2.4.1 A monolithic implementation}
 %-----------------------------------------------------------------
 \begin{plSection}{2.4.2 Factoring out the domain}
+\label{sec:FactoringCheckers}
 
 Another abuse of English: should be ``Factoring the domain''.
 ``Factoring out'' would mean removing the domain,
@@ -2424,19 +2439,148 @@ API for ``steps'', ``jumps'', and ``moves''.
 Here they replace that with a similarly incoherent
 and unspecified API for ``changes'' and ``partial moves''.
 
-{\schemeFont (make-change {\itshape board piece flags})}:\\
+{\schemeFont (make-change {\itshape board piece flags})}:
+
+An API with arguments named {\schemeFont {\itshape flags}}
+is one of the classic bad code smells.
+(``Code smells are usually not bugs; 
+they are not technically incorrect and 
+do not prevent the program from functioning. 
+Instead, they indicate weaknesses in design 
+that may slow down development 
+or increase the risk of bugs or failures 
+in the future."~\cite{wiki:CodeSmell})
+
+We have piece types, why not change types?
+
+``We will replace the path idea with a more abstract notion 
+called a \emph{partial move.}''
+In fact, there is no difference.
+And there is also nothing inherently ``partial'' about it either.
+
+In other words, how is a ``partial move'' different from a 
+``move''?
+Answer: it isn't. 
+
+How is a ``partial move'' containing one ``move'' different from a 
+``change''? It isn't.
+
+Isn't an empty ``partial move'' the same thing as a
+``no change'' change? 
+
+Missed opportunity: Doesn't this sound a lot like function
+composition?
+
+It wouldn't have taken much to start with a general picture
+of a game built from a set of players, a state-of-play,
+and a set of possible actions that a player can invoke. 
+Actions are really just functions that take the state-of-play
+and return an updated state. 
+And actions can be composed just like functions.
+
+I'm going to skip over the rest of the 
+{\schemeFont \itshape pmove} API, 
+since it is similarly bad,
+and unnecessary once you realize ``steps'',
+``jumps'', ``crowning'', ``paths'', ``changes'',
+``partial moves'', ``moves'', ``captures'', {\ldots}
+ are all the same thing:
+first class functions with what ought to be a standard API
+for getting at the (co)domain and other constraints on allowed
+composition, and
+the factors of a composed function,
+etc.
 
 \end{plSection}%{A domain model}
 %-----------------------------------------------------------------
 \begin{plSection}{An executive}
 
+This is backwards. 
+The section primarily describes a vague notion 
+of two very different kinds of 
+``rules'': 
+\emph{evolution rules} 
+used to build moves by extending the moves in an existing set,
+and \emph{aggregate rules} that are used to filter sets of moves.
+
+This is very different from what ``executive'' usually means,
+which has to do with controlling move get executed,
+maintaining the actual state-of-play under possibly
+concurrent moves,
+as opposed to speculative states-of-play that might be created
+in the process of a player choosing its next move.
+
+There are two issues: handling updates to the real state-of-play,
+and making sure that players' moves are legal with respect to
+the current state.
+These are largely orthogonal concerns 
+and ought to be kept separate.
+
+The code in the section is still based on the nonsensical,
+and unstated, assumption that the only way to proceed is 
+to generate all possible moves.
+In particular, it does that by recursively calling
+{\schemeFont evolve-pmove} to generate some large set of moves
+that are only filtered for legality at the end.
+
+Problems:
+
+Wouldn't it be more efficient to filter as you go?
+
+Even though this isn't a normal ``rule-based system'', it has the
+same basic fault: how do check that the rules are correct?
+In particular , how do you check that the evolution rules 
+are actually generating at least all legal moves?
+And that the aggregate rules aren't removing valid moves
+or allowing illegal ones thru?
+
+My guess is that correctness is easier to achieve 
+when you isolate and minimize the amount of data you need
+to determine correctness at each local decision.
+For example, explicitly encoding the board topology
+into a directed graph (or a few graphs depending on piece type)
+would make it easier 
+to see what incremental changes are available,
+and unnecessary to filter illegal steps later,
+especially as compared to doing coordinate arithmetic.
+For another example, I think jumping would be 
+more easily and reliably implemented 
+in the piece type's step function.
+
 \end{plSection}%{An executive}
 %-----------------------------------------------------------------
 \begin{plSection}{Rules of checkers}
 
+How is
+{\schemeFont 
+(define-evolution-rule 'jump checkers 
+(lambda (pmove) {\itshape body}))}
+fundamentally different from 
+{\schemeFont 
+(define (jump pmove) {\itshape body})},
+with the checkers game object 
+holding a collection of such functions.
+Especially since in reality one wouldn't want to generate all
+possible moves, and would want the ability to compare
+different strategies for generating the next move.
+
+Similar comments hold for the aggregate rules.
+
 \end{plSection}%{Rules of checkers}
 %-----------------------------------------------------------------
 \begin{plSection}{Critique}
+
+Again, pretty self-congratulatory about things I disagree with.
+
+They miss the critical issue of how hard it is to get
+``rules'' like this right.
+
+They only partially recognize the fact 
+that what they are doing is just function composition,
+and completely miss the key issue 
+for valid moves is constraining which functions can be composed
+with which, and which must be composed with which 
+(eg for forcing jumps).
 
 \end{plSection}%{Critique}
 %-----------------------------------------------------------------
@@ -2444,13 +2588,20 @@ and unspecified API for ``changes'' and ``partial moves''.
 %-----------------------------------------------------------------
 \begin{plSection}{A sketch of something better}
 
+As of 2021-05-08, I'm considering how much to do with this.
+My complaints would be more convincing if I ``put up or shut up''.
+But how much effort is it worth?
+Does it illustrate something I would want in my domain:
+computable science and mathematics?
+
 \begin{description}
 \item[Players]
 \item[State of play]
 \item[Pieces]
-\item[Board (graph?)]
-\item[Positions]
-\item[Actions/Moves]
+\item[Board (graph?) topology]
+\item[Positions vs coordinates]
+\item[Actions/Moves as functions]
+\item[Legality constraints]
 \end{description}
 
 
@@ -2460,7 +2611,36 @@ and unspecified API for ``changes'' and ``partial moves''.
 %-----------------------------------------------------------------
 \begin{plSection}{2.5 Summary}
 
-
+This section repeats the mistakes from earlier in the chapter:
+\begin{itemize}
+  \item talks about ``lexical scoping'' rather than 
+  first class functions
+  \item ``combinators'' rather than first class compositions
+  \item claim regular expression DSL is ``nicer'' in some 
+  unspecified sense, and only suffers from verboseness
+  \item views ``units of measurement'' as about wrappers,
+  rather than the real problem: recognizing the difference
+  between elements of a mathematical structure 
+  (measurable quantity group) and differing coordinate systems
+  for specifying those elements.
+  \item confuses DSL with partitioning a problem,
+  particularly the problem state, into simple components
+  representing natural abstractions with as limited interfaces
+  as possible, with the goal of being able to solve new, 
+  but related problems by substituting variations on a few 
+  components.
+  If you do this right, you are creating new \emph{vocabulary},
+  not a new \emph{language}.
+  
+  When people do create new \emph{languages},
+  that's almost always a bad idea,
+  and the problem would be better handled by choosing a better
+  base language.
+  The results (eg Unix little languages) are fragile systems built
+  from islands of meaning separated 
+  by gratuitously incompatible syntaxes,
+  with endless bugs resulting from miscommunication.
+\end{itemize}
 \end{plSection}%{2.5 Summary}
 %-----------------------------------------------------------------
 \end{plSection}%{2 Domain Specific Languages}
