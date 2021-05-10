@@ -355,6 +355,15 @@ you simply failed to think of ahead of time.
 This is related in some ways to the ``Postel's law''
 mentioned later, which I would re-word as:
 functions should have large domains and small codomains.
+Also, not a good idea as stated:
+promising a very small codomain is classic
+``painting into a corner'',
+causing endless torment when you discover the small codomain
+isn't adequate
+(eg promising {\pseudocodeFont price} is in US\$,
+later adding a one-time conversion from euros to dollars,
+leaving a system open to exploitation 
+when the market rates change).
 But I think it's not really the same thing
 (\TODO need a better word for problem ``domain"
 that distinguishes it from function ``domain".
@@ -2646,9 +2655,259 @@ This section repeats the mistakes from earlier in the chapter:
 \end{plSection}%{2 Domain Specific Languages}
 %-----------------------------------------------------------------
 \begin{plSection}{3 Variations on an arithmetic theme}
-\citeAuthorYearTitle{
-SiskindPearlmutter:2005:PerturbationConfusion,
-ManzyukEtAl:2019:PerturbationConfusion}
+%-----------------------------------------------------------------
+\begin{plSection}{Preview}
+
+This chapter concerns ``generic procedures''
+(aka generic functions aka multimethods {\ldots}),
+something more important than anything in chapter 2.
+It probably should have been the first content chapter,
+so that ideas/code developed here could have been used 
+in the rest of the book.
+
+Another language/naming problem:
+This section is not about arithmetic.
+That's just part of the first example.
+Could also look at the problem as another case of 
+``burying the lead''.
+
+Unfortunately the presentation is murky.
+The value, if not the absolute necessity, of generic procedures
+is easy to demonstrate with a wide variety of examples
+that would be meaningful to typical SDEs,
+but here is hidden is poorly thought-thru fragments of a symbolic
+algebra/calculus system.
+
+They repeat a fairly pervasive mistake: they treat mathematical
+structures as though they were like types, in the sense that they
+are static, global entities created at compile-time.
+It's not hard to see that, in reality, software implementations
+of mathematical structures must be dynamically created
+objects, at most instances of types rather than types themselves.
+
+Consider the minimal group-like algebraic structures 
+called \emph{magmas}~\cite{wiki:Magma}.
+Each of these isa set of elements and a group operation.
+We get two different structures
+if we take the set to be {\javaFont int},
+and the operation to be {\javaFont +} versus {\javaFont *}
+
+\NOTE For this to be correct we have to choose what happens 
+when these operations overflow the range of {\javaFont int}.
+Two obvious options:
+\begin{itemize}
+  \item default Java behavior is twos-complement wrap-around: 
+  {\javaFont Integer.MAX\_VALUE + 1 -> Integer.MIN\_VALUE}.
+I suspect there is a lot of Java code with unrecognized bugs due
+to developers not considering this issue.
+\item Overflow into some unbounded integer representation.
+
+\NOTE {\javaFont java.math.BigInteger} doesn't in fact work here,
+because it has a bounded range. 
+There's nothing fundamental that would prevent overflowing
+from {\javaFont java.math.BigInteger}
+into some unbounded integer representation,
+but in practice, it's unlikely to be worth the trouble,
+since, at present, a calculation that would overflow
+would either give an out-of-memory error first,
+or take so long to get to the overflow that no one would still be 
+alive to see the answer {\ldots}.
+  
+\end{itemize}
+
+This is the necessary clear thought  in problem formulation
+that's pervasively missing from the book,
+and is the most critical requirement if you want
+``to avoid programming yourself into a corner''.
+
+\end{plSection}%{Preview}
+%-----------------------------------------------------------------
+\begin{plSection}{3.1 Combining arithmetics}
+
+``Arithmetic''?
+
+%-----------------------------------------------------------------
+\begin{plSection}{3.1.1 A simple ODE integrator}
+\end{plSection}%{3.1.1 A simple ODE integrator}
+%-----------------------------------------------------------------
+\begin{plSection}{3.1.2 Modulating arithmetic operators}
+
+``Modulating''?
+
+%-----------------------------------------------------------------
+\begin{plSection}{Problems with redefining operators}
+
+Nothing about this is special to generic functions.
+Same issue with redefining functions in general.
+Real issue is mutating shared global state,
+which is of course dangerous, but sometimes necessary.
+Dealing with mutable global state properly requires
+clearly identifying it, minimizing it,
+control over who can mutate it,
+when it can be mutated,
+notification on mutation, {\ldots},
+all of which they fail to do.
+
+\end{plSection}%{Problems with redefining operators}
+%-----------------------------------------------------------------
+\end{plSection}%{3.1.2 Modulating arithmetic operators}
+%-----------------------------------------------------------------
+\begin{plSection}{3.1.3 Combining arithmetics}
+%-----------------------------------------------------------------
+\begin{plSection}{An improved arithmetic abstraction}
+\end{plSection}%{An improved arithmetic abstraction}
+%-----------------------------------------------------------------
+\begin{plSection}{A combinator for arithmetics}
+
+Calling this a ``combinator'' doesn't help anything.
+
+\end{plSection}%{A combinator for arithmetics}
+%-----------------------------------------------------------------
+\begin{plSection}{3.1.4 Arithmetic on functions}
+
+Very sketchy without first class (co)domains.
+
+\end{plSection}%{3.1.4 Arithmetic on functions}
+%-----------------------------------------------------------------
+\begin{plSection}{3.1.5 Problem with combinators}
+
+Again, calling this a ``combinator'' just hides the real issues.
+
+\end{plSection}%{3.1.5 Problem with combinators}
+%-----------------------------------------------------------------
+\end{plSection}%{3.1 Combining arithmetics}
+%-----------------------------------------------------------------
+\begin{plSection}{3.2 Extensible generic procedures}
+%-----------------------------------------------------------------
+\begin{plSection}{3.2.1 Generic arithmetic}
+%-----------------------------------------------------------------
+\begin{plSection}{Fun with generic arithmetics}
+\end{plSection}%{Fun with generic arithmetics}
+%-----------------------------------------------------------------
+\end{plSection}%{3.2.1 Generic arithmetic}
+%-----------------------------------------------------------------
+\begin{plSection}{3.2.2 Construction depends on order}
+\end{plSection}%{3.2.2 Construction depends on order}
+%-----------------------------------------------------------------
+\begin{plSection}{3.2.3 Implementing generic procedures}
+%-----------------------------------------------------------------
+\begin{plSection}{Making constructors for generic procedures}
+\end{plSection}%{Making constructors for generic procedures}
+%-----------------------------------------------------------------
+\begin{plSection}{Adding handlers to generic procedures}
+\end{plSection}%{Adding handlers to generic procedures}
+%-----------------------------------------------------------------
+\begin{plSection}{The power of extensible generics}
+\end{plSection}%{The power of extensible generics}
+%-----------------------------------------------------------------
+\end{plSection}%{3.2.3 Implementing generic procedures}
+%-----------------------------------------------------------------
+\end{plSection}%{3.2 Extensible generic procedures}
+%-----------------------------------------------------------------
+\begin{plSection}{3.3 Example: automatic differentiation}
+%-----------------------------------------------------------------
+\begin{plSection}{3.3.1 How automatic differentiation works}
+%-----------------------------------------------------------------
+\begin{plSection}{Extending the primitives}
+\end{plSection}%{Extending the primitives}
+%-----------------------------------------------------------------
+\begin{plSection}{Extracting the derivative's value}
+\end{plSection}%{Extracting the derivative's value}
+%-----------------------------------------------------------------
+\end{plSection}%{3.3.1 How automatic differentiation works}
+%-----------------------------------------------------------------
+\begin{plSection}{3.3.2 Derivatives of n-ary functions}
+\end{plSection}%{3.3.2 Derivatives of n-ary functions}
+%-----------------------------------------------------------------
+\begin{plSection}{3.3.3 Some technical details}
+%-----------------------------------------------------------------
+\begin{plSection}{Differential algebra}
+\end{plSection}%{Differential algebra}
+%-----------------------------------------------------------------
+\begin{plSection}{Finite and infinitesimal parts}
+\end{plSection}%{Finite and infinitesimal parts}
+%-----------------------------------------------------------------
+\begin{plSection}{How extracting really works}
+\end{plSection}%{How extracting really works}
+%-----------------------------------------------------------------
+\begin{plSection}{Higher order functions}
+\end{plSection}%{Higher order functions}
+%-----------------------------------------------------------------
+\end{plSection}%{3.3.3 Some technical details}
+%-----------------------------------------------------------------
+\end{plSection}%{3.3 Example: automatic differentiation}
+%-----------------------------------------------------------------
+\begin{plSection}{3.4 Efficient generic procedures}
+
+A ``master class'' ought to assume familiarity with
+indexing data structures, just describe some relevant 
+libraries, rather than building from scratch.
+
+Missed opportunity: careful benchmarking as-you-go
+is an under appreciated aspect of designing for flexibility.
+Performance matters. 
+Missing a small design change with big
+implications for time and space can greatly limit later options.
+
+%-----------------------------------------------------------------
+\begin{plSection}{3.4.1 Tries}
+\end{plSection}%{3.4.1 Tries}
+%-----------------------------------------------------------------
+\begin{plSection}{3.4.2 Caching}
+\end{plSection}%{3.4.2 Caching}
+%-----------------------------------------------------------------
+\end{plSection}%{3.4 Efficient generic procedures}
+%-----------------------------------------------------------------
+\begin{plSection}{3.5 Efficient used-defined types}
+%-----------------------------------------------------------------
+\begin{plSection}{3.5.1 Predicates as types}
+
+Confusion about predicates, sets, types,
+dynamic vs static,
+local vs global.
+
+\end{plSection}%{3.5.1 Predicates as types}
+%-----------------------------------------------------------------
+\begin{plSection}{3.5.2 Relationships between predicates}
+
+\end{plSection}%{3.5.2 Relationships between predicates}
+%-----------------------------------------------------------------
+\begin{plSection}{3.5.3 Predicates are dispatch keys}
+ 
+Bad English, should be ``Predicates \emph{as} dispatch keys''.
+
+Bad concepts, should ``\emph{Sets} as dispatch keys''.
+ 
+\end{plSection}%{3.5.3 Predicates are dispatch keys}
+%-----------------------------------------------------------------
+\begin{plSection}{3.5.4 Example: an adventure game}
+ 
+Bad example, would have more useful in the checkers/chess
+section as something to consider when formulating the 
+games problem.
+
+Use of generic procedures is trivial compared
+to math examples, and example needs too much supporting code
+for no significant lessons about generic procedures.
+ 
+%-----------------------------------------------------------------
+\begin{plSection}{Implementing properties}
+Unnecessary in a ``master class''.
+\end{plSection}%{Implementing properties}
+%-----------------------------------------------------------------
+\end{plSection}%{3.5.4 Example: an adventure game}
+%-----------------------------------------------------------------
+\end{plSection}%{3.5 Efficient used-defined types}
+%-----------------------------------------------------------------
+\begin{plSection}{3.6 Summary}
+\end{plSection}%{3.6 Summary}
+%-----------------------------------------------------------------
+\end{plSection}%{3 Variations on an arithmetic theme}
+%-----------------------------------------------------------------
+\citeAuthorYearTitle{SiskindPearlmutter:2005:PerturbationConfusion}
+
+\citeAuthorYearTitle{ManzyukEtAl:2019:PerturbationConfusion}
+
 \end{plSection}%{3 Variations on an arithmetic theme}
 %-----------------------------------------------------------------
 \BeginAppendices

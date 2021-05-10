@@ -6,7 +6,7 @@
   
   {:doc "examples from SDFF chapter 3"
    :author "palisades dot lakes at gmail dot com"
-   :version "2021-05-09"}
+   :version "2021-05-10"}
   
   (:refer-clojure :exclude [*])
   (:require [clojure.core :as core]
