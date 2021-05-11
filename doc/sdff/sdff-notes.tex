@@ -2728,14 +2728,69 @@ and is the most critical requirement if you want
 careful thought if you want to get it right.
 
 I'm going to tentatively assume ``arithmetic'' means
-a \emph{field}~\cite{wiki:FieldMathematics}:
-One set $\Set{F}$ with two operations, commonly written
-$+$ and $*$, such that for all 
-$f_{0}, f_{1}, f_{2} \, \in \, \Set{F}$
+a \emph{field}~\cite{wiki:FieldMathematics}
+or possibly a \emph{ring}~\cite{wiki:RingMathematics}.
+
+The classical definition of a field posits
+one set $\Set{F}$,
+with two binary operations, commonly written
+$+, * : \Set{F} \times \Set{F} \rightarrow \Set{F}$, 
+with two distinguished elements, the identities,
+commonly written $0$ and $1$,
+and two unary operations, commonly written 
+$-f$ for additive inverse, and $f^{-1}$ or $\frac{1}{f}$
+for the multiplicative inverse,
+such that for all 
+$f, f_{0}, f_{1}, f_{2} \, \in \, \Set{F}$
+the operations are
 \begin{description}
-\item{Associativity} $(f_{0} + )$
+
+\item[Associative:] 
+$\left( f_{0} + f_{1} \right) + f_{2} 
+\,=\, 
+f_{0} + \left( f_{1} + f_{2} \right)$
+and 
+$\left( f_{0} * f_{1} \right) * f_{2} 
+\,=\, 
+f_{0} * \left( f_{1} * f_{2} \right)$
+
+\item[Commutative:] 
+$f_{0} + f_{1} \,=\, f_{1} + f_{0}$
+and 
+$f_{0} * f_{1} \,=\, f_{1} * f_{0}$
+
+\item[Identity:] There exists a $0 \in \Set{F}$ such that
+$0 + f = f$;
+there exists a $1 \in \Set{F}$ such that $1 * f = f$.
+
+\item[Inverse:] $\left(-f\right) + f = 0$
+and $f^{-1}*f = 1$ for all $f\neq0$.
+
+\item[Distributive:] 
+$f_{0} * \left( f_{1} + f_{2} \right)
+\,=\, 
+\left(f_{0} * f_{1} \right) + \left(f_{0} * f_{2} \right)$
 
 \end{description}
+
+\NOTE The universal algebra approach~\cite{wiki:UniversalAlgebra} considers a field
+to be defined by two binary functions, two unary functions,
+and two nullary functions (constant functions returning the
+identity elements).
+The universal version has an advantage for computation:
+all the structure laws are expressed with universal (``for all'')
+quantifiers, without the existential (``there exists'')
+quantifiers.
+Proving an implementation satisfies the laws is difficult 
+in either case, but is it usually easy to at least validate
+universal laws with generative tests.
+In most cases, for common instances of common structures
+like rings and fields, we are given the identities,
+but in a more general (non-constructive) setting, 
+we may only be told they exist.
+Verifying that some or no element with given properties exists
+in an unbounded set is computable.
+
 
 %-----------------------------------------------------------------
 \begin{plSection}{3.1.1 A simple ODE integrator}
