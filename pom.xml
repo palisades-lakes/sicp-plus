@@ -77,6 +77,17 @@
    <version>${commons-math3-version}</version>
   </dependency>
   <dependency>
+   <groupId>criterium</groupId>
+   <artifactId>criterium</artifactId>
+   <version>${criterium-version}</version>
+   <exclusions>
+    <exclusion>
+     <groupId>org.clojure</groupId>
+     <artifactId>clojure</artifactId>
+    </exclusion>
+   </exclusions>
+  </dependency>
+  <dependency>
    <groupId>org.apache.commons</groupId>
    <artifactId>commons-rng-sampling</artifactId>
    <version>${commons-rng-version}</version>
@@ -120,6 +131,12 @@
    <groupId>org.junit.jupiter</groupId>
    <artifactId>junit-jupiter-engine</artifactId>
    <version>${junit-jupiter-version}</version>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>com.github.peteroupc</groupId>
+   <artifactId>numbers</artifactId>
+   <version>${numbers-java-version}</version>
    <scope>test</scope>
   </dependency>
  </dependencies>

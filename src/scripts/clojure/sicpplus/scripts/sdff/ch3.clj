@@ -1,12 +1,12 @@
-;; core src/scripts/clojure/sicpplus/scripts/sdff/ch232.core
+;; core src/scripts/clojure/sicpplus/scripts/sdff/ch3.clj
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 ;;----------------------------------------------------------------
 (ns sicpplus.scripts.sdff.ch3
   
-  {:doc "examples from SDFF chapter 3"
+  {:doc "SDFF chapter 3"
    :author "palisades dot lakes at gmail dot com"
-   :version "2021-05-10"}
+   :version "2021-05-11"}
   
   (:refer-clojure :exclude [*])
   (:require [clojure.core :as core]
