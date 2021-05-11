@@ -1,65 +1,36 @@
 package sicpplus.java.scripts;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
-import sicpplus.java.algebra.OneSetTwoOperations;
-import sicpplus.java.algebra.TwoSetsTwoOperations;
-import sicpplus.java.prng.PRNG;
-import sicpplus.java.prng.Seeds;
-import sicpplus.java.test.algebra.AlgebraicStructureTests;
-import sicpplus.java.test.sets.SetTests;
+import sicpplus.java.algebra.TwoSetsOneOperation;
+import sicpplus.java.linear.Qn;
+import sicpplus.java.test.algebra.Profile;
 
 //----------------------------------------------------------------
-/** Profiling rational vector spaces. 
+/** Profiling rational vector spaces.
  *
- * jy ----source 11 src/scripts/java/sicpplus/java/scripts/QnProfile.java
- * 
+ * jy --source 12 src/scripts/java/xfp/java/scripts/QnProfile.java
+ *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-01-14
+ * @version 2019-02-25
  */
 
 @SuppressWarnings("unchecked")
 public final class QnProfile {
 
-  private static final int TRYS = 1023;
-
-  private static final void 
-  linearspaceTests (final TwoSetsTwoOperations space) {
-
-    final OneSetTwoOperations scalars = 
-      (OneSetTwoOperations) space.scalars();
-    AlgebraicStructureTests.fieldTests(scalars);
-
-    SetTests.tests(space);
-
-    final Supplier sg = 
-      space.scalars().generator( 
-        PRNG.well44497b(
-          Seeds.seed("seeds/Well44497b-2019-01-11.txt")));
-    final Supplier vg = 
-      space.generator( 
-        PRNG.well44497b(
-          Seeds.seed("seeds/Well44497b-2019-01-09.txt")));
-
-    for(final Object law : space.linearspaceLaws()) {
-      for (int i=0; i<TRYS; i++) {
-        if (law instanceof Predicate) {
-          assertTrue(((Predicate) law).test(vg)); }
-        else if (law instanceof BiPredicate) {
-          assertTrue(((BiPredicate) law).test(vg,sg));} } } }
-
   //--------------------------------------------------------------
 
-  public static final void main (final String[] args) {
-    for (final int n : new int[] { 1, 3, 13, 127, 1023}) {
-      System.out.println(n);
-      final TwoSetsTwoOperations qn = 
-        TwoSetsTwoOperations.getBFn(n);
-      linearspaceTests(qn); } }
+  public static final void main (final String[] args) throws InterruptedException {
+    //    int i = 0;
+    //    for (final Object law : Qn.space(1).laws()) {
+    //      System.out.println((i++) + ": " + law); }
+    Thread.sleep(16*1024);
+    final long t = System.nanoTime();
+    for (final int n : Profile.DIMENSIONS) {
+      final TwoSetsOneOperation space = Qn.space(n);
+      if (! Profile.structureTests(space,Profile.TRYS)) {
+        System.out.println("false"); } }
+    System.out.printf("total secs: %8.2f\n",
+      Double.valueOf((System.nanoTime()-t)*1.0e-9));
+    Thread.sleep(16*1024); }
 
   //--------------------------------------------------------------
 }

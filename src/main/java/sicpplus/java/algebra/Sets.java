@@ -1,4 +1,4 @@
-package sicpplus.java.sets;
+package sicpplus.java.algebra;
 
 import java.util.Map;
 import java.util.Objects;
@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.sampling.CollectionSampler;
 
+import sicpplus.java.Classes;
 import sicpplus.java.exceptions.Exceptions;
 
 /** Utilities merging <code>java.util.Set</code> and
@@ -16,7 +17,7 @@ import sicpplus.java.exceptions.Exceptions;
  * Static methods only; no state.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-01-11
+ * @version 2019-06-26
  */
 
 @SuppressWarnings("unchecked")
@@ -27,7 +28,7 @@ public final class Sets {
   public static final BiPredicate OBJECT_EQUALS =
     new BiPredicate() {
     @Override
-    public final boolean test (final Object t, 
+    public final boolean test (final Object t,
                                final Object u) {
       return Objects.equals(t,u); }
   };
@@ -47,23 +48,23 @@ public final class Sets {
 
   //--------------------------------------------------------------
 
-  public static final Supplier sampler (final Object set,
-                                        final UniformRandomProvider prng,
-                                        final Map options) {
+  public static final Supplier generator (final Object set,
+                                          final Map options) {
     if (set instanceof Set) {
-      return ((Set) set).generator(prng,options); }
+      return ((Set) set).generator(options); }
 
     if (set instanceof java.util.Set) {
-      assert null == options;
+      final UniformRandomProvider urp = Set.urp(options);
+      assert null != urp;
       final CollectionSampler cs =
-        new CollectionSampler(prng,((java.util.Set) set)); 
+        new CollectionSampler(urp,((java.util.Set) set));
       return
         new Supplier () {
         @Override
         public final Object get () { return cs.sample(); } }; }
 
     throw Exceptions.unsupportedOperation(
-      null,"contains",set,prng,options); }
+      null,"contains",set,options); }
 
   //--------------------------------------------------------------
   // predicates on equivalence relation
@@ -72,34 +73,43 @@ public final class Sets {
    */
   public final static boolean isReflexive (final Set elements,
                                            final BiPredicate equivalent,
-                                           final Supplier samples) {
-    final Object a = samples.get();
+                                           final Supplier generator) {
+    final Object a = generator.get();
     assert elements.contains(a);
     return equivalent.test(a,a); }
 
   /** Is a = a?
    */
   public final static boolean isReflexive (final Set elements,
-                                           final Supplier samples) {
-    return isReflexive(elements,elements.equivalence(),samples); }
+                                           final Supplier generator) {
+    return isReflexive(elements,elements.equivalence(),generator); }
 
   //--------------------------------------------------------------
   /** Is a = a?
    */
   public final static boolean isSymmetric (final Set elements,
                                            final BiPredicate equivalent,
-                                           final Supplier samples) {
-    final Object a = samples.get();
+                                           final Supplier generator) {
+    final Object a = generator.get();
     assert elements.contains(a);
-    final Object b = samples.get();
+    final Object b = generator.get();
     assert elements.contains(b);
-    return equivalent.test(a,b) == equivalent.test(b,a); }
+    final boolean ab = equivalent.test(a,b);
+    final boolean ba = equivalent.test(b,a);
+    assert ab==ba :
+      "\nset=" + Classes.className(elements) + " " + elements
+      + "\nequivalent=" + Classes.className(equivalent) + " " + equivalent
+      + "\na=" + Classes.className(a) + " " + a
+      + "\nb=" + Classes.className(b) + " " + b
+      + "\na==b -> " + ab
+      + "\nb==a -> " + ba;
+    return ab == ba; }
 
   /** Is a = a?
    */
   public final static boolean isSymmetric (final Set elements,
-                                           final Supplier samples) {
-    return isSymmetric(elements,elements.equivalence(),samples); }
+                                           final Supplier generator) {
+    return isSymmetric(elements,elements.equivalence(),generator); }
 
   //--------------------------------------------------------------
   // disable constructor

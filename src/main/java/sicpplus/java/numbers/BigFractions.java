@@ -1,4 +1,4 @@
-package sicpplus.java.sets;
+package sicpplus.java.numbers;
 
 import java.math.BigInteger;
 import java.util.Collections;
@@ -13,6 +13,7 @@ import org.apache.commons.rng.UniformRandomProvider;
 
 import sicpplus.java.prng.Generator;
 import sicpplus.java.prng.Generators;
+import sicpplus.java.algebra.Set;
 
 /** The set of rational numbers represented by 
  * <code>BigFraction</code>
@@ -69,17 +70,17 @@ public final class BigFractions implements Set {
   //--------------------------------------------------------------
 
   @Override
-  public final Supplier generator (final UniformRandomProvider urp,
-                                   final Map options) {
-    final Generator bfs = Generators.bigFractionGenerator(urp);
+  public final Supplier generator (final Map options) {
+    final Generator bfs = Generators.bigFractionGenerator(
+      Set.urp(options));
     return 
       new Supplier () {
       @Override
       public final Object get () { return bfs.next(); } }; }
 
-  @Override
-  public final Supplier generator (final UniformRandomProvider urp) {
-    return generator(urp,Collections.emptyMap()); }
+//  @Override
+//  public final Supplier generator (final UniformRandomProvider urp) {
+//    return generator(urp,Collections.emptyMap()); }
 
   //--------------------------------------------------------------
   // Object methods

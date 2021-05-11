@@ -1,4 +1,4 @@
-package sicpplus.java.sets;
+package sicpplus.java.linear;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,8 +15,10 @@ import org.apache.commons.rng.UniformRandomProvider;
 import com.carrotsearch.hppc.IntObjectHashMap;
 import com.carrotsearch.hppc.IntObjectMap;
 
+import sicpplus.java.numbers.BigFractions;
 import sicpplus.java.prng.Generator;
 import sicpplus.java.prng.Generators;
+import sicpplus.java.algebra.Set;
 
 /** The set of instances of <code>BigFraction[dimension]</code>).
  * 
@@ -81,18 +83,17 @@ public final class BigFractionsN implements Set {
   /** Intended primarily for testing. 
    */
   @Override
-  public final Supplier generator (final UniformRandomProvider urp,
-                                   final Map options) {
+  public final Supplier generator (final Map options) {
     return 
       new Supplier () {
       final Generator bf = 
-        Generators.bigFractionGenerator(_dimension,urp);
+        Generators.bigFractionGenerator(_dimension,Set.urp(options));
         @Override
       public final Object get () { return bf.next(); } }; }
 
-  @Override
-  public final Supplier generator (final UniformRandomProvider urp) {
-    return generator(urp,Collections.emptyMap()); }
+//  @Override
+//  public final Supplier generator (final UniformRandomProvider urp) {
+//    return generator(urp,Collections.emptyMap()); }
 
   //--------------------------------------------------------------
   // Object methods

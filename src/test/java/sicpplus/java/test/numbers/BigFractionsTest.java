@@ -1,9 +1,10 @@
-package sicpplus.java.test.sets;
+package sicpplus.java.test.numbers;
 
 import org.junit.jupiter.api.Test;
 
-import sicpplus.java.sets.BigFractions;
+import sicpplus.java.numbers.BigFractions;
 
+import sicpplus.java.test.algebra.SetTests;
 //----------------------------------------------------------------
 /** Test <code>BigFractions</code> set. 
  * <p>
@@ -12,7 +13,7 @@ import sicpplus.java.sets.BigFractions;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-01-09
+ * @version 2021-05-11
  */
 
 public final class BigFractionsTest {

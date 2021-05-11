@@ -2,130 +2,98 @@ package sicpplus.java.test.algebra;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.function.BiPredicate;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-import sicpplus.java.algebra.OneSetOneOperation;
-import sicpplus.java.algebra.OneSetTwoOperations;
-import sicpplus.java.algebra.TwoSetsTwoOperations;
+import com.google.common.collect.ImmutableMap;
+
+import sicpplus.java.algebra.Set;
+import sicpplus.java.algebra.Structure;
+import sicpplus.java.linear.Dn;
+import sicpplus.java.linear.Fn;
+import sicpplus.java.linear.Qn;
+import sicpplus.java.linear.RationalFloatsN;
+import sicpplus.java.numbers.BigFloats;
+import sicpplus.java.numbers.Doubles;
+import sicpplus.java.numbers.Floats;
+import sicpplus.java.numbers.Q;
+import sicpplus.java.numbers.RationalFloats;
 import sicpplus.java.prng.PRNG;
-import sicpplus.java.prng.Seeds;
-import sicpplus.java.test.sets.SetTests;
 
 //----------------------------------------------------------------
-/** Common code for testing sets. 
- *
+/** <pre>
+ * mvn -q -Dtest=xfp/java/test/algebra/AlgebraicStructureTests test > AST.txt
+ * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-03
- * 
- * mvn test -Dtest=sicpplus.java.test.algebra.AlgebraicStructureTests
+ * @version 2019-10-15
  */
 
 @SuppressWarnings("unchecked")
 public final class AlgebraicStructureTests {
-
-//  private static final int TRYS = 1000;
-//  static final int LINEARSPACE_TRYS = 127;
-  // speed up this test while focusing on other things
-  private static final int TRYS = 64;
-  static final int LINEARSPACE_TRYS = 8;
-
-  // TODO: should each structure know what laws it obeys?
-  // almost surely.
-  // then only need one test method...
-  
-  public static final void 
-  magmaTests (final OneSetOneOperation magma) {
-    SetTests.tests(magma);
-    final Supplier g = 
-      magma.generator( 
-        PRNG.well44497b(
-          Seeds.seed("seeds/Well44497b-2019-01-09.txt")));
-    for(final Predicate law : magma.magmaLaws()) {
-      for (int i=0; i<TRYS; i++) {
-        assertTrue(law.test(g)); } } }
-
-  public static final void 
-  commutativegroupTests (final OneSetOneOperation group) {
-    SetTests.tests(group);
-    final Supplier g = 
-      group.generator( 
-        PRNG.well44497b(
-          Seeds.seed("seeds/Well44497b-2019-01-09.txt")));
-    for(final Predicate law : group.commutativegroupLaws()) {
-      for (int i=0; i<TRYS; i++) {
-        assertTrue(law.test(g)); } } }
-
-  public static final void 
-  fieldTests (final OneSetTwoOperations field) {
-    SetTests.tests(field);
-    final Supplier g = 
-      field.generator( 
-        PRNG.well44497b(
-          Seeds.seed("seeds/Well44497b-2019-01-11.txt")));
-
-    for(final Predicate law : field.fieldLaws()) {
-      for (int i=0; i<TRYS; i++) {
-        assertTrue(law.test(g)); } } }
-
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void bigFractions () {
-    magmaTests(OneSetOneOperation.BIGFRACTIONS_ADD);
-    magmaTests(OneSetOneOperation.BIGFRACTIONS_MULTIPLY); 
-    fieldTests(OneSetTwoOperations.BIGFRACTIONS_FIELD); }
-
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void qTests () {
-    fieldTests(OneSetTwoOperations.Q_FIELD); }
+  private static final int TRYS = 31;
+  static final int SPACE_TRYS = 5;
 
   //--------------------------------------------------------------
 
-  public static final void 
-  linearspaceTests (final TwoSetsTwoOperations space) {
-  
-    SetTests.tests(space);
-  
-    final OneSetOneOperation elements = 
-      (OneSetOneOperation) space.elements();
-    commutativegroupTests(elements);
-  
-    final OneSetTwoOperations scalars = 
-      (OneSetTwoOperations) space.scalars();
-    fieldTests(scalars);
-  
-    final Supplier sg = 
-      space.scalars().generator( 
-        PRNG.well44497b(
-          Seeds.seed("seeds/Well44497b-2019-01-11.txt")));
-    final Supplier vg = 
-      space.elements().generator( 
-        PRNG.well44497b(
-          Seeds.seed("seeds/Well44497b-2019-01-09.txt")));
-  
-    for(final Object law : space.linearspaceLaws()) {
-      for (int i=0; i<LINEARSPACE_TRYS; i++) {
-        assertTrue(((BiPredicate) law).test(vg,sg));} } }
+  private static final void
+  structureTests (final Structure s,
+                  final int n) {
+    SetTests.tests(s);
+    final Map<Set,Supplier> generators =
+      s.generators(
+        ImmutableMap.of(
+          Set.URP,
+          PRNG.well44497b("seeds/Well44497b-2019-01-09.txt")));
+    for(final Predicate law : s.laws()) {
+      for (int i=0; i<n; i++) {
+        final boolean result = law.test(generators);
+        assertTrue(result,
+          s.toString() + " : " + law.toString()); } } }
+
+  //--------------------------------------------------------------
 
   @SuppressWarnings({ "static-method" })
   @Test
-  public final void bigFractionN () {
-    for (final int n : new int[] { 1, 3, 13, 127}) {
-      final TwoSetsTwoOperations bfn = 
-        TwoSetsTwoOperations.getBFn(n);
-      AlgebraicStructureTests.linearspaceTests(bfn); } }
+  public final void tests () {
 
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void qN () {
-    for (final int n : new int[] { 1, 3, 13, 127}) {
-      final TwoSetsTwoOperations qn = 
-        TwoSetsTwoOperations.getQn(n);
-      AlgebraicStructureTests.linearspaceTests(qn); } }
+    //Debug.DEBUG=false;
+    structureTests(BigFloats.ADDITIVE_MAGMA,TRYS);
+    structureTests(BigFloats.MULTIPLICATIVE_MAGMA,TRYS);
+    structureTests(BigFloats.RING,TRYS);
+
+    structureTests(RationalFloats.ADDITIVE_MAGMA,TRYS);
+    structureTests(RationalFloats.MULTIPLICATIVE_MAGMA,TRYS);
+    structureTests(RationalFloats.FIELD,TRYS);
+
+    structureTests(Q.FIELD,TRYS);
+
+     structureTests(Floats.ADDITIVE_MAGMA,TRYS);
+    structureTests(Floats.MULTIPLICATIVE_MAGMA,TRYS);
+    structureTests(Floats.FLOATING_POINT,TRYS);
+
+    structureTests(Doubles.ADDITIVE_MAGMA,TRYS);
+    structureTests(Doubles.MULTIPLICATIVE_MAGMA,TRYS);
+    structureTests(Doubles.FLOATING_POINT,TRYS);
+
+    for (final int n : new int[] { 1, 3, 63, 257 }) {
+      structureTests(RationalFloatsN.group(n),SPACE_TRYS);
+      structureTests(RationalFloatsN.space(n),SPACE_TRYS);
+
+      structureTests(Qn.group(n),SPACE_TRYS);
+      structureTests(Qn.space(n),SPACE_TRYS);
+
+      structureTests(Fn.magma(n),SPACE_TRYS);
+      structureTests(Fn.space(n),SPACE_TRYS);
+
+      structureTests(Dn.magma(n),SPACE_TRYS);
+      structureTests(Dn.space(n),SPACE_TRYS);
+    }
+    //Debug.DEBUG=false;
+  }
+
 
   //--------------------------------------------------------------
 }
