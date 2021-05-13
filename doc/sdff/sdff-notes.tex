@@ -394,7 +394,7 @@ What they advocate (p~2--3)
   depending on the meaning of ``sum''.)
   \item parts with separate concerns. (should really be groups of
   parts that share concerns, separate different groups.
-  contradicts shared apis below.)
+  contradicts shared APIs below.)
   \item minimize interactions (which contradicts to some degree
   wanting more than the sum of parts)
   \item parts ``simple and general'' 
@@ -2724,8 +2724,174 @@ and is the most critical requirement if you want
 %-----------------------------------------------------------------
 \begin{plSection}{3.1 Combining arithmetics}
 
-``Arithmetic''? Never defined, and desperately needs 
+``Arithmetic''? Never clearly defined, and desperately needs 
 careful thought if you want to get it right.
+
+The closest they get is:
+``Suppose we have a program that computes some useful numerical 
+results.
+It depends on the meanings of the arithmetic operators 
+that are referenced in the program text.
+These operators can be extended to work on things
+other than the numbers that were expected by the program.
+{\ldots}
+A common pattern is a program that takes numerical weights and 
+other arguments and makes a linear combination by adding up
+the weighted arguments.''
+
+``A common pattern'' should be `` a classic blunder''.
+They go on to amplify their mistake by, again, confusing
+tuples of numbers with vectors, and ignoring the fact that,
+while the meaning of ``+'' for vectors for vectors is fairly
+clear, it only is valid for vectors in the same \emph{space}:
+same dimension is not enough. 
+For an example of how badly this can go wrong, 
+consider R~\cite{GentlemanEtal:2011:R},
+where ``adding'' two tuples of different lengths is implemented
+by recycling the elements of the shorter array.
+(I believe this is due the R represented scalars by 1-element
+arrays, and making the bad choice that the same operator
+should be used to add vectors and add a scalar to each coordinate
+of a vector, the second an operation that doesn't make sense
+in vector spaces anyway.)
+
+And what about ``*'' for vectors? 
+Inner product? Outer/tensor product?
+Or element-wise multiply of particular coordinates, 
+which again doesn't make sense for vectors.
+
+They do note that extending ``+'' and ``*'' to matrices
+runs into problems, but: ``We will ignore this problem for now.''
+They fail to recognize that the reason it doesn't work is
+because matrix ``times'' vector is really function application,
+and matrix ``times'' matrix is really function composition.
+
+%-----------------------------------------------------------------
+\begin{plSection}{MIT Scheme numbers}
+
+The only way to get a handle on what they might have in mind
+is to look at numbers and arithmetic operators 
+in MIT Scheme~\cite[chapter 4]{Hanson:2020:MITSchemeRef}.
+
+MIT Scheme numbers are classified in three dimensions: 
+type, exactness, and implementation, which \emph{do not} have
+a simple relationship.
+
+\begin{description}
+\item[Types:]
+The numerical type tower is:
+{\schemeFont 
+integer? $\Rightarrow$ rational? $\Rightarrow$ real? 
+$\Rightarrow$ complex? $\Rightarrow$ number?}.
+``{\ldots} the types number, complex,
+real, rational, and integer to refer 
+to both mathematical numbers and Scheme numbers.'',
+
+There are couple of issues here that are being ignored.
+
+The meaning of ``real'' is complicated question,
+both in mathematics and computations,
+and deserves more attention.
+See, for example, \citeAuthorYearTitle{Henle:2012:RealNumbers}.
+
+Mathematicians rely on ambiguity that isn't possible 
+in computation.
+An example of this: 
+Is $\Space{Q}$ a subset (actually a sub-field) of $\Space{R}$?
+Or is it isomorphic to a sub-field of $\Space{R}$?
+Mathematicians are free to switch between these two viewpoints
+whenever convenient, or hold both at the same time.
+
+\item[Exactness:]
+Every MIT Scheme number is either {\schemeFont exact?} or 
+{\schemeFont inexact?}.
+Unfortunately, it pretty unclear from the documentation
+what exactly this is supposed to mean.
+It seems like the idea is to mark some data as involving
+an approximation, but not include any info about what the
+error bounds might be.
+It doesn't take much thought to see how murky this idea is,
+and I'm not sure it has much value, in any case.
+
+``A number is exact if it was written as an exact constant 
+or was derived from exact numbers using only exact operations.
+A number is inexact if it was written as an inexact constant, 
+if it was derived using inexact ingredients,
+or if it was derived using inexact operations. 
+Thus inexactness is a contagious property of a 
+number.''~\cite[section 4.2]{Hanson:2020:MITSchemeRef}
+
+However, this is contradicted shortly after:
+``An operation may, however,
+return an exact result if it can prove that the value of the 
+result is unaffected by the inexactness of its arguments. 
+For example, multiplication of any number by an exact zero
+may produce an exact zero result, even if the other argument 
+is inexact.''
+
+They also imply that a computation taking inexact inputs
+may produce ``exact'' results, requiring only 
+that alternate implementations return the same results
+if the intermediate operations are all exact.
+
+The operation {\schemeFont inexact->exact} is described
+as returning the closest exact number to it's input,
+which doesn't make sense---a {\schemeFont flonum} has
+an exact value as a rational or real
+
+IEEE binary64 numbers are an exact representation of a subset of
+$\Space{Q}$. 
+Floating point arithmetic is ``exact'';
+it just doesn't have the same rules as rational arithmetic.
+Where you get into trouble is confusing  
+{\schemeFont flo:+} with the missing {\schemeFont rational:+},
+and never specifying exactly what the unqualified 
+{\schemeFont +}, which is presumably meant to be
+{\schemeFont complex:+}.
+
+\item[Implementation]
+``MIT/GNU Scheme implements the whole tower of numerical types. 
+It has unlimited-precision exact
+integers and exact rationals. 
+Flonums are used to implement all inexact reals; 
+on machines that support IEEE floating-point arithmetic 
+these are double-precision floating-point 
+numbers.''~\cite[chapter 4, footnote 1]{Hanson:2020:MITSchemeRef}
+
+The reference manual discusses only two implementations,
+and those are not fully first class:
+\begin{description}
+\item[fixnum:] a subset of integers
+represented by a twos-complement bit sequence 
+of unspecified length.
+There is no API to get at the number of bits---the manual
+has a code fragment illustrating a search to find the max/min
+fixnum.
+\item[flonum] ``MIT/GNU Scheme follows the IEEE 754-2008 
+floating-point standard, using binary64
+arithmetic for 
+flonums.''~\cite[section 4.7.2]{Hanson:2020:MITSchemeRef}
+There doesn't appear to be any straightforward way to get
+at the bits, like, for example, 
+{\javaFont Double.doubleToLongBits},
+though there functions to get at the exponent, word-size, etc.,
+of the floating point implementation. 
+(Given that they assert IEEE binary64, 
+these functions are not strictly necessary.)
+\end{description}
+All other implementations are hidden, 
+which is a fundamental problem if the idea is to extend arithmetic
+with these functions as a base.
+
+In addition, the lack of simple access to primitives
+makes doing an alternative number library infeasible
+in MIT Scheme, though perhaps the FFI might allow something
+in C.~\cite{Birkholz:2018:MITSchemeSOS}
+\end{description}
+
+\end{plSection}%{MIT Scheme numbers}
+%-----------------------------------------------------------------
+\begin{plSection}{Filling in some gaps}
 
 I'm going to tentatively assume ``arithmetic'' means
 a \emph{field}~\cite{wiki:FieldMathematics}
@@ -2791,6 +2957,8 @@ we may only be told they exist.
 Verifying that some or no element with given properties exists
 in an unbounded set is computable.
 
+\end{plSection}%{Filling in some gaps}
+%-----------------------------------------------------------------
 
 %-----------------------------------------------------------------
 \begin{plSection}{3.1.1 A simple ODE integrator}
