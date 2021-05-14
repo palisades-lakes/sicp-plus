@@ -2828,16 +2828,17 @@ result is unaffected by the inexactness of its arguments.
 For example, multiplication of any number by an exact zero
 may produce an exact zero result, even if the other argument 
 is inexact.''
-
-They also imply that a computation taking inexact inputs
-may produce ``exact'' results, requiring only 
+They require only 
 that alternate implementations return the same results
-if the intermediate operations are all exact.
+if the intermediate operations are all exact
+(even though not the same intermediate operations).
 
 The operation {\schemeFont inexact->exact} is described
 as returning the closest exact number to it's input,
 which doesn't make sense---a {\schemeFont flonum} has
-an exact value as a rational or real
+an exact value as a rational or real.
+I can't think of an example where an inexact number can only
+be approximated by an exact one.
 
 IEEE binary64 numbers are an exact representation of a subset of
 $\Space{Q}$. 
@@ -2848,6 +2849,10 @@ Where you get into trouble is confusing
 and never specifying exactly what the unqualified 
 {\schemeFont +}, which is presumably meant to be
 {\schemeFont complex:+}.
+
+What's missing here is anything explicit about approximation,
+or rounding (though there is some discussion of rounding modes
+for {\schemeFont flonum} operations).
 
 \item[Implementation]
 ``MIT/GNU Scheme implements the whole tower of numerical types. 
