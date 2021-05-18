@@ -2896,7 +2896,119 @@ in C.~\cite{Birkholz:2018:MITSchemeSOS}
 
 \end{plSection}%{MIT Scheme numbers}
 %-----------------------------------------------------------------
+\begin{plSection}{3.1.1 A simple ODE integrator}
+
+Looking at MIT Scheme numbers and arithmetic didn't help
+illuminate what they mean by ``arithmetic''.
+Perhaps the first example will?
+
+In this case, the topic is simulating the behavior 
+of a physical system specified by an ordinary differential
+equation (ODE), that is, a univariate differential equation.
+There is no context for the problem, not even references.
+
+A couple possibly relevant ones are: 
+\citeAuthorTitle{wiki:VerletIntegration}
+and
+\citeAuthorYearTitle[%
+section 17.4 Second-orde+r conservative equations]%
+{PressEtal:2007:NumericalRecipes}.
+
+Missed opportunity: comparison with the C++ implementation
+in  Numerical Recipes.
+
+Like chapter 2, they jump into the example
+without the motivation, background, and bigger picture 
+needed for reasoned design choices.
+
+One aspect that seems relevant to the question of ``arithmetic''
+is the fact that they claim they are solving the differential
+equation
+\begin{equation}
+D^{2} x \left( t \right) \, = \, F\left(t,x\left(t\right)\right)
+\end{equation}
+when they are in fact modelling the behavior 
+with a discrete difference equation.
+
+Any issues of alternative approximations and accuracy trade-offs,
+or whether difference equations might be the right setting from 
+the start,
+are considered to be in the domain of ``numerical analysis
+and are not of interest here.''
+
+They fail to mention that what they are doing is
+approximating the solution to an \emph{initial value problem}.
+This is important because the designer needs to know if
+we have decided that we are only interested in initial value
+problems (and why). Or would solving other boundary conditions
+eventually be necessary?
+
+\TODO
+Might be better to do this after discussing number systems.
+What do we need for differential equations?
+Rationals? Computable reals?
+
+\NOTE 
+Let's see if we can make more sense of the ``stepper''
+they write without any justification:
+
+\begin{equation}
+\Delta_{h} x(t) \; \defeq \;
+\frac
+{x\left(t+\frac{h}{2}\right) \,-\, x\left(t-\frac{h}{2}\right)}
+{h} 
+\end{equation}
+so
+\begin{align}
+\Delta_{h}^{2} x(t) & \; = \; 
+\frac{
+\Delta_{h}x\left(t+\frac{h}{2}\right)
+ \,-\, 
+\Delta_{h}x\left(t-\frac{h}{2}\right)}
+{h} \\ 
+& \; = \; 
+\frac
+{x\left(t+h\right) \,-\, x\left(t\right)
+ - \left[x\left(t\right) \,-\, x\left(t-h\right)\right]}
+{h^2} \nonumber \\ 
+& \; = \; 
+\frac{x\left(t+h\right) \,-\, 2 x\left(t\right)
++ x\left(t-h\right)}
+{h^2} \nonumber \\
+& \; = \; 
+F\left(t,x\left(t\right)\right) \nonumber 
+\end{align}
+which lets us re-write SDFF equation 3.2 in a slightly more
+informative way:
+\begin{equation}
+\Delta_{h}^{2} x(t)  \; = \; 
+\sum_{j=0}^{k}
+A(j)\, F \left( t-jh, x(t-jh) \right)
+\end{equation}
+where ``$A$ is the array of magic coefficients.''
+
+\end{plSection}%{3.1.1 A simple ODE integrator}
+%-----------------------------------------------------------------
 \begin{plSection}{Filling in some gaps}
+%-----------------------------------------------------------------
+\begin{plSection}{Number systems in mathematics}
+
+For a more complete treatment, 
+see, for example, 
+\citeAuthorYearTitle{Feferman:1989:NumberSystems}.
+
+%-----------------------------------------------------------------
+\begin{plSection}{Natural numbers}
+
+
+The \emph{natural numbers} 
+$\Space{N} = \left\{ 0, 1, 2, {\cdots}\right\}$
+\end{plSection}%{Natural numbers}
+%-----------------------------------------------------------------
+
+
+\end{plSection}%{Number systems in mathematics}
+%-----------------------------------------------------------------
 
 I'm going to tentatively assume ``arithmetic'' means
 a \emph{field}~\cite{wiki:FieldMathematics}
@@ -2963,11 +3075,6 @@ Verifying that some or no element with given properties exists
 in an unbounded set is computable.
 
 \end{plSection}%{Filling in some gaps}
-%-----------------------------------------------------------------
-
-%-----------------------------------------------------------------
-\begin{plSection}{3.1.1 A simple ODE integrator}
-\end{plSection}%{3.1.1 A simple ODE integrator}
 %-----------------------------------------------------------------
 \begin{plSection}{3.1.2 Modulating arithmetic operators}
 
