@@ -3043,6 +3043,139 @@ However, since it comes here in the book,
 I'm going do a review of mathematical and computational
 number systems and arithmetic together in this section.
 
+%-----------------------------------------------------------------
+\begin{plSection}{Unexamined assumptions}
+
+I think when most software developers see ``arithmetic''
+they remember elementary school
+and think of addition, subtraction, multiplication, and division.
+The ``numbers'' passed to these operations are 
+understood to be the (classical) reals, 
+though probably only partially understood.
+
+This adds up to what a mathematician would call an ordered 
+\emph{field}~\cite{wiki:FieldMathematics}.
+Skipping the ``ordered'' part for now,
+a field $\Space{F}$ consists of
+$[\Set{F},\Add{F},\Mul{F},\Sub{F},\Div{F},\Zero{F}, \One{F}]$:
+\begin{description}
+\item[Elements:] a set $\Set{F}$, the ``numbers'',
+\item[Addition:] a binary operation (two argument function)
+$\Add{F} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
+\item[Multiplication:] a binary operation 
+$ : \Set{F} \times \Set{F} \rightarrow \Set{F}$
+\item[Additive inverse:] a unary operation (one argument function)
+$\Sub{F} :\Set{F} \rightarrow \Set{F}$,
+that is, $\Sub{F} : a \rightarrow \Sub{F} a$.
+\item[Multiplicative inverse:] 
+a unary operation (one argument function)
+on everything but the additive identity:
+$\Div{F} :  \Set{F} \setminus \left\{\Zero{F}\right\} 
+\rightarrow \Set{F}$.
+$\;\Div{F} : a \rightarrow \One{F}\Div{F} a$.
+\item[Additive identity:] a nullary operation 
+(zero argument/constant function)
+$\Zero{F} : \emptyset \rightarrow \Set{F}$.
+\item[Multiplicative identity:] a nullary operation 
+$\One{F} : \emptyset \rightarrow \Set{F}$.
+\end{description}
+Note that I am being pedantic about a number of things
+that mathematicians usually leave ambiguous,
+such as the difference between the field $\Space{F}$ 
+and the set of elements $\Set{F}$,
+and labeling the operations
+with the field for which they are defined.
+Another non-standard aspect of my definition is taking
+the identities to be zero-argument functions rather than
+elements of the set.
+The reason for these peculiarities is to better match the needs 
+of implementation, which should, I hope, 
+become clear later.
+
+The operations satisfy the following laws, for all 
+$a, b, c \,\in \, \Set{F}$
+\begin{description}
+
+\item[Additive identity:] 
+$\Zero{F}() \,\Add{F}\, a \,=\, a$.
+Typically the nullary function $\Zero{F}()$ is identified with its
+value as an element of $\Set{F}$: $\Zero{F}() = \Zero{F}$.
+
+\item[Multiplicative identity:] 
+$\One{F}() \,\Mul{F}\, a \,=\, a$.
+
+\item[Additive inverse:] 
+$\Sub{F}(a) \;\Add{F}\; a = \Zero{F}$.
+Binary subtraction is defined as the composition 
+of addition and inverse:
+$a \,\Sub{F}\, b = 
+a \,\Add{F}\, \left(\Sub{F} b\right) $
+
+\item[Multiplicative inverse:] 
+$\Div{F}(a) \;\Mul{F}\; a = \One{F}$ for all $a \neq \Zero{F}$.
+Binary division is defined as with binary addition,
+with the wrinkle that the second argument (the divisor)
+cannot be the additive identity.
+
+\item[Associative addition:] 
+$\left( a \Add{F} b \right)  \Add{F} c 
+\,=\, 
+a  \Add{F} \left( b  \Add{F} c \right)$
+
+\item[Associative multiplication:] 
+$\left( a  \Mul{F} b \right) \Mul{F} c 
+\,=\, 
+a \Mul{F} \left( b \Mul{F} c \right)$
+
+\item[Commutative addition:] 
+$a \Add{F} b \,=\, b \Add{F} a$
+
+\item[Commutative multiplication:] 
+$a \Mul{F} b \,=\, b \Mul{F} a$
+
+\item[Distributive multiplication over addition:] 
+$a \Mul{F} \left( b \Add{F} c \right)
+\,=\, 
+\left(a \Mul{F} b \right) 
+\, \Add{F} \, 
+\left(a \Mul{F} c \right)$
+
+\end{description}
+
+The problem with this viewpoint is that computer arithmetic
+doesn't work this way
+and, more critically, computer arithmetic \emph{can't} work
+this way.
+The (classical) reals, $\Re$, are \emph{uncountable};
+computer arithmetic can at most handle countably infinite sets
+(in the sense is bounded by available memory,
+rather than having an intrinsically limited range)
+
+This suggests the following question:
+Is there a countable, implementable number system,
+probably a subset of $\Re$,
+which is sufficient for, in my case,
+``scientific computing''?
+
+Perhaps surprisingly, the answer to this seems to be yes.
+See: 
+
+\citeAuthorYearTitle{Feferman:1989:IsCantorNecessary}
+
+\citeAuthorYearTitle{Feferman:1992:ALittleBit}
+
+Reprinted, updated in:
+
+\citeAuthorYearTitle[ch.~2 ``Is Cantor necessary?'']{
+Feferman:1998:LightOfLogic}
+
+\citeAuthorYearTitle[ch.~12 ``Is Cantor necessary? (Conclusion)'']
+{Feferman:1998:LightOfLogic}
+
+\citeAuthorYearTitle[ch~14 ``Why a little bit goes a long way:
+logical foundations of scientifically applicable mathematics'']{
+Feferman:1998:LightOfLogic}
+
 Useful references, intended for undergraduates, include:
  
 \citeAuthorYearTitle{Feferman:1989:NumberSystems}
@@ -3051,13 +3184,20 @@ Useful references, intended for undergraduates, include:
 
 \citeAuthorYearTitle{Bridger:2019}
 
-My approach to this is to motivate a new 
-(mathematical/computational) structure
+In the next few sections I'm going to work thru a series
+of number systems, both mathematical and computational.
+My approach is to motivate a new structure
 by posing a problem that can't be solved in the structures
 introduced up to that point.
 This leads to an implementation/representation
 in terms of previous (structures),
 which can then be abstracted into a set of axioms.
+The goal is to end up with something that is both
+implementable and covers ``scientifically applicable mathematics''.
+
+\end{plSection}%{Unexamined assumptions}
+%-----------------------------------------------------------------
+\begin{plSection}{Nonstandard foundations}
 
 The mathematics I will be using is unusual in two ways:
 
@@ -3125,22 +3265,6 @@ that this kind of foundation covers all ``scientifically
 applicable mathematics''.
 See:
 
-\citeAuthorYearTitle{Feferman:1989:IsCantorNecessary}
-
-\citeAuthorYearTitle{Feferman:1992:ALittleBit}
-
-Reprinted, updated in:
-
-\citeAuthorYearTitle[ch.~2 ``Is Cantor necessary?'']{
-Feferman:1998:LightOfLogic}
-
-\citeAuthorYearTitle[ch.~12 ``Is Cantor necessary? (Conclusion)'']
-{Feferman:1998:LightOfLogic}
-
-\citeAuthorYearTitle[ch~14 ``Why a little bit goes a long way:
-logical foundations of scientifically applicable mathematics'']{
-Feferman:1998:LightOfLogic}
-
 This approach to mathematics eliminates much of the ugliness
 of classical analysis---no axiom of choice, no unmeasurable
 sets, etc.
@@ -3157,6 +3281,7 @@ or is just very slow.
 
 \end{itemize}
 
+\end{plSection}%{Nonstandard foundations}
 %-----------------------------------------------------------------
 \begin{plSection}{Natural numbers}
 
@@ -3236,52 +3361,6 @@ but we will see more convincing examples later.
 %-----------------------------------------------------------------
 \begin{plSection}{Rationals}
 
-
-I'm going to tentatively assume ``arithmetic'' means
-a \emph{field}~\cite{wiki:FieldMathematics}
-or possibly a \emph{ring}~\cite{wiki:RingMathematics}.
-
-The classical definition of a field posits
-one set $\Set{F}$,
-with two binary operations, commonly written
-$+, * : \Set{F} \times \Set{F} \rightarrow \Set{F}$, 
-with two distinguished elements, the identities,
-commonly written $0$ and $1$,
-and two unary operations, commonly written 
-$-f$ for additive inverse, and $f^{-1}$ or $\frac{1}{f}$
-for the multiplicative inverse,
-such that for all 
-$f, f_{0}, f_{1}, f_{2} \, \in \, \Set{F}$
-the operations are
-\begin{description}
-
-\item[Associative:] 
-$\left( f_{0} + f_{1} \right) + f_{2} 
-\,=\, 
-f_{0} + \left( f_{1} + f_{2} \right)$
-and 
-$\left( f_{0} * f_{1} \right) * f_{2} 
-\,=\, 
-f_{0} * \left( f_{1} * f_{2} \right)$
-
-\item[Commutative:] 
-$f_{0} + f_{1} \,=\, f_{1} + f_{0}$
-and 
-$f_{0} * f_{1} \,=\, f_{1} * f_{0}$
-
-\item[Identity:] There exists a $0 \in \Set{F}$ such that
-$0 + f = f$;
-there exists a $1 \in \Set{F}$ such that $1 * f = f$.
-
-\item[Inverse:] $\left(-f\right) + f = 0$
-and $f^{-1}*f = 1$ for all $f\neq0$.
-
-\item[Distributive:] 
-$f_{0} * \left( f_{1} + f_{2} \right)
-\,=\, 
-\left(f_{0} * f_{1} \right) + \left(f_{0} * f_{2} \right)$
-
-\end{description}
 
 \end{plSection}%{Rationals}
 %-----------------------------------------------------------------
