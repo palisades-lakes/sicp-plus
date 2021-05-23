@@ -3059,23 +3059,24 @@ Skipping the ``ordered'' part for now,
 a field $\Space{F}$ consists of
 $[\Set{F},\Add{F},\Mul{F},\Sub{F},\Div{F},\Zero{F}, \One{F}]$:
 \begin{description}
-\item[Elements:] a set $\Set{F}$, the ``numbers'',
+\item[Elements:] a set $\Set{F}$, the ``numbers''.
 \item[Addition:] a binary operation (two argument function)
 $\Add{F} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
 \item[Multiplication:] a binary operation 
-$ : \Set{F} \times \Set{F} \rightarrow \Set{F}$
+$\Mul{F} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
 \item[Additive inverse:] a unary operation (one argument function)
-$\Sub{F} :\Set{F} \rightarrow \Set{F}$,
-that is, $\Sub{F} : a \rightarrow \Sub{F} a$.
+$\Sub{F} :\Set{F} \rightarrow \Set{F}$.
 \item[Multiplicative inverse:] 
 a unary operation (one argument function)
 on everything but the additive identity:
 $\Div{F} :  \Set{F} \setminus \left\{\Zero{F}\right\} 
 \rightarrow \Set{F}$.
-$\;\Div{F} : a \rightarrow \One{F}\Div{F} a$.
 \item[Additive identity:] a nullary operation 
-(zero argument/constant function)
+(zero argument function)
 $\Zero{F} : \emptyset \rightarrow \Set{F}$.
+Mathematicians typically ignore the difference between a zero
+argument function and the value of that function,
+acting as if $\Zero{F}() = \Zero{F}\, \in \, \Set{F}$.
 \item[Multiplicative identity:] a nullary operation 
 $\One{F} : \emptyset \rightarrow \Set{F}$.
 \end{description}
@@ -3097,9 +3098,7 @@ $a, b, c \,\in \, \Set{F}$
 \begin{description}
 
 \item[Additive identity:] 
-$\Zero{F}() \,\Add{F}\, a \,=\, a$.
-Typically the nullary function $\Zero{F}()$ is identified with its
-value as an element of $\Set{F}$: $\Zero{F}() = \Zero{F}$.
+$\Zero{F} \,\Add{F}\, a \,=\, a$.
 
 \item[Multiplicative identity:] 
 $\One{F}() \,\Mul{F}\, a \,=\, a$.
@@ -3109,7 +3108,7 @@ $\Sub{F}(a) \;\Add{F}\; a = \Zero{F}$.
 Binary subtraction is defined as the composition 
 of addition and inverse:
 $a \,\Sub{F}\, b = 
-a \,\Add{F}\, \left(\Sub{F} b\right) $
+a \,\Add{F}\, \left(\Sub{F}(b)\right) $
 
 \item[Multiplicative inverse:] 
 $\Div{F}(a) \;\Mul{F}\; a = \One{F}$ for all $a \neq \Zero{F}$.
@@ -3134,7 +3133,7 @@ $a \Add{F} b \,=\, b \Add{F} a$
 $a \Mul{F} b \,=\, b \Mul{F} a$
 
 \item[Distributive multiplication over addition:] 
-$a \Mul{F} \left( b \Add{F} c \right)
+$a \, \Mul{F} \, \left( b \Add{F} c \right)
 \,=\, 
 \left(a \Mul{F} b \right) 
 \, \Add{F} \, 
@@ -3349,6 +3348,23 @@ but we will see more convincing examples later.
 %-----------------------------------------------------------------
 \begin{plSection}{Implementations}
 
+%-----------------------------------------------------------------
+\begin{plSection}{\javaFont UnboundedNatural}
+
+\citeAuthorYearTitle{LindholmEtAl:2021:JVMS16}
+
+\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}
+
+\end{plSection}%{\javaFont UnboundedNatural}
+%-----------------------------------------------------------------
+\begin{plSection}{\javaFont BigNatural}
+
+\citeAuthorYearTitle{LindholmEtAl:2021:JVMS16}
+
+\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}
+
+\end{plSection}%{\javaFont BigNatural}
+%-----------------------------------------------------------------
 
 \end{plSection}%{Implementations}
 %-----------------------------------------------------------------
