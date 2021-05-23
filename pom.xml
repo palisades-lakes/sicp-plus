@@ -62,6 +62,11 @@
  </build>
  <dependencies>
   <dependency>
+   <groupId>com.github.oshi</groupId>
+   <artifactId>oshi-core</artifactId>
+   <version>${oshi-version}</version>
+  </dependency>
+  <dependency>
    <groupId>org.clojure</groupId>
    <artifactId>math.numeric-tower</artifactId>
    <version>${clojure-math-numeric-tower-version}</version>
@@ -70,7 +75,7 @@
   <groupId>org.clojure</groupId>
   <artifactId>core.memoize</artifactId>
   <version>${clojure-core-memoize-version}</version>
-</dependency>
+  </dependency>
   <dependency>
    <groupId>org.apache.commons</groupId>
    <artifactId>commons-math3</artifactId>

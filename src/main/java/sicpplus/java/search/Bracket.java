@@ -1,4 +1,4 @@
-package sicpplus.java;
+package sicpplus.java.search;
 
 import sicpplus.java.functions.Dn;
 import sicpplus.java.functions.Function;

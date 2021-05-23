@@ -1,6 +1,6 @@
 package sicpplus.java.exceptions;
 
-import sicpplus.java.Status;
+import sicpplus.java.search.Status;
 
 /** Thrown for unsuccessful exits from search.
  *

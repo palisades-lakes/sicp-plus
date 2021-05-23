@@ -1,4 +1,4 @@
-package sicpplus.java;
+package sicpplus.java.search;
 
 /** 
  * @author mcdonald dot john dot alan at gmail dot com

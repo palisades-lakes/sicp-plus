@@ -1,7 +1,7 @@
 package sicpplus.java.functions.scalar;
 
-import sicpplus.java.StopTest;
 import sicpplus.java.functions.Function;
+import sicpplus.java.search.StopTest;
 
 /** Stop a 1d search if the history contains 3 <code>double</code>
  * domain values, <code>x0 < x1 < x2</code>, such that

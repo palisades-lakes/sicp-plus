@@ -2,8 +2,8 @@ package sicpplus.java.test;
 
 import org.junit.jupiter.api.Assertions;
 
-import sicpplus.java.ResultQuality;
-import sicpplus.java.Status;
+import sicpplus.java.search.ResultQuality;
+import sicpplus.java.search.Status;
 
 //----------------------------------------------------------------
 /** Common test methods.

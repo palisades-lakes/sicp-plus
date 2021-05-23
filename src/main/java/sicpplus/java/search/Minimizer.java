@@ -1,4 +1,4 @@
-package sicpplus.java;
+package sicpplus.java.search;
 
 /** Interface for iterative search algorithms.
  *
