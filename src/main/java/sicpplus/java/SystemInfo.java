@@ -29,14 +29,15 @@ import oshi.software.os.OperatingSystem.ProcessSorting;
 import oshi.util.FormatUtil;
 import oshi.util.Util;
 
-/** Derived from oshi.SystemInfoTest example code.
+/** TODO: update to use <code>oshi.SystemInfo</code>.
+ * 
+ * Derived from oshi.SystemInfoTest example code.
  *
  * TODO: functions that return a hashmap,
  * rather than printing.
  *
  * @author palisades dot lakes at gmail dot com
- * @since 2017-07-12
- * @version 2021-04-12
+ * @version 2021-05-23
  */
 public final class SystemInfo {
 

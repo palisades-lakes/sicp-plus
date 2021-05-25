@@ -16,12 +16,42 @@ import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
 import sicpplus.java.prng.Generator;
 import sicpplus.java.prng.GeneratorBase;
 
-/** immutable arbitrary-precision non-negative integers
+/** Immutable arbitrary-precision non-negative integers
  * (natural numbers) represented by little-endian
- * unsigned <code>int[]</code>
+ * unsigned <code>int[]</code>.
  *
+ * Note: the range of numbers that can be represented by instances
+ * of this class is bounded by the maximum Java array size,
+ * which varies across different JVMs, and, 
+ * as far as I can determine, might even vary within a 
+ * running JVM. 
+ * 
+ * And, as far as I can tell, even if we assume the limit is fixed
+ * within a running JVM, there doesn't seem
+ * to be any way to determine what it is, except by 
+ * an expensive iteration, allocating large arrays until a 
+ * "Requested array size exceeds VM limit" erros occurs.
+ * 
+ * (The limit I am talking about is separate from
+ * the limit imposed by the available memory.)
+ * 
+ * In any case, the number of <code>words</code> must be less than
+ * <code>Integer.MAX_VALUE</code>, because that's the largest
+ * <code>n</code> that could be passed to <code>new int[n]</code>.
+ * 
+ * Note: the javadoc for <code>math.BigInteger</code>
+ * says: "BigInteger must support values in the range 
+ * <code>-2^Integer.MAX_VALUE</code> (exclusive) to 
+ * <code>+2^Integer.MAX_VALUE</code> (exclusive) 
+ * and may support values outside of that range."
+ * If the implementation is based on a <code>int[]</code>,
+ * an array of 32-bit (unsigned) <code>int</code> words,
+ * then the range should be <code>+/- 2^(maxArraySize+5)</code>
+ * This suggests that the maximum array size should be at least
+ * <code>Integer.MAX_VALUE-5</code>.
+ *  
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-10
+ * @version 2021-05-23
  */
 
 @SuppressWarnings("unchecked")
