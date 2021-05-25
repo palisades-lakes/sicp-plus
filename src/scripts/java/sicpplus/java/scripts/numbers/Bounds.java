@@ -2,8 +2,6 @@ package sicpplus.java.scripts.numbers;
 
 import java.math.BigInteger;
 
-import org.junit.jupiter.api.Test;
-
 import sicpplus.java.numbers.Natural;
 
 //----------------------------------------------------------------
@@ -19,14 +17,14 @@ import sicpplus.java.numbers.Natural;
 
 public final class Bounds {
 
-  public static final void main (final String[] args) {
+  private static final void biBounds () {
     
     BigInteger n = 
       BigInteger.valueOf(1)
-      .shiftLeft(Integer.MAX_VALUE-63)
+      .shiftLeft(1+(Integer.MAX_VALUE>>1))
       .subtract(BigInteger.TEN);
     for (long i=0L;i<=Long.MAX_VALUE;i++) {
-      System.out.print(
+      System.out.print("BigInteger: " +
         i
         + ": " +
         Integer.toUnsignedString(n.bitLength(),16)); 
@@ -34,23 +32,29 @@ public final class Bounds {
       n = n.multiply(n); 
       System.out.printf(" [%4.3f]\n",
         Double.valueOf((System.nanoTime()-t)*1.0e-9));}
-    
   }
 
-//  public static final void main (final String[] args) {
-//    
-//    Natural n = Natural.valueOf(Long.MAX_VALUE);
-//    for (long i=0L;i<=Long.MAX_VALUE;i++) {
-//      System.out.print(
-//        i
-//        + ": " +
-//        Integer.toUnsignedString(n.hiInt(),16)); 
-//      final long t = System.nanoTime();
-//      n = n.square(); 
-//      System.out.printf(" [%8.2f]\n",
-//        Double.valueOf((System.nanoTime()-t)*1.0e-9));}
-//    
-//  }
+  private static final void naturalBounds () {
+    
+    Natural n = 
+      Natural.valueOf(1,1+(Integer.MAX_VALUE>>1))
+      .subtract(10);
+    for (long i=0L;i<=Long.MAX_VALUE;i++) {
+      System.out.print("Natural " +
+        i
+        + ": " +
+        Integer.toUnsignedString(n.hiBit(),16)); 
+      final long t = System.nanoTime();
+      n = n.multiply(n); 
+      System.out.printf(" [%4.3f]\n",
+        Double.valueOf((System.nanoTime()-t)*1.0e-9));}
+  }
+
+  public static final void main (final String[] args) {
+    
+    biBounds();
+    naturalBounds();
+  }
 
 
   //--------------------------------------------------------------
