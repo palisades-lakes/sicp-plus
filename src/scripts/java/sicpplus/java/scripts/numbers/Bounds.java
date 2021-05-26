@@ -13,10 +13,39 @@ import sicpplus.java.numbers.Natural;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-25
+ * @version 2021-05-26
  */
 
 public final class Bounds {
+
+  private static final void additionNatural () {
+    final long t0 = System.nanoTime();
+    try {
+      final Natural one = Natural.valueOf(1);
+      final Natural n0 = one
+        .shiftUp(Natural.MAX_BITS-2)
+        .subtract(1);
+      final Natural n1 = one
+        .shiftUp(Natural.MAX_BITS-1)
+        .add(n0)
+        .add(n0);
+      Natural n = n1;
+      for (long i=1L;i<=3;i++) { 
+        System.out.print("Natural: " + i + ": " +
+          Integer.toUnsignedString(n.hiBit(),16)); 
+        final long t = System.nanoTime();
+        final Natural nn = n.add(1);
+        assert nn.compareTo(n) > 0 : 
+          nn.compareTo(n) + "\n" +
+          Integer.toUnsignedString(n1.hiBit(),16) + " " +
+          Integer.toUnsignedString(Integer.MAX_VALUE,16);
+        System.out.printf(" [%4.3f]\n",
+          Double.valueOf((System.nanoTime()-t)*1.0e-9)); 
+        n = nn;  
+      } }
+    finally {
+      System.out.printf("Total seconds: %4.3f\n",
+        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
 
   private static final void additionBigInteger () {
     final long t0 = System.nanoTime();
@@ -34,29 +63,6 @@ public final class Bounds {
         n = n1;
         System.out.printf(" [%4.3f]\n",
           Double.valueOf((System.nanoTime()-t)*1.0e-9)); } }
-    finally {
-      System.out.printf("Total seconds: %4.3f\n",
-        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
-
-  private static final void additionNatural () {
-    final long t0 = System.nanoTime();
-    try {
-      Natural n = 
-      Natural.valueOf(0);
-//      Natural.valueOf(1)
-//        .shiftUp(Integer.MAX_VALUE-1);
-//      n = n.add(n.subtract(10));
-      for (long i=1L;i<=Long.MAX_VALUE;i++) {
-//        System.out.print("Natural: " + i + ": " +
-//          Integer.toUnsignedString(n.hiBit(),16)); 
-        final long t = System.nanoTime();
-        final Natural n1 = n.add(1L);
-        assert n1.compareTo(n) > 0 : n1.compareTo(n) + " " +
-        Integer.toUnsignedString(n1.hiBit(),16);
-        n = n1; 
-//        System.out.printf(" [%4.3f]\n",
-//          Double.valueOf((System.nanoTime()-t)*1.0e-9)); 
-        } }
     finally {
       System.out.printf("Total seconds: %4.3f\n",
         Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
