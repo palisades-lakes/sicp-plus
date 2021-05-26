@@ -51,7 +51,7 @@ import sicpplus.java.prng.GeneratorBase;
  * <code>Integer.MAX_VALUE-5</code>.
  *  
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-23
+ * @version 2021-05-25
  */
 
 @SuppressWarnings("unchecked")
@@ -406,6 +406,7 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
   // add (non-negative) longs
   //--------------------------------------------------------------
+  // checking for overflow
 
   public final Natural add (final long u) {
     //assert 0L<u;
@@ -416,24 +417,25 @@ public final class Natural implements Ringlike<Natural> {
     final long ulo = loWord(u);
     final int nu = ((0L!=uhi)?2:(0L!=ulo)?1:0);
     final int nv = Math.max(nu,nt);
+    assert nv < Integer.MAX_VALUE;
     if (0==nv) { return ZERO; }
     final int[] tt = words();
     final int[] vv = new int[nv];
     long sum = ulo;
-    if (0<nt) { sum += unsigned(tt[0]); } 
+    if (0<nt) { sum = Math.addExact(sum,unsigned(tt[0])); } 
     vv[0] = (int) sum;
     sum = hiWord(sum);
     if (1<nv) { 
-      sum += uhi;
-      if (1<nt) { sum += unsigned(tt[1]); }
+      sum = Math.addExact(sum, uhi);
+      if (1<nt) { sum = Math.addExact(sum, unsigned(tt[1])); }
       vv[1] = (int) sum; 
       sum = hiWord(sum); }
 
     int i=2;
 
-    for (;i<nt;i++) {
+    for (;i<nt;i=Math.addExact(i,1)) {
       if (0L==sum) { break; }
-      sum += unsigned(tt[i]);
+      sum = Math.addExact(sum, unsigned(tt[i]));
       vv[i] = (int) sum;
       sum = hiWord(sum); }
     //    if (0L!=sum) { 
@@ -442,13 +444,59 @@ public final class Natural implements Ringlike<Natural> {
     //      return unsafe(vvv,nv+1); }
     if (0L!=sum) { 
       //vv[nv] = (int) sum; 
-      final int[] vvv = new int[nv+1];
-      for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
+      final int[] vvv = new int[Math.addExact(nv,1)];
+      for (int j=0;j<nv;j=Math.addExact(j,1)) { vvv[j]=vv[j]; } 
       vvv[nv] = 1; 
       return new Natural(vvv); }
 
-    for (;i<nt;i++) { vv[i] = tt[i]; }
+    for (;i<nt;i=Math.addExact(i,1)) { vv[i] = tt[i]; }
     return new Natural(vv); }
+
+  //--------------------------------------------------------------
+  // no overflow check
+  
+//  public final Natural add (final long u) {
+//    //assert 0L<u;
+//    //if (0L==u) { return this; }
+//    final int nt = hiInt();
+//    //if (0==nt) { return valueOf(u); }
+//    final long uhi = hiWord(u);
+//    final long ulo = loWord(u);
+//    final int nu = ((0L!=uhi)?2:(0L!=ulo)?1:0);
+//    final int nv = Math.max(nu,nt);
+//    if (0==nv) { return ZERO; }
+//    final int[] tt = words();
+//    final int[] vv = new int[nv];
+//    long sum = ulo;
+//    if (0<nt) { sum += unsigned(tt[0]); } 
+//    vv[0] = (int) sum;
+//    sum = hiWord(sum);
+//    if (1<nv) { 
+//      sum += uhi;
+//      if (1<nt) { sum += unsigned(tt[1]); }
+//      vv[1] = (int) sum; 
+//      sum = hiWord(sum); }
+//
+//    int i=2;
+//
+//    for (;i<nt;i++) {
+//      if (0L==sum) { break; }
+//      sum += unsigned(tt[i]);
+//      vv[i] = (int) sum;
+//      sum = hiWord(sum); }
+//    //    if (0L!=sum) { 
+//    //      final int[] vvv = Arrays.copyOf(vv,nv+1);
+//    //      vvv[nv] = 1; 
+//    //      return unsafe(vvv,nv+1); }
+//    if (0L!=sum) { 
+//      //vv[nv] = (int) sum; 
+//      final int[] vvv = new int[nv+1];
+//      for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
+//      vvv[nv] = 1; 
+//      return new Natural(vvv); }
+//
+//    for (;i<nt;i++) { vv[i] = tt[i]; }
+//    return new Natural(vv); }
 
   //--------------------------------------------------------------
 
@@ -1243,7 +1291,7 @@ public final class Natural implements Ringlike<Natural> {
 
   //--------------------------------------------------------------
 
-  private final Natural shiftUpBywords (final int iShift) {
+  private final Natural shiftUpByWords (final int iShift) {
     final int nt = hiInt();
     final int nv = nt+iShift;
     final int[] tt = words();
@@ -1278,7 +1326,7 @@ public final class Natural implements Ringlike<Natural> {
     if (isZero()) { return this; }
     final int iShift = (upShift>>>5);
     final int bShift = (upShift&0x1f);
-    if (0==bShift) { return shiftUpBywords(iShift); }
+    if (0==bShift) { return shiftUpByWords(iShift); }
     return shiftUpByBits(iShift,bShift); }
 
   public final boolean testBit (final int n) {

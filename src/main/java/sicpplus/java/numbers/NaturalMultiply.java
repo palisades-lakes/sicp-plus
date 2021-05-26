@@ -133,9 +133,29 @@ public final class NaturalMultiply {
 
   //--------------------------------------------------------------
 
+//  private static final Natural exactDivideBy3 (final Natural u) {
+//    final int n = u.hiInt();
+//    Natural t = u;
+//    long borrow = 0L;
+//    for (int i=0;i<n;i++) {
+//      final long x = u.uword(i);
+//      final long w = x-borrow;
+//      if (x<borrow) { borrow = 1L; }
+//      else { borrow = 0L; }
+//      // 0xAAAAAAAB is the modular inverse of 3 (mod 2^32). Thus,
+//      // the effect of this is to divide by 3 (mod 2^32).
+//      // This is much faster than division on most architectures.
+//      final long q = loWord(w*0xAAAAAAABL);
+//      t = t.setWord(i,(int) q);
+//      // Check the borrow. 
+//      if (q>=0x55555556L) {
+//        borrow++;
+//        if (q>=0xAAAAAAABL) { borrow++; } } }
+//    return t; }
+
   private static final Natural exactDivideBy3 (final Natural u) {
     final int n = u.hiInt();
-    Natural t = u;
+    final int[] t = new int[n];
     long borrow = 0L;
     for (int i=0;i<n;i++) {
       final long x = u.uword(i);
@@ -146,12 +166,12 @@ public final class NaturalMultiply {
       // the effect of this is to divide by 3 (mod 2^32).
       // This is much faster than division on most architectures.
       final long q = loWord(w*0xAAAAAAABL);
-      t = t.setWord(i,(int) q);
+      t[i] = (int) q;
       // Check the borrow. 
       if (q>=0x55555556L) {
         borrow++;
         if (q>=0xAAAAAAABL) { borrow++; } } }
-    return t; }
+    return Natural.unsafe(t); }
 
   //--------------------------------------------------------------
 
