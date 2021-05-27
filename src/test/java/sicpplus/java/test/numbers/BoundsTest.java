@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import sicpplus.java.Classes;
 import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.UnboundedNatural;
 
 //----------------------------------------------------------------
 /** Test bounded ranges for various number implementations.
@@ -58,6 +59,21 @@ public final class BoundsTest {
         Natural n = n1;
         for (long i=1L;i<=3;i++) { n = n.add(1); } },
       Classes.className(n0)); } 
+
+//  @SuppressWarnings({ "static-method" })
+//  @Test
+//  public final void noOverflowUnboundedNatural () {
+//    final Natural one = Natural.valueOf(1);
+//    final Natural n0 = one
+//      .shiftUp(Natural.MAX_BITS-2)
+//      .subtract(1);
+//    final Natural n1 = one
+//      .shiftUp(Natural.MAX_BITS-1)
+//      .add(n0)
+//      .add(n0);
+//    UnboundedNatural uone = UnboundedNatural.valueOf(one);
+//    UnboundedNatural u = UnboundedNatural.valueOf(n1);;
+//    for (int i=1;i<=3;i++) { u = u.add(uone); } }
 
   //  @SuppressWarnings({ "static-method" })
   //  @Test

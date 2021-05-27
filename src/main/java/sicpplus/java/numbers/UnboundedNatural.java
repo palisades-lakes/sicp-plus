@@ -1,17 +1,9 @@
 package sicpplus.java.numbers;
 
 import static sicpplus.java.numbers.Numbers.hiWord;
-import static sicpplus.java.numbers.Numbers.loWord;
 import static sicpplus.java.numbers.Numbers.unsigned;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.sampling.CollectionSampler;
-import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
-import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
 
 import sicpplus.java.prng.Generator;
 import sicpplus.java.prng.GeneratorBase;
@@ -21,7 +13,7 @@ import sicpplus.java.prng.GeneratorBase;
  * (ie just addition) for now.
  * 
  * This is in contrast to {@link Natural} and
- * {@link java.math.BigInteger}, which both a bounded ranges,
+ * {@link java.math.BigInteger}, which both have bounded ranges,
  * limited, for one thing, by the fact that bits are addressable
  * by <code>int</code>.
  *  
@@ -46,20 +38,23 @@ public final class UnboundedNatural
   // TODO: What about zero-length sequences? 
   // Is there a better choice than just null?
 
-  private static final class IntSequence {
+  private static final class Words {
     private final int _value;
     private final int value () { return _value; }
-    private final long uvalue () { return unsigned(_value); }
+    // simplicity, not efficiency, for now.
+    private static final long uvalue (final Words w) { 
+      if (null==w) { return 0L; }
+      return unsigned(w.value()); }
     
     /** may be <code>null</code>, indicating end of sequence. */
-    private final IntSequence _rest;
-    private final IntSequence rest () { return _rest; }
+    private final Words _rest;
+    private final Words rest () { return _rest; }
     
     /** 
      * @param r may be <code>null</code>, 
      * indicating an empty, zero-length sequence. 
      */
-    private IntSequence (final int v, final IntSequence r) {  
+    private Words (final int v, final Words r) {  
       _value = v; _rest = r; }
     
     // TODO: skip hashcode and equals until needed
@@ -68,17 +63,17 @@ public final class UnboundedNatural
      * @param r may be <code>null</code>, 
      * indicating an empty, zero-length sequence. 
      */
-    private static final IntSequence prepend (final int v,
-                                              final IntSequence r) {
-      return new IntSequence(v,r); }
+    private static final Words prepend (final int v,
+                                              final Words r) {
+      return new Words(v,r); }
     
     /** Will return <code>null</code> if <code>s</code> is 
      * <code>null</code>.
      */
-    private static final IntSequence reverse (final IntSequence s) {
+    private static final Words reverse (final Words s) {
       if (null == s) { return null; }
-      IntSequence out = prepend(s.value(),null);
-      IntSequence in = s.rest();
+      Words out = prepend(s.value(),null);
+      Words in = s.rest();
       while (null != in) {
         out = prepend(in.value(),out);
         in = in.rest(); }
@@ -91,8 +86,8 @@ public final class UnboundedNatural
    * This sequence is never modified.
    */
 
-  private final IntSequence _words;
-  private final IntSequence words () { return _words; }
+  private final Words _words;
+  private final Words words () { return _words; }
 
   /** Singleton. */
   public static final UnboundedNatural ZERO = 
@@ -121,32 +116,16 @@ public final class UnboundedNatural
   //--------------------------------------------------------------
 
   public final UnboundedNatural add (final UnboundedNatural u) {
-    final int nt = hiInt();
-    final int nu = u.hiInt();
-    if (nt<nu) { return u.add(this); }
-    final int[] tt = words();
-    final int[] uu = u.words();
-    final int[] vv = new int[nt];
+    Words tt = words();
+    Words uu = u.words();
+    Words vv = null;
     long sum = 0L;
-    int i=0;
-    for (;i<nu;i++) {
-      sum += unsigned(tt[i]) + unsigned(uu[i]);
-      vv[i] = (int) sum; 
+    while ((null!=tt)||(null!=uu)) {
+      sum += Words.uvalue(tt) + Words.uvalue(uu);
+      vv = Words.prepend((int) sum,vv); 
       sum = hiWord(sum);}
-    for (;i<nt;i++) {
-      if (0L==sum) { break; }
-      sum += unsigned(tt[i]);
-      vv[i] = (int) sum; 
-      sum = hiWord(sum);}
-    if (0L!=sum) { 
-      //vv[nt] = (int) sum; return new Natural(vv); }
-      final int[] vvv = new int[nt+1];
-      for (int j=0;j<nt;j++) { vvv[j]=vv[j]; } 
-      vvv[nt] = 1; 
-      return new UnboundedNatural(vvv); }
-
-    for (;i<nt;i++) { vv[i] = tt[i]; }
-    return new UnboundedNatural(vv); }
+    if (0L!=sum) { vv = Words.prepend(1,vv); } 
+    return new UnboundedNatural(Words.reverse(vv)); }
 
   //--------------------------------------------------------------
   // Object methods
@@ -213,14 +192,14 @@ public final class UnboundedNatural
    * <code>loInt</code> or <code>hiInt</code.
    */
 
-  private UnboundedNatural (final IntSequence words) { 
+  private UnboundedNatural (final Words words) { 
     _words = words; }
 
   public static final UnboundedNatural valueOf (final Natural u) {
     final int n = u.hiInt();
-    IntSequence r = null;
-    for (int i=0;i<n;i++) { r = IntSequence.prepend(u.word(i),r); }
-    return new UnboundedNatural(IntSequence.reverse(r)); }
+    Words r = null;
+    for (int i=0;i<n;i++) { r = Words.prepend(u.word(i),r); }
+    return new UnboundedNatural(Words.reverse(r)); }
 
 //  //--------------------------------------------------------------
 //  /** From a big endian {@code byte[]}, as produced by
