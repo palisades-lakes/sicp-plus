@@ -127,8 +127,8 @@ public final class Bounds {
 
   public static final void main (final String[] args) {
     additionUnboundedNatural();
-    additionNatural();
-    additionBigInteger();
+//    additionNatural();
+//    additionBigInteger();
   }
 
   //--------------------------------------------------------------
