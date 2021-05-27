@@ -1,6 +1,6 @@
 @echo off
 :: palisades.lakes (at) gmail (dot) com
-:: 2021-05-23
+:: 2021-05-27
 
 ::set GC=-XX:+AggressiveHeap -XX:+UseStringDeduplication 
 set GC=
@@ -12,8 +12,8 @@ set THRUPUT=
 ::set THRUPUT=-server -Xbatch -XX:+UseFMA
 ::set THRUPUT=-server -Xbatch 
 
-set XMX=-Xms29g -Xmx29g -Xmn11g 
-::set XMX=-Xms12g -Xmx12g -Xmn5g 
+::set XMX=-Xms29g -Xmx29g -Xmn11g 
+set XMX=-Xms12g -Xmx12g -Xmn5g 
 
 set PROF=
 ::set PROF=-agentpath:"C:\Program Files\YourKit Java Profiler 2021.3-b230\bin\win64\yjpagent.dll=_no_java_version_check"
