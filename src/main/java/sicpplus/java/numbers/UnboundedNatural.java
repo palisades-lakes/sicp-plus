@@ -50,18 +50,18 @@ implements Comparable<UnboundedNatural> {
       return unsigned(w.word()); }
 
     /** may be <code>null</code>, indicating end of sequence. */
-    private final Words _rest;
-    private final Words rest () { return _rest; }
+    private final Words _next;
+    private final Words next () { return _next; }
     private static final Words next (final Words w) {
       if (null==w) { return null; }
-      return w.rest(); }
+      return w.next(); }
 
     /** 
      * @param r may be <code>null</code>, 
      * indicating an empty, zero-length sequence. 
      */
     private Words (final int v, final Words r) {  
-      _word = v; _rest = r; }
+      _word = v; _next = r; }
 
     // TODO: skip hashcode and equals until needed
 
@@ -78,11 +78,11 @@ implements Comparable<UnboundedNatural> {
      */
     private static final Words reverse (final Words s) {
       if (null == s) { return null; }
-      Words out = prepend(s.word(),null);
-      Words in = s.rest();
+      Words out = new Words(s.word(),null);
+      Words in = s.next();
       while (null != in) {
-        out = prepend(in.word(),out);
-        in = in.rest(); }
+        out = new Words(in.word(),out);
+        in = in.next(); }
       return out; }
   }
   //--------------------------------------------------------------
@@ -107,36 +107,84 @@ implements Comparable<UnboundedNatural> {
   // monoid operation
   //--------------------------------------------------------------
 
+  //  public final UnboundedNatural add (final UnboundedNatural u) {
+  //    Words tt = words();
+  //    Words uu = u.words();
+  //    Words vv = null;
+  //    long sum = 0L;
+  //    while ((null!=tt)||(null!=uu)) {
+  //      sum += Words.uword(tt) + Words.uword(uu);
+  //      vv = Words.prepend((int) sum,vv); 
+  //      sum = hiWord(sum);
+  //      tt = Words.next(tt); 
+  //      uu = Words.next(uu); } 
+  //    if (0L!=sum) { vv = Words.prepend(1,vv); } 
+  //    return new UnboundedNatural(Words.reverse(vv)); }
+
   public final UnboundedNatural add (final UnboundedNatural u) {
     Words tt = words();
     Words uu = u.words();
     Words vv = null;
     long sum = 0L;
-    while ((null!=tt)||(null!=uu)) {
-      sum += Words.uword(tt) + Words.uword(uu);
-      vv = Words.prepend((int) sum,vv); 
+    while ((null!=tt)&&(null!=uu)) {
+      sum += unsigned(tt.word()) + unsigned(uu.word());
+      vv = new Words((int) sum,vv); 
       sum = hiWord(sum);
-      tt = Words.next(tt); 
-      uu = Words.next(uu); } 
-    if (0L!=sum) { vv = Words.prepend(1,vv); } 
+      tt = tt.next(); 
+      uu = uu.next(); }
+    if (null==tt) {
+      while (null!=uu) {
+        sum += unsigned(uu.word());
+        vv = new Words((int) sum,vv); 
+        sum = hiWord(sum);
+        uu = uu.next(); } }
+    else {
+      while (null!=tt) {
+        sum += unsigned(tt.word());
+        vv = new Words((int) sum,vv); 
+        sum = hiWord(sum);
+        tt = tt.next(); } }
+    if (0L!=sum) { vv = new Words(1,vv); } 
     return new UnboundedNatural(Words.reverse(vv)); }
 
   //--------------------------------------------------------------
   // Comparable
   //--------------------------------------------------------------
 
+  //  @Override
+  //  public final int compareTo (final UnboundedNatural u) {
+  //    Words tt = words();
+  //    Words uu = u.words();
+  //    int result = 0;
+  //    while ((null!=tt)||(null!=uu)) {
+  //      final long ti = Words.uword(tt);
+  //      final long ui = Words.uword(uu);
+  //      if (ti<ui) { result = -1; }
+  //      if (ti>ui) { result = 1; }
+  //      tt = Words.next(tt); 
+  //      uu = Words.next(uu); } 
+  //    return result; }
+
   @Override
   public final int compareTo (final UnboundedNatural u) {
     Words tt = words();
     Words uu = u.words();
     int result = 0;
-    while ((null!=tt)||(null!=uu)) {
-      final long ti = Words.uword(tt);
-      final long ui = Words.uword(uu);
+    while ((null!=tt)&&(null!=uu)) {
+      final long ti = unsigned(tt.word());
+      final long ui = unsigned(uu.word());
       if (ti<ui) { result = -1; }
       if (ti>ui) { result = 1; }
-      tt = Words.next(tt); 
-      uu = Words.next(uu); } 
+      tt = tt.next(); 
+      uu = uu.next(); } 
+    if (null==tt) {
+      while (null!=uu) {
+        if (0!=uu.word()) { return -1; }
+        uu = uu.next(); } }
+    else {
+      while (null!=tt) {
+        if (0!=tt.word()) { return 1; }
+        tt = tt.next(); } }
     return result; }
 
   //--------------------------------------------------------------

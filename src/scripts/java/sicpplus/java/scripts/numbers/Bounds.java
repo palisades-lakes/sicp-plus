@@ -32,7 +32,7 @@ public final class Bounds {
         .add(n0);
     UnboundedNatural uone = UnboundedNatural.ONE;
     UnboundedNatural u = UnboundedNatural.valueOf(n1);
-    for (int i=1;i<=4;i++) { 
+    for (int i=0;i<64;i++) { 
       final UnboundedNatural u1 = u.add(uone); 
       assert (u.compareTo(u1) < 0); 
       u = u1; } }
