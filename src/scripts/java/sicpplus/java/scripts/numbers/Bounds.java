@@ -30,9 +30,12 @@ public final class Bounds {
         .shiftUp(Natural.MAX_BITS-1)
         .add(n0)
         .add(n0);
-    UnboundedNatural uone = UnboundedNatural.valueOf(one);
+    UnboundedNatural uone = UnboundedNatural.ONE;
     UnboundedNatural u = UnboundedNatural.valueOf(n1);
-    for (int i=1;i<=3;i++) { u = u.add(uone); } }
+    for (int i=1;i<=4;i++) { 
+      final UnboundedNatural u1 = u.add(uone); 
+      assert (u.compareTo(u1) < 0); 
+      u = u1; } }
     finally {
       System.out.printf("Total seconds: %4.3f\n",
         Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }

@@ -25,7 +25,7 @@ import sicpplus.java.prng.GeneratorBase;
 public final class UnboundedNatural 
 // not ring-like, at most group-like, actually just a monoid
 // implements Ringlike<UnboundedNatural> {
-{
+implements Comparable<UnboundedNatural> {
 
   //--------------------------------------------------------------
   // an unbounded immutable sequence of ints
@@ -37,14 +37,17 @@ public final class UnboundedNatural
   //
   // TODO: What about zero-length sequences? 
   // Is there a better choice than just null?
+  //
+  // TODO: could do without this class; have the U.N. be the
+  // sequence. Then next/rest would be shifting down 32 bits?
 
   private static final class Words {
-    private final int _value;
-    private final int value () { return _value; }
+    private final int _word;
+    private final int word () { return _word; }
     // simplicity, not efficiency, for now.
-    private static final long uvalue (final Words w) { 
+    private static final long uword (final Words w) { 
       if (null==w) { return 0L; }
-      return unsigned(w.value()); }
+      return unsigned(w.word()); }
 
     /** may be <code>null</code>, indicating end of sequence. */
     private final Words _rest;
@@ -58,7 +61,7 @@ public final class UnboundedNatural
      * indicating an empty, zero-length sequence. 
      */
     private Words (final int v, final Words r) {  
-      _value = v; _rest = r; }
+      _word = v; _rest = r; }
 
     // TODO: skip hashcode and equals until needed
 
@@ -75,10 +78,10 @@ public final class UnboundedNatural
      */
     private static final Words reverse (final Words s) {
       if (null == s) { return null; }
-      Words out = prepend(s.value(),null);
+      Words out = prepend(s.word(),null);
       Words in = s.rest();
       while (null != in) {
-        out = prepend(in.value(),out);
+        out = prepend(in.word(),out);
         in = in.rest(); }
       return out; }
   }
@@ -96,23 +99,9 @@ public final class UnboundedNatural
   public static final UnboundedNatural ZERO = 
     new UnboundedNatural(null); 
 
-  //--------------------------------------------------------------
-  // ordering
-  //--------------------------------------------------------------
-
-  //  @Override
-  //  public final int compareTo (final UnboundedNatural u) {
-  //    final int b0 = hiBit();
-  //    final int b1 = u.hiBit();
-  //    if (b0<b1) { return -1; }
-  //    if (b0>b1) { return 1; }
-  //    int i = hiInt()-1;
-  //    for (;i>=0;i--) {
-  //      final long u0i = uword(i);
-  //      final long u1i = u.uword(i);
-  //      if (u0i<u1i) { return -1; }
-  //      if (u0i>u1i) { return 1; } }
-  //    return 0; }
+  /** Singleton. */
+  public static final UnboundedNatural ONE = 
+    new UnboundedNatural(new Words(1,null)); 
 
   //--------------------------------------------------------------
   // monoid operation
@@ -124,7 +113,7 @@ public final class UnboundedNatural
     Words vv = null;
     long sum = 0L;
     while ((null!=tt)||(null!=uu)) {
-      sum += Words.uvalue(tt) + Words.uvalue(uu);
+      sum += Words.uword(tt) + Words.uword(uu);
       vv = Words.prepend((int) sum,vv); 
       sum = hiWord(sum);
       tt = Words.next(tt); 
@@ -133,43 +122,51 @@ public final class UnboundedNatural
     return new UnboundedNatural(Words.reverse(vv)); }
 
   //--------------------------------------------------------------
+  // Comparable
+  //--------------------------------------------------------------
+
+  @Override
+  public final int compareTo (final UnboundedNatural u) {
+    Words tt = words();
+    Words uu = u.words();
+    int result = 0;
+    while ((null!=tt)||(null!=uu)) {
+      final long ti = Words.uword(tt);
+      final long ui = Words.uword(uu);
+      if (ti<ui) { result = -1; }
+      if (ti>ui) { result = 1; }
+      tt = Words.next(tt); 
+      uu = Words.next(uu); } 
+    return result; }
+
+  //--------------------------------------------------------------
   // Object methods
   //--------------------------------------------------------------
 
-  //  @Override
-  //  public final int hashCode () { 
-  //    int hashCode = 0;
-  //    for (int i=0; i<hiInt(); i++) {
-  //      hashCode = ((31 * hashCode) + _words[i]); }
-  //    return hashCode; }
-  //
-  //  @Override
-  //  public final boolean equals (final Object x) {
-  //    if (x==this) { return true; }
-  //    if (!(x instanceof UnboundedNatural)) { return false; }
-  //    final UnboundedNatural u = (UnboundedNatural) x;
-  //    final int nt = hiInt();
-  //    if (nt!=u.hiInt()) { return false; }
-  //    for (int i=0; i<nt; i++) {
-  //      if (_words[i]!=u._words[i]) { return false; } }
-  //    return true; }
+  @Override
+  public final int hashCode () { 
+    final int prime = 31;
+    int c = 1;
+    Words tt = words();
+    while (null != tt) { 
+      c = (int) ((prime * c) + Words.uword(tt)); }
+    return c; }
 
-  // might easily exceed maximum string length
-  //  public final String toHexString () {
-  //    final StringBuilder b = new StringBuilder("");
-  //    final int n = hiInt()-1;
-  //    if (0>n) { b.append('0'); }
-  //    else {
-  //      b.append(String.format("%x",Long.valueOf(uword(n))));
-  //      for (int i=n-1;i>=0;i--) {
-  //        //b.append(" ");
-  //        b.append(String.format("%08x",Long.valueOf(uword(i)))); } }
-  //    return b.toString(); }
-  //
-  //  /** hex string. */
-  //  @Override
-  //  public final String toString () { return toHexString(); }
+  @Override
+  public final boolean equals (final Object x) {
+    if (x==this) { return true; }
+    if (!(x instanceof UnboundedNatural)) { return false; }
+    final UnboundedNatural u = (UnboundedNatural) x;
+    Words tt = words();
+    Words uu = u.words();
+    while ((null!=tt)||(null!=uu)) {
+      final long ti = Words.uword(tt);
+      final long ui = Words.uword(uu);
+      if (ti!=ui) { return false; } }
+    return true; }
 
+  //--------------------------------------------------------------
+  // "random" instances for testing, etc.
   //--------------------------------------------------------------
   // Is this characteristic of most inputs?
 

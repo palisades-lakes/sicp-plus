@@ -60,20 +60,34 @@ public final class BoundsTest {
         for (long i=1L;i<=3;i++) { n = n.add(1); } },
       Classes.className(n0)); } 
 
-//  @SuppressWarnings({ "static-method" })
-//  @Test
-//  public final void noOverflowUnboundedNatural () {
-//    final Natural one = Natural.valueOf(1);
-//    final Natural n0 = one
-//      .shiftUp(Natural.MAX_BITS-2)
-//      .subtract(1);
-//    final Natural n1 = one
-//      .shiftUp(Natural.MAX_BITS-1)
-//      .add(n0)
-//      .add(n0);
-//    UnboundedNatural uone = UnboundedNatural.valueOf(one);
-//    UnboundedNatural u = UnboundedNatural.valueOf(n1);;
-//    for (int i=1;i<=3;i++) { u = u.add(uone); } }
+  @SuppressWarnings({ "static-method" })
+  @Test
+  public final void noOverflowUnboundedNatural () {
+    final Natural one = Natural.valueOf(1);
+    final Natural n0 = one
+      .shiftUp(Natural.MAX_BITS-2)
+      .subtract(1);
+    final Natural n1 = one
+      .shiftUp(Natural.MAX_BITS-1)
+      .add(n0)
+      .add(n0)
+      .add(one);
+    Assertions.assertThrows(
+      ArithmeticException.class,
+      () -> {
+        // overflow from add 1
+        final Natural n = n1.add(1); },
+      Classes.className(n0)); 
+    // no overflow from add 1
+    UnboundedNatural uone = UnboundedNatural.ONE;
+    UnboundedNatural u = UnboundedNatural.valueOf(n1);
+    final UnboundedNatural v = u.add(uone); 
+    final int cmp = u.compareTo(v);
+    Assertions.assertTrue(
+      (cmp < 0),
+      () -> { 
+        return "\nadd one doesn't increase value\n" 
+          + "compareTo -> " + cmp; }); }
 
   //  @SuppressWarnings({ "static-method" })
   //  @Test

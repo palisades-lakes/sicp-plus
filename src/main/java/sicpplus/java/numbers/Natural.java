@@ -1021,7 +1021,7 @@ public final class Natural implements Ringlike<Natural> {
   @Override
   public final Natural one () { return ONE; }
 
-  public final static Natural ones (final int n) {
+  public static final Natural ones (final int n) {
     final int[] vv = new int[n];
     Arrays.fill(vv, -1);
     return unsafe(vv,n); }
