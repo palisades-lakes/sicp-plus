@@ -80,6 +80,18 @@ public final class Natural implements Ringlike<Natural> {
 
   public final static int MAX_WORDS = (Integer.MAX_VALUE >> 5);
 
+  /** throw an {@link ArithmeticException} if
+   * <code>nwords</code> exceeds {@link #MAX_WORDS}.
+   */
+
+  private static final void checkOverflow (final int nwords) {
+    if (nwords > MAX_WORDS) { 
+    throw new ArithmeticException(
+      "Attempting to create an instance of Natural"
+        + " overflowing the range: " 
+        + nwords + " words."); } }
+  
+
   /** The value of {@link #hiBit()} is assumed to fit in an
    * <code>int</code>. 
    */
@@ -442,7 +454,56 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
   // add (non-negative) longs
   //--------------------------------------------------------------
-  // checking for overflow
+  // checking for int arithmetic overflow
+
+//  public final Natural add (final long u) {
+//    assert 0L<u;
+//    //if (0L==u) { return this; }
+//    final int nt = hiInt();
+//    //if (0==nt) { return valueOf(u); }
+//    final long uhi = hiWord(u);
+//    final long ulo = loWord(u);
+//    final int nu = ((0L!=uhi)?2:(0L!=ulo)?1:0);
+//    final int nv = Math.max(nu,nt);
+//    assert nv <= MAX_WORDS;
+//    if (0==nv) { return ZERO; }
+//    final int[] tt = words();
+//    final int[] vv = new int[nv];
+//    long sum = ulo;
+//    if (0<nt) { sum = Math.addExact(sum,unsigned(tt[0])); } 
+//    vv[0] = (int) sum;
+//    sum = hiWord(sum);
+//    if (1<nv) { 
+//      sum = Math.addExact(sum, uhi);
+//      if (1<nt) { sum = Math.addExact(sum, unsigned(tt[1])); }
+//      vv[1] = (int) sum; 
+//      sum = hiWord(sum); }
+//
+//    int i=2;
+//
+//    for (;i<nt;i=Math.addExact(i,1)) {
+//      if (0L==sum) { break; }
+//      sum = Math.addExact(sum, unsigned(tt[i]));
+//      vv[i] = (int) sum;
+//      sum = hiWord(sum); }
+//    //    if (0L!=sum) { 
+//    //      final int[] vvv = Arrays.copyOf(vv,nv+1);
+//    //      vvv[nv] = 1; 
+//    //      return unsafe(vvv,nv+1); }
+//    if (0L!=sum) { 
+//      //vv[nv] = (int) sum; 
+//      final int nvv =Math.addExact(nv,1);
+//      assert nvv <= MAX_WORDS;
+//      final int[] vvv = new int[nvv];
+//      for (int j=0;j<nv;j=Math.addExact(j,1)) { vvv[j]=vv[j]; } 
+//      vvv[nv] = 1; 
+//      return new Natural(vvv); }
+//
+//    for (;i<nt;i=Math.addExact(i,1)) { vv[i] = tt[i]; }
+//    return new Natural(vv); }
+
+  //--------------------------------------------------------------
+  // no int arithmetic overflow checks
 
   public final Natural add (final long u) {
     assert 0L<u;
@@ -453,17 +514,17 @@ public final class Natural implements Ringlike<Natural> {
     final long ulo = loWord(u);
     final int nu = ((0L!=uhi)?2:(0L!=ulo)?1:0);
     final int nv = Math.max(nu,nt);
-    assert nv < Integer.MAX_VALUE;
+    checkOverflow(nv);
     if (0==nv) { return ZERO; }
     final int[] tt = words();
     final int[] vv = new int[nv];
     long sum = ulo;
-    if (0<nt) { sum = Math.addExact(sum,unsigned(tt[0])); } 
+    if (0<nt) { sum += unsigned(tt[0]); } 
     vv[0] = (int) sum;
     sum = hiWord(sum);
     if (1<nv) { 
-      sum = Math.addExact(sum, uhi);
-      if (1<nt) { sum = Math.addExact(sum, unsigned(tt[1])); }
+      sum += uhi;
+      if (1<nt) { sum += unsigned(tt[1]); }
       vv[1] = (int) sum; 
       sum = hiWord(sum); }
 
@@ -471,25 +532,20 @@ public final class Natural implements Ringlike<Natural> {
 
     for (;i<nt;i=Math.addExact(i,1)) {
       if (0L==sum) { break; }
-      sum = Math.addExact(sum, unsigned(tt[i]));
+      sum += unsigned(tt[i]);
       vv[i] = (int) sum;
       sum = hiWord(sum); }
-    //    if (0L!=sum) { 
-    //      final int[] vvv = Arrays.copyOf(vv,nv+1);
-    //      vvv[nv] = 1; 
-    //      return unsafe(vvv,nv+1); }
     if (0L!=sum) { 
       //vv[nv] = (int) sum; 
-      final int[] vvv = new int[Math.addExact(nv,1)];
-      for (int j=0;j<nv;j=Math.addExact(j,1)) { vvv[j]=vv[j]; } 
+      final int nvv = Math.addExact(nv,1);
+      checkOverflow(nvv);
+      final int[] vvv = new int[nvv];
+      for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
       vvv[nv] = 1; 
       return new Natural(vvv); }
 
-    for (;i<nt;i=Math.addExact(i,1)) { vv[i] = tt[i]; }
+    for (;i<nt;i++) { vv[i] = tt[i]; }
     return new Natural(vv); }
-
-  //--------------------------------------------------------------
-  // no overflow check
 
   //  public final Natural add (final long u) {
   //    assert 0L<u;
@@ -1409,53 +1465,6 @@ public final class Natural implements Ringlike<Natural> {
       for (int i=n2-1;i>=0;i--) { if (0!=tt[i]) { return true; } } }
     return testBit(tt,nt,e); }
 
-  //  final boolean roundUp (final int e) {
-  //    final int nt = hiInt();
-  //    if (nt<=(e>>>5)) { return false; }
-  //    final int[] tt = words();
-  //    final int e1 = e-1;
-  //    final int n1 = (e1>>>5);
-  //    if (nt<=n1) { return false; }
-  //    final int w1 = (tt[n1] & (1<<(e1&0x1F)));
-  //    if (0==w1) { return false; }
-  //    final int e2 = e-2;
-  //    if (0<=e2) {
-  //    final int n2 = (e2>>>5);
-  //    for (int i=e2;i>=(n2<<5);i--) {
-  //      if (testBit(tt,nt,i)) { return true; } } 
-  //    for (int i=n2-1;i>=0;i--) { if (0!=tt[i]) { return true; } } }
-  //    return testBit(tt,nt,e); }
-
-  //  final boolean roundUp (final int e) {
-  //    final int nt = hiInt();
-  //    if (nt<=(e>>>5)) { return false; }
-  //    final int[] tt = words();
-  //    if (! testBit(tt,nt,e-1)) { return false; }
-  //    final int e2 = e-2;
-  //    if (0<=e2) {
-  //    final int n2 = (e2>>>5);
-  //    for (int i=e2;i>=(n2<<5);i--) {
-  //      if (testBit(tt,nt,i)) { return true; } } 
-  //    for (int i=n2-1;i>=0;i--) { if (0!=tt[i]) { return true; } } }
-  //    return testBit(tt,nt,e); }
-
-  //  final boolean roundUp (final int e) {
-  //    final int nt = hiInt();
-  //    if (nt<=(e>>>5)) { return false; }
-  //    final int[] tt = words();
-  //    if (! testBit(tt,nt,e-1)) { return false; }
-  //    for (int i=e-2;i>=0;i--) {
-  //      if (testBit(tt,nt,i)) { return true; } }
-  //    return testBit(tt,nt,e); }
-
-  //  final boolean roundUp (final int e) {
-  //    final int nt = hiInt();
-  //    final int[] tt = words();
-  //    if (! testBit(tt,nt,e-1)) { return false; }
-  //    for (int i=e-2;i>=0;i--) {
-  //      if (testBit(tt,nt,i)) { return true; } }
-  //    return testBit(tt,nt,e); }
-
   //--------------------------------------------------------------
   // 'Number' methods
   //--------------------------------------------------------------
@@ -1577,12 +1586,7 @@ public final class Natural implements Ringlike<Natural> {
    */
 
   private Natural (final int[] words) { 
-    if (words.length > MAX_WORDS) {
-      throw new ArithmeticException(
-        "Attempting to create an instance of Natural"
-          + " overflowing the range: " 
-          + words.length + " words.");
-    }
+    checkOverflow(words.length);
     _words = words; }
 
   /** Doesn't copy <code>words</code> or check <code>loInt</code>
