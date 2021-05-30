@@ -9,36 +9,15 @@ import sicpplus.java.numbers.UnboundedNatural;
 /** Test bounded ranges for various number implementations.
  * <p>
  * <pre>
- * j src/scripts/java/sicpplus/java/scripts/numbers/Bounds.java
- * jy src/scripts/java/sicpplus/java/scripts/numbers/Bounds.java
+ * j src/scripts/java/sicpplus/java/scripts/numbers/Bounded.java
+ * jy src/scripts/java/sicpplus/java/scripts/numbers/Bounded.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-27
+ * @version 2021-05-29
  */
 
-public final class Bounds {
-
-  private static final void additionUnboundedNatural () {
-    final long t0 = System.nanoTime();
-    try {
-      final Natural one = Natural.valueOf(1);
-      final Natural n0 = one
-        .shiftUp(Natural.MAX_BITS-2)
-        .subtract(1);
-      final Natural n1 = one
-        .shiftUp(Natural.MAX_BITS-1)
-        .add(n0)
-        .add(n0);
-    UnboundedNatural uone = UnboundedNatural.ONE;
-    UnboundedNatural u = UnboundedNatural.valueOf(n1);
-    for (int i=0;i<64;i++) { 
-      final UnboundedNatural u1 = u.add(uone); 
-      assert (u.compareTo(u1) < 0); 
-      u = u1; } }
-    finally {
-      System.out.printf("Total seconds: %4.3f\n",
-        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
+public final class Bounded {
 
   private static final void additionNatural () {
     final long t0 = System.nanoTime();
@@ -129,7 +108,6 @@ public final class Bounds {
         Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
 
   public static final void main (final String[] args) {
-//    additionUnboundedNatural();
     additionNatural();
 //    additionBigInteger();
   }

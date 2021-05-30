@@ -191,6 +191,10 @@ public final class Natural implements Ringlike<Natural> {
 
   @Override
   public final Natural zero () { return ZERO; }
+  
+  /** Don't use a singleton for this---takes up too much space. */
+  public static final Natural maxValue () { 
+    return ones(MAX_WORDS); }
 
   //--------------------------------------------------------------
   // ordering

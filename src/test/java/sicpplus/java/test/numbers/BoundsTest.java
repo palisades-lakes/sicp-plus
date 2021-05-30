@@ -17,7 +17,7 @@ import sicpplus.java.numbers.UnboundedNatural;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-26
+ * @version 2021-05-29
  */
 
 public final class BoundsTest {
@@ -44,44 +44,21 @@ public final class BoundsTest {
   @SuppressWarnings({ "static-method" })
   @Test
   public final void overflowNatural () {
-    final Natural one = Natural.valueOf(1);
-    final Natural n0 = one
-      .shiftUp(Natural.MAX_BITS-2)
-      .subtract(1);
-    final Natural n1 = one
-      .shiftUp(Natural.MAX_BITS-1)
-      .add(n0)
-      .add(n0);
     Assertions.assertThrows(
       ArithmeticException.class,
       () -> {
         // overflow at 2nd add
-        Natural n = n1;
-        for (long i=1L;i<=3;i++) { n = n.add(1); } },
-      Classes.className(n0)); } 
+        Natural n = Natural.maxValue().add(1); 
+        System.out.println(n.hiBit()); },
+      "Overflow Natural"); } 
 
   @SuppressWarnings({ "static-method" })
   @Test
   public final void noOverflowUnboundedNatural () {
-    final Natural one = Natural.valueOf(1);
-    final Natural n0 = one
-      .shiftUp(Natural.MAX_BITS-2)
-      .subtract(1);
-    final Natural n1 = one
-      .shiftUp(Natural.MAX_BITS-1)
-      .add(n0)
-      .add(n0)
-      .add(one);
-    Assertions.assertThrows(
-      ArithmeticException.class,
-      () -> {
-        // overflow from add 1
-        final Natural n = n1.add(1); },
-      Classes.className(n0)); 
-    // no overflow from add 1
-    UnboundedNatural uone = UnboundedNatural.ONE;
-    UnboundedNatural u = UnboundedNatural.valueOf(n1);
-    final UnboundedNatural v = u.add(uone); 
+    final UnboundedNatural u = 
+      UnboundedNatural.valueOf(Natural.maxValue());
+    // no overflow from add 
+    final UnboundedNatural v = u.add(u); 
     final int cmp = u.compareTo(v);
     Assertions.assertTrue(
       (cmp < 0),
