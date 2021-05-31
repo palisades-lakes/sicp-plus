@@ -116,6 +116,17 @@ public final class OneSetOneOperation extends Structure {
   //--------------------------------------------------------------
 
   public static final OneSetOneOperation
+  commutativeMonoid (final BinaryOperator operation,
+                    final Set elements,
+                    final Object identity) {
+    return
+      make(operation,elements,identity,null,
+        Laws.commutativemonoid(
+          elements,operation,identity)); }
+
+  //--------------------------------------------------------------
+
+  public static final OneSetOneOperation
   commutativeGroup (final BinaryOperator operation,
                     final Set elements,
                     final Object identity,

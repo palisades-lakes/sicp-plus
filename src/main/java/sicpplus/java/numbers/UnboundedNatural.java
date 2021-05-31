@@ -3,6 +3,18 @@ package sicpplus.java.numbers;
 import static sicpplus.java.numbers.Numbers.hiWord;
 import static sicpplus.java.numbers.Numbers.unsigned;
 
+import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Supplier;
+
+import org.apache.commons.rng.UniformRandomProvider;
+
+import sicpplus.java.algebra.OneSetOneOperation;
+import sicpplus.java.algebra.Set;
+import sicpplus.java.prng.Generator;
+import sicpplus.java.prng.GeneratorBase;
+import sicpplus.java.prng.Generators;
+
 /** /** A proof-of-concept implementation of unbounded natural
  * numbers. Only implementing a commutative monoid 
  * (ie just addition) for now.
@@ -13,7 +25,7 @@ import static sicpplus.java.numbers.Numbers.unsigned;
  * by <code>int</code>.
  *  
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-29
+ * @version 2021-05-31
  */
 
 @SuppressWarnings("unchecked")
@@ -45,7 +57,7 @@ implements Comparable<UnboundedNatural> {
       out = new Words(in.word,out);
       in = in.next; }
     return out; }
-  
+
   //--------------------------------------------------------------
   // fields
   //--------------------------------------------------------------
@@ -113,60 +125,65 @@ implements Comparable<UnboundedNatural> {
   //--------------------------------------------------------------
   // Object methods
   //--------------------------------------------------------------
-  // skip while testing reduced class size
-  
-//  @Override
-//  public final int hashCode () { 
-//    final int prime = 31;
-//    int c = 1;
-//    Words tt = words;
-//    while (null != tt) { 
-//      c = (int) ((prime * c) + unsigned(tt.word)); }
-//    return c; }
-//
-//  @Override
-//  public final boolean equals (final Object x) {
-//    if (x==this) { return true; }
-//    if (!(x instanceof UnboundedNatural)) { return false; }
-//    final UnboundedNatural u = (UnboundedNatural) x;
-//    Words tt = words;
-//    Words uu = u.words;
-//    while ((null!=tt)&&(null!=uu)) {
-//      final int ti = tt.word;
-//      final int ui = uu.word;
-//      if (ti!=ui) { return false; } }
-//    if (null==tt) {
-//      while (null!=uu) {
-//        if (0!=uu.word) { return false; }
-//        uu = uu.next; } }
-//    else {
-//      while (null!=tt) {
-//        if (0!=tt.word) { return false; }
-//        tt = tt.next; } }
-//    return true; }
+
+  @Override
+  public final int hashCode () { 
+    final int prime = 31;
+    int c = 1;
+    Words tt = words;
+    while (null != tt) { 
+      c = (int) ((prime * c) + unsigned(tt.word)); }
+    return c; }
+
+  @Override
+  public final boolean equals (final Object x) {
+    if (x==this) { return true; }
+    if (!(x instanceof UnboundedNatural)) { return false; }
+    final UnboundedNatural u = (UnboundedNatural) x;
+    Words tt = words;
+    Words uu = u.words;
+    while ((null!=tt)&&(null!=uu)) {
+      final int ti = tt.word;
+      final int ui = uu.word;
+      if (ti!=ui) { return false; } }
+    if (null==tt) {
+      while (null!=uu) {
+        if (0!=uu.word) { return false; }
+        uu = uu.next; } }
+    else {
+      while (null!=tt) {
+        if (0!=tt.word) { return false; }
+        tt = tt.next; } }
+    return true; }
 
   //--------------------------------------------------------------
   // "random" instances for testing, etc.
   //--------------------------------------------------------------
-  // Is this characteristic of most inputs?
 
-//  public static final Generator
-//  fromNaturalGenerator (final UniformRandomProvider urp) {
-//    return new GeneratorBase ("fromNaturalGenerator") {
-//      private final Generator g = Natural.generator(urp);
-//      @Override
-//      public Object next () {
-//        return valueOf((Natural) g.next()); } }; }
-//
-//  /** Intended primarily for testing. <b>
-//   * Generate enough bytes to at least cover the range of
-//   * <code>double</code> values.
-//   */
-//
-//  public static final Generator
-//  generator (final UniformRandomProvider urp)  {
-//    return fromNaturalGenerator(urp); }
-//
+  /** Generate an {@link UnboundedNatural} with <code>n</code>
+   * random <code>int</code> words.
+   */
+
+  private static final Generator 
+  randomBitsGenerator (final long n,
+                       final UniformRandomProvider urp) {
+    final Generator ig = Generators.intGenerator(urp);
+    return new GeneratorBase ("UnboundedNaturalRandomBits:" + n) {
+      @Override
+      public final Object next () {
+        Words w = null;
+        for (long i=0;i<n;i++) { w = new Words(ig.nextInt(),w); }
+        return new UnboundedNatural(w); } }; }
+
+  /** Intended primarily for testing. 
+   * For now, just random bits in roughly twice 
+   * the number of words supported by {@link Natural}.
+   */
+
+  public static final Generator
+  generator (final UniformRandomProvider urp)  {
+    return randomBitsGenerator (2L+Integer.MAX_VALUE,urp); }
+
   //--------------------------------------------------------------
   // construction
   //-------------------------------------------------------------
@@ -196,6 +213,43 @@ implements Comparable<UnboundedNatural> {
     final int n1 = u1.hiInt();
     for (int i=0;i<n1;i++) { w = new Words(u1.word(i),w); }
     return new UnboundedNatural(reverse(w)); }
+
+  //--------------------------------------------------------------
+  // mathematical structures using UnboundedNatural
+  //--------------------------------------------------------------
+  /** Contains all instances of {@link UnboundedNatural}. 
+   * Could be extended to include all non-negative integer
+   * values, but not necessary for proof of concept.
+   */
+
+  public static final Set SET = new Set() {
+    @Override
+    @SuppressWarnings("unused")
+    public boolean contains (final Object element) {
+      return element instanceof UnboundedNatural; } 
+    @Override
+    public final Supplier generator (final Map options) {
+      final UniformRandomProvider urp = Set.urp(options);
+      final Generator g = UnboundedNatural.generator(urp);
+      return
+        new Supplier () {
+        @Override
+        public final Object get () { return g.next(); } }; }
+  };
+
+  public static final BinaryOperator<UnboundedNatural> adder () {
+    return new BinaryOperator<> () {
+      @Override
+      public final String toString () { return "BF.add()"; }
+      @Override
+      public final UnboundedNatural 
+      apply (final UnboundedNatural q0,
+             final UnboundedNatural q1) {
+        return q0.add(q1); } }; }
+
+  public static final OneSetOneOperation MONOID = 
+    OneSetOneOperation.commutativeMonoid(adder(),SET,ZERO); 
+
 
   //--------------------------------------------------------------
 }

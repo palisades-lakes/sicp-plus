@@ -33,7 +33,7 @@ import sicpplus.java.Classes;
  * no instance state or methods.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-24
+ * @version 2021-05-31
  */
 
 @SuppressWarnings("unchecked")
@@ -250,6 +250,8 @@ public final class Laws {
   //--------------------------------------------------------------
   // by algebraic structure
   // TODO: reuse code by adding elements to (immutable) lists
+  // TODO: how to fit ordering into this? specifically in cases
+  // like Natural numbers where a + b >= a and b.
 
   public static final ImmutableList<Predicate<Map<Set,Supplier>>>
   magma  (final Set elements,
@@ -271,6 +273,16 @@ public final class Laws {
       closed(elements,operation),
       associative(elements,operation),
       identity(elements,operation,identity));}
+
+  public static final ImmutableList<Predicate<Map<Set,Supplier>>>
+  commutativemonoid  (final Set elements,
+           final BinaryOperator operation,
+           final Object identity) {
+    return ImmutableList.of(
+      closed(elements,operation),
+      associative(elements,operation),
+      identity(elements,operation,identity),
+      commutative(elements,operation));}
 
   public static final ImmutableList<Predicate<Map<Set,Supplier>>>
   group  (final Set elements,

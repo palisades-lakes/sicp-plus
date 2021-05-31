@@ -21,14 +21,15 @@ import sicpplus.java.numbers.Doubles;
 import sicpplus.java.numbers.Floats;
 import sicpplus.java.numbers.Q;
 import sicpplus.java.numbers.RationalFloats;
+import sicpplus.java.numbers.UnboundedNatural;
 import sicpplus.java.prng.PRNG;
 
 //----------------------------------------------------------------
 /** <pre>
- * mvn -q -Dtest=xfp/java/test/algebra/AlgebraicStructureTests test > AST.txt
+ * mvn -q -Dtest=sicpplus/java/test/algebra/AlgebraicStructureTests test > AST.txt
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-15
+ * @version 2021-05-31
  */
 
 @SuppressWarnings("unchecked")
@@ -41,7 +42,7 @@ public final class AlgebraicStructureTests {
   private static final void
   structureTests (final Structure s,
                   final int n) {
-    SetTests.tests(s);
+    SetTests.tests(s,n);
     final Map<Set,Supplier> generators =
       s.generators(
         ImmutableMap.of(
@@ -59,6 +60,8 @@ public final class AlgebraicStructureTests {
   @Test
   public final void tests () {
 
+    structureTests(UnboundedNatural.MONOID,2);
+
     //Debug.DEBUG=false;
     structureTests(BigFloats.ADDITIVE_MAGMA,TRYS);
     structureTests(BigFloats.MULTIPLICATIVE_MAGMA,TRYS);
@@ -70,7 +73,7 @@ public final class AlgebraicStructureTests {
 
     structureTests(Q.FIELD,TRYS);
 
-     structureTests(Floats.ADDITIVE_MAGMA,TRYS);
+    structureTests(Floats.ADDITIVE_MAGMA,TRYS);
     structureTests(Floats.MULTIPLICATIVE_MAGMA,TRYS);
     structureTests(Floats.FLOATING_POINT,TRYS);
 
