@@ -52,20 +52,6 @@ public final class BoundsTest {
         System.out.println(n.hiBit()); },
       "Overflow Natural"); } 
 
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void noOverflowUnboundedNatural () {
-    final UnboundedNatural u = 
-      UnboundedNatural.valueOf(Natural.maxValue());
-    // no overflow from add 
-    final UnboundedNatural v = u.add(u); 
-    final int cmp = u.compareTo(v);
-    Assertions.assertTrue(
-      (cmp < 0),
-      () -> { 
-        return "\nadd one doesn't increase value\n" 
-          + "compareTo -> " + cmp; }); }
-
   //  @SuppressWarnings({ "static-method" })
   //  @Test
   //  public final void overflowNatural () {

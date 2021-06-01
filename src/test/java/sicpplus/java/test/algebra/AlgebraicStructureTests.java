@@ -21,7 +21,6 @@ import sicpplus.java.numbers.Doubles;
 import sicpplus.java.numbers.Floats;
 import sicpplus.java.numbers.Q;
 import sicpplus.java.numbers.RationalFloats;
-import sicpplus.java.numbers.UnboundedNatural;
 import sicpplus.java.prng.PRNG;
 
 //----------------------------------------------------------------
@@ -59,8 +58,6 @@ public final class AlgebraicStructureTests {
   @SuppressWarnings({ "static-method" })
   @Test
   public final void tests () {
-
-    structureTests(UnboundedNatural.MONOID,2);
 
     //Debug.DEBUG=false;
     structureTests(BigFloats.ADDITIVE_MAGMA,TRYS);
