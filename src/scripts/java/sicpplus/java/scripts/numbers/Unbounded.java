@@ -125,8 +125,8 @@ public final class Unbounded {
 
   public static final void main (final String[] args) {
     //noOverflow();
-    monoid();
-    //addition();
+    //monoid();
+    addition();
   }
 
   //--------------------------------------------------------------
