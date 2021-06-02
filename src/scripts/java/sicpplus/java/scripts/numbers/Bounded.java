@@ -2,7 +2,7 @@ package sicpplus.java.scripts.numbers;
 
 import java.math.BigInteger;
 
-import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.BoundedNatural;
 import sicpplus.java.numbers.UnboundedNatural;
 
 //----------------------------------------------------------------
@@ -22,20 +22,20 @@ public final class Bounded {
   private static final void additionNatural () {
     final long t0 = System.nanoTime();
     try {
-      final Natural one = Natural.valueOf(1);
-      final Natural n0 = one
-        .shiftUp(Natural.MAX_BITS-2)
+      final BoundedNatural one = BoundedNatural.valueOf(1);
+      final BoundedNatural n0 = one
+        .shiftUp(BoundedNatural.MAX_BITS-2)
         .subtract(1);
-      final Natural n1 = one
-        .shiftUp(Natural.MAX_BITS-1)
+      final BoundedNatural n1 = one
+        .shiftUp(BoundedNatural.MAX_BITS-1)
         //.add(n0)
         .add(n0);
-      Natural n = n1;
+      BoundedNatural n = n1;
       for (int i=1;i<=Integer.MAX_VALUE;i++) { 
-//        System.out.print("Natural: " + i + ": " +
+//        System.out.print("BoundedNatural: " + i + ": " +
 //          Integer.toUnsignedString(n.hiBit(),16)); 
         final long t = System.nanoTime();
-        final Natural nn = n.add(1);
+        final BoundedNatural nn = n.add(1);
         assert nn.compareTo(n) > 0 : 
           nn.compareTo(n) + "\n" +
           Integer.toUnsignedString(n1.hiBit(),16) + " " +
@@ -91,11 +91,11 @@ public final class Bounded {
 
     final long t0 = System.nanoTime();
     try {
-      Natural n = 
-        Natural.valueOf(1,1+(Integer.MAX_VALUE>>1))
+      BoundedNatural n = 
+        BoundedNatural.valueOf(1,1+(Integer.MAX_VALUE>>1))
         .subtract(10);
       for (long i=0L;i<=Long.MAX_VALUE;i++) {
-        System.out.print("Natural " +
+        System.out.print("BoundedNatural " +
           i
           + ": " +
           Integer.toUnsignedString(n.hiBit(),16)); 

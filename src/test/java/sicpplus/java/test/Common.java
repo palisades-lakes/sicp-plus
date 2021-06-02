@@ -23,7 +23,7 @@ import sicpplus.java.accumulators.Accumulator;
 import sicpplus.java.linear.Dn;
 import sicpplus.java.numbers.Doubles;
 import sicpplus.java.numbers.Floats;
-import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.BoundedNatural;
 import sicpplus.java.numbers.NaturalDivide;
 import sicpplus.java.numbers.Ringlike;
 import sicpplus.java.polynomial.Polynomial;
@@ -101,7 +101,7 @@ public final class Common {
   hiBit (final Function<BigInteger,T> fromBI,
          final BigInteger z0) {
     final int bl = z0.bitLength();
-    final Natural r0 = (Natural) fromBI.apply(z0);
+    final BoundedNatural r0 = (BoundedNatural) fromBI.apply(z0);
     final int hi = r0.hiBit();
     Assertions.assertEquals(bl,hi,() ->
     "\nbitLength=" + bl + "\nhiBit=" + hi); }
@@ -144,12 +144,12 @@ public final class Common {
     + "\n"); }
 
   protected static final void
-  compare (final Function<BigInteger,Natural> fromBI,
+  compare (final Function<BigInteger,BoundedNatural> fromBI,
            final BigInteger x0,
            final BigInteger x1) {
     final int c0 = x0.compareTo(x1);
-    final Natural y0 = fromBI.apply(x0);
-    final Natural y1 = fromBI.apply(x1);
+    final BoundedNatural y0 = fromBI.apply(x0);
+    final BoundedNatural y1 = fromBI.apply(x1);
     final int c1 = y0.compareTo(y1);
     Assertions.assertEquals(c0,c1, ()->
     "\n" + x0.toString(0x10)
@@ -373,15 +373,15 @@ public final class Common {
       + "\n" + x3[1].toString(0x10)); } }
 
   public static final void 
-  divideAndRemainderKnuth (final Function<BigInteger,Natural> fromBI,
-                           final Function<Natural,BigInteger> toBI,
+  divideAndRemainderKnuth (final Function<BigInteger,BoundedNatural> fromBI,
+                           final Function<BoundedNatural,BigInteger> toBI,
                            final BigInteger x0,
                            final BigInteger x1) {
     if (0 != x1.signum()) {
-      final Natural y0 = fromBI.apply(x0);
-      final Natural y1 = fromBI.apply(x1);
+      final BoundedNatural y0 = fromBI.apply(x0);
+      final BoundedNatural y1 = fromBI.apply(x1);
       final BigInteger[] x2 = x0.divideAndRemainder(x1);
-      final List<Natural> y2 = y0.divideAndRemainderKnuth(y1);
+      final List<BoundedNatural> y2 = y0.divideAndRemainderKnuth(y1);
       final BigInteger[] x3 = { toBI.apply(y2.get(0)), 
                                 toBI.apply(y2.get(1)),};
 
@@ -414,17 +414,17 @@ public final class Common {
       + "\n" + x3[1].toString(0x10)); } }
 
   public static final void
-  divideAndRemainderBurnikelZiegler (final Function<BigInteger,Natural> fromBI,
-                                     final Function<Natural,BigInteger> toBI,
+  divideAndRemainderBurnikelZiegler (final Function<BigInteger,BoundedNatural> fromBI,
+                                     final Function<BoundedNatural,BigInteger> toBI,
                                      final BigInteger x0,
                                      final BigInteger x1) {
     if (0 != x1.signum()) {
-      final Natural y0 = fromBI.apply(x0);
-      final Natural y1 = fromBI.apply(x1);
+      final BoundedNatural y0 = fromBI.apply(x0);
+      final BoundedNatural y1 = fromBI.apply(x1);
       final BigInteger[] x2 = x0.divideAndRemainder(x1);
-      final List<Natural> y2 = y0.divideAndRemainderBurnikelZiegler(y1);
-      final Natural q = y2.get(0);
-      final Natural r = y2.get(1);
+      final List<BoundedNatural> y2 = y0.divideAndRemainderBurnikelZiegler(y1);
+      final BoundedNatural q = y2.get(0);
+      final BoundedNatural r = y2.get(1);
       final BigInteger[] x3 = { toBI.apply(q), toBI.apply(r),};
 
       Assertions.assertEquals(x2[0],x3[0],() ->
@@ -547,9 +547,9 @@ public final class Common {
   //--------------------------------------------------------------
 
   public static final void
-  naturalTest (final Function<String,Natural> valueOf,
-               final Function<BigInteger,Natural> fromBI,
-               final Function<Natural,BigInteger> toBI,
+  naturalTest (final Function<String,BoundedNatural> valueOf,
+               final Function<BigInteger,BoundedNatural> fromBI,
+               final Function<BoundedNatural,BigInteger> toBI,
                final BigInteger z0,
                final BigInteger z1) {
     assert 0<=z0.signum();
@@ -592,9 +592,9 @@ public final class Common {
 
 
   public static final void
-  naturalTest (final Function<String,Natural> valueOf,
-               final Function<BigInteger,Natural> fromBI,
-               final Function<Natural,BigInteger> toBI) {
+  naturalTest (final Function<String,BoundedNatural> valueOf,
+               final Function<BigInteger,BoundedNatural> fromBI,
+               final Function<BoundedNatural,BigInteger> toBI) {
     final Generator gn =
       Generators.bigIntegerGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));

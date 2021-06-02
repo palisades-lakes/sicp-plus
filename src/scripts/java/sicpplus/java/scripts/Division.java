@@ -6,10 +6,10 @@ import java.util.List;
 import sicpplus.java.prng.Generator;
 import sicpplus.java.prng.Generators;
 import sicpplus.java.prng.PRNG;
-import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.BoundedNatural;
 
-/** Compare BigInteger and Natural results.
- * At least 4*2<sup>32</sup> tests to get calls to Natural.divadd.
+/** Compare BigInteger and BoundedNatural results.
+ * At least 4*2<sup>32</sup> tests to get calls to BoundedNatural.divadd.
  *
  * <pre>
  * j --source 12 -ea src/scripts/java/xfp/java/scripts/Division.java > division.txt
@@ -24,12 +24,12 @@ public final class Division {
   divideAndRemainder (final BigInteger x0,
                       final BigInteger x1) {
     if (0 != x1.signum()) {
-      final Natural y0 = Natural.valueOf(x0);
-      final Natural y1 = Natural.valueOf(x1);
+      final BoundedNatural y0 = BoundedNatural.valueOf(x0);
+      final BoundedNatural y1 = BoundedNatural.valueOf(x1);
       final BigInteger[] xqr = x0.divideAndRemainder(x1);
       final BigInteger xq = xqr[0];
       final BigInteger xr = xqr[1];
-      final List<Natural> yqr = y0.divideAndRemainder(y1);
+      final List<BoundedNatural> yqr = y0.divideAndRemainder(y1);
       final BigInteger yq = yqr.get(0).bigIntegerValue();
       final BigInteger yr = yqr.get(1).bigIntegerValue();
 

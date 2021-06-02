@@ -27,8 +27,8 @@ public final class NaturalDivide {
 
   //--------------------------------------------------------------
 
-  private static final boolean useKnuthDivision (final Natural u,
-                                                 final Natural v) {
+  private static final boolean useKnuthDivision (final BoundedNatural u,
+                                                 final BoundedNatural v) {
     final int nn = u.hiInt();
     final int nd = v.hiInt();
     return
@@ -39,8 +39,8 @@ public final class NaturalDivide {
   //--------------------------------------------------------------
   /** Interpret {@code d} as unsigned. */
 
-  private static final List<Natural> 
-  divideAndRemainder (final Natural u,
+  private static final List<BoundedNatural> 
+  divideAndRemainder (final BoundedNatural u,
                       final int d) {
     if (1==d) { return List.of(u,u.zero()); }
 
@@ -50,9 +50,9 @@ public final class NaturalDivide {
       final long nn = u.uword(0);
       final int q = (int) (nn/dd);
       final int r = (int) (nn-(q*dd));
-      return List.of(Natural.valueOf(q),Natural.valueOf(r)); }
+      return List.of(BoundedNatural.valueOf(q),BoundedNatural.valueOf(r)); }
 
-    Natural qq = u;
+    BoundedNatural qq = u;
 
     final int shift = Integer.numberOfLeadingZeros(d);
     int r = u.word(u.hiInt()-1);
@@ -78,22 +78,22 @@ public final class NaturalDivide {
         r = (int) Numbers.hiWord(tmp); }
       qq = qq.setWord(xlen-1,q);
       rr = unsigned(r); }
-    if (shift > 0) { return List.of(qq,Natural.valueOf(r%d)); }
-    return List.of(qq,Natural.valueOf(r)); }
+    if (shift > 0) { return List.of(qq,BoundedNatural.valueOf(r%d)); }
+    return List.of(qq,BoundedNatural.valueOf(r)); }
 
   //--------------------------------------------------------------
   /** Special shifted fused multiply-subtract 
    */
 
-  private static List fms (final Natural u,
+  private static List fms (final BoundedNatural u,
                            final int n0,
                            final long x,
-                           final Natural v,
+                           final BoundedNatural v,
                            final int n1,
                            final int i0) {
     //assert 0L<=x;
     //assert 0<=i0;
-    Natural w = u;
+    BoundedNatural w = u;
     long carry = 0;
     int i = n0-1-n1-i0;
     //assert 0<=i :
@@ -121,13 +121,13 @@ public final class NaturalDivide {
    * so DANGER that changes have made it incorrect...
    */
 
-  private static final Natural divadd (final Natural u,
+  private static final BoundedNatural divadd (final BoundedNatural u,
                                        final int n0,
-                                       final Natural v,
+                                       final BoundedNatural v,
                                        final int n1,
                                        final int i0) {
     //assert 0<=i0;
-    Natural w = u;
+    BoundedNatural w = u;
     final int off = n0 - n1 - 1 - i0;
     long carry = 0;   
     for (int j=0;j<n1;j++) {
@@ -139,20 +139,20 @@ public final class NaturalDivide {
 
   //--------------------------------------------------------------
 
-  private static final List<Natural> 
-  knuthDivision (final Natural u,
-                 final Natural v) {
+  private static final List<BoundedNatural> 
+  knuthDivision (final BoundedNatural u,
+                 final BoundedNatural v) {
     //assert u.isValid();
     //assert v.isValid();
     //assert !v.isZero();
     // D1 compact the divisor
     final int nv = v.hiInt();
     final int lShift = Integer.numberOfLeadingZeros(v.word(nv-1));
-    Natural d = v.shiftUp(lShift);
+    BoundedNatural d = v.shiftUp(lShift);
     //assert v.isValid();
     final int nd = d.hiInt();
     //assert nv==nd;
-    Natural r = u.shiftUp(lShift);
+    BoundedNatural r = u.shiftUp(lShift);
     //assert u.isValid();
     final int nr0 = r.hiInt();
 //    final int nu = u.hiInt();
@@ -161,7 +161,7 @@ public final class NaturalDivide {
     r = r.setWord(nr0,0);
     //assert u.isValid();
     final int nr = nr0+1;
-    Natural q = u.zero();
+    BoundedNatural q = u.zero();
     final int nq = nr-nd;
     final long dh = d.uword(nd-1);
     final long dl = d.uword(nd-2);
@@ -198,7 +198,7 @@ public final class NaturalDivide {
       // D4 Multiply and subtract
       r = r.setWord(i,0);
       final List rc = fms(r,nr,qhat,d,nd,j);
-      r = (Natural) rc.get(0);
+      r = (BoundedNatural) rc.get(0);
       final long borrow = ((Long) rc.get(1)).longValue();
       // D5 Test remainder, D6 Add back
       if (borrow>rh) { r = divadd(r,nr,d,nd,j); qhat--; }
@@ -237,7 +237,7 @@ public final class NaturalDivide {
       // D4 Multiply and subtract
       r = r.setWord(nd,0);
       final List rc = fms(r,nr,qhat,d,nd,nq-1);
-      r = (Natural) rc.get(0);
+      r = (BoundedNatural) rc.get(0);
       final long borrow = ((Long) rc.get(1)).longValue();
       // D5 Test remainder
       if (borrow > nh) { // D6 Add back
@@ -260,9 +260,9 @@ public final class NaturalDivide {
 
   //--------------------------------------------------------------
 
-  public static final List<Natural> 
-  divideAndRemainderKnuth (final Natural u,
-                           final Natural v) {
+  public static final List<BoundedNatural> 
+  divideAndRemainderKnuth (final BoundedNatural u,
+                           final BoundedNatural v) {
     //assert ! v.isZero();
     if (v.isOne()) { return List.of(u,u.zero()); }
     if (u.isZero()) { return List.of(u.zero(),u.zero()); }
@@ -279,10 +279,10 @@ public final class NaturalDivide {
     if (u.hiInt() >= KNUTH_POW2_THRESH_LEN) {
       final int shift = Math.min(u.loBit(),v.loBit());
       if (shift >= KNUTH_POW2_THRESH_ZEROS) {
-        final Natural a = u.shiftDown(shift);
-        final Natural b = v.shiftDown(shift);
-        final List<Natural> qr = divideAndRemainderKnuth(a,b);
-        final Natural r = qr.get(1).shiftUp(shift);
+        final BoundedNatural a = u.shiftDown(shift);
+        final BoundedNatural b = v.shiftDown(shift);
+        final List<BoundedNatural> qr = divideAndRemainderKnuth(a,b);
+        final BoundedNatural r = qr.get(1).shiftUp(shift);
         return List.of(qr.get(0),r); } }
     return knuthDivision(u,v); }
 
@@ -297,26 +297,26 @@ public final class NaturalDivide {
    * {@code 2*this.hiBit() <= 3*b.hiBit()}
    */
 
-  private static final List<Natural> 
-  divide3n2n (final Natural a,
-              final Natural b) {
+  private static final List<BoundedNatural> 
+  divide3n2n (final BoundedNatural a,
+              final BoundedNatural b) {
     final int n = b.hiInt() / 2;   // half the length of b in ints
 
     // step 1: view this as [a1,a2,a3] where each ai is n ints
     // or less; let a12=[a1,a2]
-    Natural a12 = a.shiftDown(32*n);
+    BoundedNatural a12 = a.shiftDown(32*n);
 
     // step 2: view b as [b1,b2] where each bi is n ints or less
-    Natural b1 = b.shiftDown(n*32);
-    final Natural b2 = b.words(0,n);
-    Natural r;
-    Natural d;
-    Natural q;
+    BoundedNatural b1 = b.shiftDown(n*32);
+    final BoundedNatural b2 = b.words(0,n);
+    BoundedNatural r;
+    BoundedNatural d;
+    BoundedNatural q;
     // TODO: word shift or shifted comparison
     if (a.compareTo(b.shiftUp(32*n)) < 0) {
       // step 3a: if a1<b1, let quotient=a12/b1 and r=a12%b1
       // Doesn't need modified a12
-      final List<Natural> qr = divide2n1n(a12,b1);
+      final List<BoundedNatural> qr = divide2n1n(a12,b1);
       q = qr.get(0);
       r = qr.get(1);
       // step 4: d=quotient*b2
@@ -324,7 +324,7 @@ public final class NaturalDivide {
     else {
       // step 3b: if a1>=b1, let quotient=beta^n-1
       //and r=a12-b1*2^n+b1
-      q = Natural.ones(n);
+      q = BoundedNatural.ones(n);
       a12 = a12.add(b1);
       b1 = b1.shiftUp(32*n);
       r = a12.subtract(b1);
@@ -351,42 +351,42 @@ public final class NaturalDivide {
    * @param b a positive number such that {@code b.hiBit()} is even
    */
 
-  private static final List<Natural> 
-  divide2n1n (final Natural a,
-              final Natural b) {
+  private static final List<BoundedNatural> 
+  divide2n1n (final BoundedNatural a,
+              final BoundedNatural b) {
     final int n = b.hiInt();
 
     //assert a.isValid();
     //assert b.isValid();
     // step 1: base case
     if (((n%2) != 0) || (n < BURNIKEL_ZIEGLER_THRESHOLD)) {
-      final List<Natural> qr = divideAndRemainderKnuth(a,b);
+      final List<BoundedNatural> qr = divideAndRemainderKnuth(a,b);
       return List.of(qr.get(0),qr.get(1)); }
 
     // step 2: view this as [a1,a2,a3,a4]
     // where each ai is n/2 ints or less
     // aUpper = [a1,a2,a3]
-    final Natural aUpper = a.shiftDown(32*(n/2));
+    final BoundedNatural aUpper = a.shiftDown(32*(n/2));
     //assert a.isValid();
     //assert aUpper.isValid();
-    Natural aa = a.words(0,n/2); // this = a4
+    BoundedNatural aa = a.words(0,n/2); // this = a4
     //assert aa.isValid();
 
     // step 3: q1=aUpper/b, r1=aUpper%b
-    final List<Natural> qr1 = divide3n2n(aUpper,b);
+    final List<BoundedNatural> qr1 = divide3n2n(aUpper,b);
     //assert aa.isValid();
     //assert qr1.get(1).isValid();
 
     // step 4: quotient=[r1,this]/b, r2=[r1,this]%b
     aa = aa.add(qr1.get(1),32*(n/2));   // this = [r1,this]
 
-    final List<Natural> qr2 = divide3n2n(aa,b);
+    final List<BoundedNatural> qr2 = divide3n2n(aa,b);
     // step 5: let quotient=[q1,quotient] and return r2
-    final Natural q2 = qr2.get(0).add(qr1.get(0), 32*(n/2));
+    final BoundedNatural q2 = qr2.get(0).add(qr1.get(0), 32*(n/2));
     return List.of(q2,qr2.get(1)); }
 
   //--------------------------------------------------------------
-  /** Returns a {@code Natural} containing
+  /** Returns a {@code BoundedNatural} containing
    * {@code blockLength} ints from {@code this} number, starting
    * at {@code index*blockLength}.<br/>
    * Used by Burnikel-Ziegler division.
@@ -395,7 +395,7 @@ public final class NaturalDivide {
    * @param blockLength length of one block in units of 32 bits
    */
 
-  private static final Natural getBlock (final Natural u,
+  private static final BoundedNatural getBlock (final BoundedNatural u,
                                          final int index,
                                          final int numBlocks,
                                          final int blockLength) {
@@ -409,9 +409,9 @@ public final class NaturalDivide {
 
   //--------------------------------------------------------------
 
-  public static final List<Natural>
-  divideAndRemainderBurnikelZiegler (final Natural u,
-                                     final Natural v) {
+  public static final List<BoundedNatural>
+  divideAndRemainderBurnikelZiegler (final BoundedNatural u,
+                                     final BoundedNatural v) {
     final int c = u.compareTo(v);
     if (0==c) { return List.of(u.one(),u.zero()); }
     if (0>c) { return List.of(u.zero(),u); }
@@ -429,9 +429,9 @@ public final class NaturalDivide {
 
     // step 4a: shift b so its length is a multiple of n
     //assert 0<=sigma;
-    final Natural bShifted = v.shiftUp(sigma);
+    final BoundedNatural bShifted = v.shiftUp(sigma);
     // step 4b: shift a by the same amount
-    final Natural aShifted = u.shiftUp(sigma);
+    final BoundedNatural aShifted = u.shiftUp(sigma);
 
     // step 5: t is the number of blocks needed to accommodate a
     // plus one additional bit
@@ -439,19 +439,19 @@ public final class NaturalDivide {
 
     // step 6: conceptually split a into blocks a[t-1], ..., a[0]
     // the most significant block of a
-    final Natural a1 = getBlock(aShifted,t-1, t, n);
+    final BoundedNatural a1 = getBlock(aShifted,t-1, t, n);
 
     // step 7: z[t-2] = [a[t-1], a[t-2]]
     // the second to most significant block
-    Natural z = getBlock(aShifted,t-2, t, n);
+    BoundedNatural z = getBlock(aShifted,t-2, t, n);
     z = z.add(a1,32*n);   // z[t-2]
 
     // schoolbook division on blocks, dividing 2-block by 1-block
-    Natural q = u.zero();
+    BoundedNatural q = u.zero();
     for (int i=t-2;i>0;i--) {
       // step 8a: compute (qi,ri) such that z=b*qi+ri
       // Doesn't need modified z
-      final List<Natural> qri = divide2n1n(z,bShifted);
+      final List<BoundedNatural> qri = divide2n1n(z,bShifted);
       // step 8b: z = [ri, a[i-1]]
       z = getBlock(aShifted,i-1, t, n);   // a[i-1]
       z = z.add(qri.get(1), 32*n);
@@ -461,7 +461,7 @@ public final class NaturalDivide {
     // for i=0 but leave z unchanged
     //assert z.isValid();
     //assert bShifted.isValid();
-    final List<Natural> qri = divide2n1n(z,bShifted);
+    final List<BoundedNatural> qri = divide2n1n(z,bShifted);
 
     // step 9: a and b were shifted, so shift back
     return List.of(
@@ -470,9 +470,9 @@ public final class NaturalDivide {
 
   //--------------------------------------------------------------
 
-  public static final List<Natural> 
-  divideAndRemainder (final Natural u,
-                      final Natural v) {
+  public static final List<BoundedNatural> 
+  divideAndRemainder (final BoundedNatural u,
+                      final BoundedNatural v) {
     //assert (! v.isZero());
     if (useKnuthDivision(u,v)) { 
       return NaturalDivide.divideAndRemainderKnuth(u,v); }
@@ -483,12 +483,12 @@ public final class NaturalDivide {
   //--------------------------------------------------------------
   /** Algorithm B from Knuth section 4.5.2 */
 
-  private static final Natural gcdKnuth (final Natural u,
-                                         final Natural v) {
-//    Natural a = u.copy();
-//    Natural b = v.copy();
-    Natural a = u;
-    Natural b = v;
+  private static final BoundedNatural gcdKnuth (final BoundedNatural u,
+                                         final BoundedNatural v) {
+//    BoundedNatural a = u.copy();
+//    BoundedNatural b = v.copy();
+    BoundedNatural a = u;
+    BoundedNatural b = v;
     //assert a.isValid();
     //assert b.isValid();
     //assert u.isValid();
@@ -503,7 +503,7 @@ public final class NaturalDivide {
     //assert v.isValid();
     // B2
     int tsign = (s==sa) ? -1 : 1;
-    Natural t = (0<tsign) ? a : b;
+    BoundedNatural t = (0<tsign) ? a : b;
     for (int lb=t.loBit();lb>=0;lb=t.loBit()) {
       //assert a.isValid();
       //assert b.isValid();
@@ -524,7 +524,7 @@ public final class NaturalDivide {
       if ((an<2) && (bn<2)) {
         final int x = a.word(an-1);
         final int y = b.word(bn-1);
-        Natural r = Natural.valueOf(Ints.unsignedGcd(x,y));
+        BoundedNatural r = BoundedNatural.valueOf(Ints.unsignedGcd(x,y));
         if (s > 0) { r = r.shiftUp(s); }
         //assert a.isValid();
         //assert b.isValid();
@@ -562,44 +562,44 @@ public final class NaturalDivide {
    * same length, then use the Knuth algorithm.
    */
 
-  public static final Natural gcd (final Natural u,
-                                   final Natural v) {
-    Natural a = u;
-    Natural b = v;
+  public static final BoundedNatural gcd (final BoundedNatural u,
+                                   final BoundedNatural v) {
+    BoundedNatural a = u;
+    BoundedNatural b = v;
     //assert a.isValid();
     //assert b.isValid();
     while (!b.isZero()) {
       if (Math.abs(a.hiInt()-b.hiInt()) < 2) { 
-        final Natural g = gcdKnuth(a,b); 
+        final BoundedNatural g = gcdKnuth(a,b); 
         //assert a.isValid();
         //assert b.isValid();
         return g; }
-      final List<Natural> qr = divideAndRemainder(a,b);
+      final List<BoundedNatural> qr = divideAndRemainder(a,b);
       //assert a.isValid();
       //assert b.isValid();
       a = b;
       b = qr.get(1); }
     return a; }
 
-  public static final List<Natural> reduce (final Natural n0,
-                                            final Natural d0) {
+  public static final List<BoundedNatural> reduce (final BoundedNatural n0,
+                                            final BoundedNatural d0) {
     //assert n0.isValid();
     //assert d0.isValid();
     final int shift = Math.min(n0.loBit(),d0.loBit());
-    final Natural n = ((shift != 0) ? n0.shiftDown(shift) : n0);
-    final Natural d = ((shift != 0) ? d0.shiftDown(shift) : d0);
+    final BoundedNatural n = ((shift != 0) ? n0.shiftDown(shift) : n0);
+    final BoundedNatural d = ((shift != 0) ? d0.shiftDown(shift) : d0);
     //assert n.isValid();
     //assert d.isValid();
     if (n.equals(d)) { return List.of(n0.one(),n0.one()); }
     if (d.isOne()) { return List.of(n,n0.one()); }
     if (n.isOne()) { return List.of(n0.one(),d); }
-    final Natural g = gcd(n,d);
+    final BoundedNatural g = gcd(n,d);
     //assert g.isValid();
     //assert n.isValid();
     //assert d.isValid();
     if (g.compareTo(n.one()) > 0) {
-      final Natural ng = n.divide(g);
-      final Natural dg = d.divide(g);
+      final BoundedNatural ng = n.divide(g);
+      final BoundedNatural dg = d.divide(g);
       //assert ng.isValid();
       //assert dg.isValid();
       return List.of(ng,dg); }

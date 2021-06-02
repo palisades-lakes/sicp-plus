@@ -15,9 +15,9 @@ public final class Square {
 //    final int ntrys = (1024*1024*1024) - 1;
 //    final UniformRandomProvider urp =
 //      PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
-//    final Generator g = Natural.generator(urp);
+//    final Generator g = BoundedNatural.generator(urp);
 //    for (int i=0;i<ntrys;i++) {
-//      final Natural z = (Natural) g.next();
+//      final BoundedNatural z = (BoundedNatural) g.next();
 //      final double z2 = z.squareSimple().doubleValue();
 //      assert Double.isFinite(z2); } }
 

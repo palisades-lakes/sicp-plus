@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableMap;
 
 import sicpplus.java.algebra.Set;
 import sicpplus.java.algebra.Structure;
-import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.BoundedNatural;
 import sicpplus.java.numbers.UnboundedNatural;
 import sicpplus.java.prng.PRNG;
 import sicpplus.java.test.algebra.SetTests;
@@ -33,7 +33,7 @@ public final class UnboundedNaturalTests {
   @Test
   public final void noOverflow () {
     final UnboundedNatural u = 
-      UnboundedNatural.valueOf(Natural.maxValue());
+      UnboundedNatural.valueOf(BoundedNatural.maxValue());
     // no overflow from add 
     final UnboundedNatural v = u.add(u); 
     final int cmp = u.compareTo(v);

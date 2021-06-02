@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import sicpplus.java.Classes;
-import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.BoundedNatural;
 import sicpplus.java.numbers.UnboundedNatural;
 
 //----------------------------------------------------------------
@@ -48,9 +48,9 @@ public final class BoundsTest {
       ArithmeticException.class,
       () -> {
         // overflow at 2nd add
-        Natural n = Natural.maxValue().add(1); 
+        BoundedNatural n = BoundedNatural.maxValue().add(1); 
         System.out.println(n.hiBit()); },
-      "Overflow Natural"); } 
+      "Overflow BoundedNatural"); } 
 
   //  @SuppressWarnings({ "static-method" })
   //  @Test
@@ -59,16 +59,16 @@ public final class BoundsTest {
   //
   //    final long t0 = System.nanoTime();
   //    try {
-  //      Natural n = 
-  ////      Natural.valueOf(0);
-  //      Natural.valueOf(1)
-  //        .shiftUp(Natural.MAX_BITS-1);
+  //      BoundedNatural n = 
+  ////      BoundedNatural.valueOf(0);
+  //      BoundedNatural.valueOf(1)
+  //        .shiftUp(BoundedNatural.MAX_BITS-1);
   //      n = n.add(n.subtract(10));
   //      for (long i=1L;i<=Long.MAX_VALUE;i++) {
-  //        System.out.print("Natural: " + i + ": " +
+  //        System.out.print("BoundedNatural: " + i + ": " +
   //          Integer.toUnsignedString(n.hiBit(),16)); 
   //        final long t = System.nanoTime();
-  //        final Natural n1 = n.add(1L);
+  //        final BoundedNatural n1 = n.add(1L);
   //        assert n1.compareTo(n) > 0 : 
   //          n1.compareTo(n) + "\n" +
   //        Integer.toUnsignedString(n1.hiBit(),16) + " " +

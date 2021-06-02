@@ -4,7 +4,7 @@ import java.util.function.BinaryOperator;
 
 import org.junit.jupiter.api.Test;
 
-import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.BoundedNatural;
 import sicpplus.java.numbers.Numbers;
 import sicpplus.java.numbers.RationalFloat;
 import sicpplus.java.test.Common;
@@ -32,19 +32,19 @@ public final class RationalFloatTest {
     final RationalFloat[] f =
     {
      RationalFloat.valueOf(
-       false,Natural.valueOf("2366052b8b801d",0x10),-22),
+       false,BoundedNatural.valueOf("2366052b8b801d",0x10),-22),
      RationalFloat.valueOf(
-       true,Natural.valueOf("2366052b8b801d",0x10),-22),
+       true,BoundedNatural.valueOf("2366052b8b801d",0x10),-22),
      RationalFloat.valueOf(
-       true,Natural.valueOf("232330747ceeab",0x10),-23),
+       true,BoundedNatural.valueOf("232330747ceeab",0x10),-23),
      RationalFloat.valueOf(
-       false,Natural.valueOf("232330747ceeab",0x10),-23),
+       false,BoundedNatural.valueOf("232330747ceeab",0x10),-23),
      RationalFloat.valueOf(
-       false,Natural.valueOf("21ab528c4dbc181",0x10),-26),
+       false,BoundedNatural.valueOf("21ab528c4dbc181",0x10),-26),
      RationalFloat.valueOf(
-       true,Natural.valueOf("8d9814ae2e0074",0x10),-25),
+       true,BoundedNatural.valueOf("8d9814ae2e0074",0x10),-25),
      RationalFloat.valueOf(
-       true,Natural.valueOf("2c94d1dcb123a56b9c1",0x10),-43), };
+       true,BoundedNatural.valueOf("2c94d1dcb123a56b9c1",0x10),-43), };
     for (final RationalFloat fi : f) {
       //Debug.println(fi.toString());
       Common.doubleRoundingTest(

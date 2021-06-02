@@ -130,14 +130,14 @@ public final class Q implements Set {
   public static final boolean knownRational (final Object x) {
     if (x instanceof BigFloat) { return true; }
     if (x instanceof RationalFloat) { return true; }
-    if (x instanceof Natural) { return true; }
+    if (x instanceof BoundedNatural) { return true; }
     if (x instanceof Number) { return true; }
     return false; }
 
   public static final boolean knownRational (final Class c) {
     if (BigFloat.class.isAssignableFrom(c)) { return true; }
     if (RationalFloat.class.isAssignableFrom(c)) { return true; }
-    if (Natural.class.isAssignableFrom(c)) { return true; }
+    if (BoundedNatural.class.isAssignableFrom(c)) { return true; }
     if (Number.class.isAssignableFrom(c)) { return true; }
     if (Byte.TYPE.equals(c)) { return true; }
     if (Short.TYPE.equals(c)) { return true; }

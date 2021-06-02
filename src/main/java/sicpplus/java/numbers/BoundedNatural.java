@@ -63,11 +63,12 @@ import sicpplus.java.prng.GeneratorBase;
  * <code>Integer.MAX_VALUE-5</code>.
  *  
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-26
+ * @version 2021-06-02
  */
 
 @SuppressWarnings("unchecked")
-public final class Natural implements Ringlike<Natural> {
+public final class BoundedNatural
+implements Ringlike<BoundedNatural> {
 
   //--------------------------------------------------------------
   // fields
@@ -87,7 +88,7 @@ public final class Natural implements Ringlike<Natural> {
   private static final void checkOverflow (final int nwords) {
     if (nwords > MAX_WORDS) { 
     throw new ArithmeticException(
-      "Attempting to create an instance of Natural"
+      "Attempting to create an instance of BoundedNatural"
         + " overflowing the range: " 
         + nwords + " words."); } }
   
@@ -151,10 +152,10 @@ public final class Natural implements Ringlike<Natural> {
 
   //--------------------------------------------------------------
   /** Return the <code>[i0,i1)</code> words as a new 
-   * <code>Natural</code> with <code>[0,i1-i0)</code> words.
+   * <code>BoundedNatural</code> with <code>[0,i1-i0)</code> words.
    */
 
-  public final Natural words (final int i0,
+  public final BoundedNatural words (final int i0,
                               final int i1) {
     assert 0<=i0;
     assert i0<i1;
@@ -169,7 +170,7 @@ public final class Natural implements Ringlike<Natural> {
     for (int i=0;i<n;i++) { vv[i] =  tt[i+i0]; }
     return unsafe(vv,n); }
 
-  public final Natural setWord (final int i,
+  public final BoundedNatural setWord (final int i,
                                 final int w) {
     assert 0<=i : "Negative index: " + i;
     assert i < MAX_WORDS : "word index too large" + i;
@@ -184,16 +185,16 @@ public final class Natural implements Ringlike<Natural> {
     return unsafe(u); }
 
   /** Singleton. */
-  public static final Natural ZERO = new Natural(new int[0]); 
+  public static final BoundedNatural ZERO = new BoundedNatural(new int[0]); 
 
   @Override
   public final boolean isZero () { return 0==hiInt(); }
 
   @Override
-  public final Natural zero () { return ZERO; }
+  public final BoundedNatural zero () { return ZERO; }
   
   /** Don't use a singleton for this---takes up too much space. */
-  public static final Natural maxValue () { 
+  public static final BoundedNatural maxValue () { 
     return ones(MAX_WORDS); }
 
   //--------------------------------------------------------------
@@ -201,7 +202,7 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
 
   @Override
-  public final int compareTo (final Natural u) {
+  public final int compareTo (final BoundedNatural u) {
     final int b0 = hiBit();
     final int b1 = u.hiBit();
     if (b0<b1) { return -1; }
@@ -311,7 +312,7 @@ public final class Natural implements Ringlike<Natural> {
   // long based factories
   //--------------------------------------------------------------
 
-  static final Natural sum (final long u,
+  static final BoundedNatural sum (final long u,
                             final long v,
                             final int upShift) {
     assert 0L<=u;
@@ -345,7 +346,7 @@ public final class Natural implements Ringlike<Natural> {
     assert 0L==hiWord(sum);
     return unsafe(ww); }
 
-  static final Natural difference (final long u,
+  static final BoundedNatural difference (final long u,
                                    final long v,
                                    final int upShift) {
     assert 0L<=u;
@@ -358,7 +359,7 @@ public final class Natural implements Ringlike<Natural> {
     assert 0L<=dm;
     return valueOf(dm); }
 
-  static final Natural difference (final long v,
+  static final BoundedNatural difference (final long v,
                                    final int upShift,
                                    final long u) {
     assert 0L<=u;
@@ -402,7 +403,7 @@ public final class Natural implements Ringlike<Natural> {
 
   //--------------------------------------------------------------
 
-  static final Natural product (final long t0,
+  static final BoundedNatural product (final long t0,
                                 final long t1) {
     assert 0L<=t0;
     assert 0L<=t1;
@@ -423,16 +424,16 @@ public final class Natural implements Ringlike<Natural> {
     sum = hiWord(sum) + hi0*hi1;
     final int w2 = (int) sum;
     final int w3 = (int) hiWord(sum);
-    if (0!=w3) { return new Natural(new int[] {w0,w1,w2,w3,}); }
-    if (0!=w2) { return new Natural(new int[] {w0,w1,w2,}); }
-    if (0!=w1) { return new Natural(new int[] {w0,w1,}); }
-    if (0!=w0) { return new Natural(new int[] {w0,}); }
+    if (0!=w3) { return new BoundedNatural(new int[] {w0,w1,w2,w3,}); }
+    if (0!=w2) { return new BoundedNatural(new int[] {w0,w1,w2,}); }
+    if (0!=w1) { return new BoundedNatural(new int[] {w0,w1,}); }
+    if (0!=w0) { return new BoundedNatural(new int[] {w0,}); }
     return ZERO; }
 
   // TODO: fix lurking overflow issue
   // probably only works as long as t is double significand
 
-  static final Natural fromSquare (final long t) {
+  static final BoundedNatural fromSquare (final long t) {
     assert 0L<=t;
     //if (0L==t) { return zero(); }
     final long hi = hiWord(t);
@@ -449,10 +450,10 @@ public final class Natural implements Ringlike<Natural> {
     final int w2 = (int) sum;
     final int w3 = (int) hiWord(sum);
 
-    if (0!=w3) { return new Natural(new int[] { w0,w1,w2,w3,}); }
-    if (0!=w2) { return new Natural(new int[] { w0,w1,w2, }); }
-    if (0!=w1) { return new Natural(new int[] {w0,w1}); }
-    if (0!=w0) { return new Natural(new int[] {w0}); }
+    if (0!=w3) { return new BoundedNatural(new int[] { w0,w1,w2,w3,}); }
+    if (0!=w2) { return new BoundedNatural(new int[] { w0,w1,w2, }); }
+    if (0!=w1) { return new BoundedNatural(new int[] {w0,w1}); }
+    if (0!=w0) { return new BoundedNatural(new int[] {w0}); }
     return ZERO; }
 
   //--------------------------------------------------------------
@@ -460,7 +461,7 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
   // checking for int arithmetic overflow
 
-//  public final Natural add (final long u) {
+//  public final BoundedNatural add (final long u) {
 //    assert 0L<u;
 //    //if (0L==u) { return this; }
 //    final int nt = hiInt();
@@ -501,15 +502,15 @@ public final class Natural implements Ringlike<Natural> {
 //      final int[] vvv = new int[nvv];
 //      for (int j=0;j<nv;j=Math.addExact(j,1)) { vvv[j]=vv[j]; } 
 //      vvv[nv] = 1; 
-//      return new Natural(vvv); }
+//      return new BoundedNatural(vvv); }
 //
 //    for (;i<nt;i=Math.addExact(i,1)) { vv[i] = tt[i]; }
-//    return new Natural(vv); }
+//    return new BoundedNatural(vv); }
 
   //--------------------------------------------------------------
   // no int arithmetic overflow checks
 
-  public final Natural add (final long u) {
+  public final BoundedNatural add (final long u) {
     assert 0L<u;
     //if (0L==u) { return this; }
     final int nt = hiInt();
@@ -546,12 +547,12 @@ public final class Natural implements Ringlike<Natural> {
       final int[] vvv = new int[nvv];
       for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
       vvv[nv] = 1; 
-      return new Natural(vvv); }
+      return new BoundedNatural(vvv); }
 
     for (;i<nt;i++) { vv[i] = tt[i]; }
-    return new Natural(vv); }
+    return new BoundedNatural(vv); }
 
-  //  public final Natural add (final long u) {
+  //  public final BoundedNatural add (final long u) {
   //    assert 0L<u;
   //    //if (0L==u) { return this; }
   //    final int nt = hiInt();
@@ -589,14 +590,14 @@ public final class Natural implements Ringlike<Natural> {
   //      final int[] vvv = new int[nv+1];
   //      for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
   //      vvv[nv] = 1; 
-  //      return new Natural(vvv); }
+  //      return new BoundedNatural(vvv); }
   //
   //    for (;i<nt;i++) { vv[i] = tt[i]; }
-  //    return new Natural(vv); }
+  //    return new BoundedNatural(vv); }
 
   //--------------------------------------------------------------
 
-  private final Natural addByWords (final long u,
+  private final BoundedNatural addByWords (final long u,
                                     final int iShift) {
     final int nt = hiInt();
     final int[] tt = words();
@@ -627,12 +628,12 @@ public final class Natural implements Ringlike<Natural> {
       final int[] vvv = new int[nv+1];
       for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
       vvv[nv] = 1; 
-      return new Natural(vvv); }
+      return new BoundedNatural(vvv); }
 
     for (;i<nt;i++) { vv[i] = tt[i]; }
-    return new Natural(vv); }
+    return new BoundedNatural(vv); }
 
-  private final Natural addByBits (final long u,
+  private final BoundedNatural addByBits (final long u,
                                    final int iShift,
                                    final int bShift) {
     final int nt = hiInt();
@@ -672,12 +673,12 @@ public final class Natural implements Ringlike<Natural> {
       final int[] vvv = new int[nv+1];
       for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
       vvv[nv] = 1; 
-      return new Natural(vvv); }
+      return new BoundedNatural(vvv); }
 
     for (;i<nt;i++) { vv[i] = tt[i]; }
-    return new Natural(vv); }
+    return new BoundedNatural(vv); }
 
-  public final Natural add (final long u,
+  public final BoundedNatural add (final long u,
                             final int upShift) {
     assert 0<u;
     assert 0<upShift;
@@ -690,7 +691,7 @@ public final class Natural implements Ringlike<Natural> {
   // subtract (non-negative) longs
   //--------------------------------------------------------------
 
-  public final Natural subtract (final long u) {
+  public final BoundedNatural subtract (final long u) {
     assert 0L<=u;
     assert 0<=compareTo(u);
     //if (0L==u) { return this; }
@@ -722,7 +723,7 @@ public final class Natural implements Ringlike<Natural> {
 
   //--------------------------------------------------------------
 
-  private final Natural subtractByWords (final long u,
+  private final BoundedNatural subtractByWords (final long u,
                                          final int iShift) {
     final int nt = hiInt();
     final int[] tt = words();
@@ -755,7 +756,7 @@ public final class Natural implements Ringlike<Natural> {
     for (int j=0;j<nv;j++) { vvv[j]=vv[j]; }
     return unsafe(vvv,nv); }
 
-  private final Natural subtractByBits (final long u,
+  private final BoundedNatural subtractByBits (final long u,
                                         final int iShift,
                                         final int bShift)  {
     final int nt = hiInt();
@@ -794,7 +795,7 @@ public final class Natural implements Ringlike<Natural> {
     for (int j=0;j<nv;j++) { vvv[j]=vv[j]; }
     return unsafe(vvv,nv); }
 
-  public final Natural subtract (final long u,
+  public final BoundedNatural subtract (final long u,
                                  final int upShift) {
     assert 0L<=u;
     assert 0<=upShift;
@@ -808,7 +809,7 @@ public final class Natural implements Ringlike<Natural> {
 
   //--------------------------------------------------------------
 
-  public final Natural subtractFrom (final long u) {
+  public final BoundedNatural subtractFrom (final long u) {
     assert 0L<=u;
     assert 0>=compareTo(u);
     //if (0L==u) { return this; }
@@ -823,7 +824,7 @@ public final class Natural implements Ringlike<Natural> {
 
   //--------------------------------------------------------------
 
-  private final Natural subtractFromByWords (final long u,
+  private final BoundedNatural subtractFromByWords (final long u,
                                              final int iShift) {
     final int nt = hiInt();
     final int[] tt = words();
@@ -849,7 +850,7 @@ public final class Natural implements Ringlike<Natural> {
     assert 0L==(dif>>32); 
     return unsafe(vv); }
 
-  private final Natural subtractFromByBits (final long u,
+  private final BoundedNatural subtractFromByBits (final long u,
                                             final int iShift,
                                             final int bShift) {
     final int nt = hiInt();
@@ -883,7 +884,7 @@ public final class Natural implements Ringlike<Natural> {
     assert 0L==(dif>>32); 
     return unsafe(vv); }
 
-  public final Natural subtractFrom (final long u,
+  public final BoundedNatural subtractFrom (final long u,
                                      final int upShift) {
     assert 0L<=u;
     assert 0<=upShift;
@@ -901,7 +902,7 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
   /** <code>add(u<<(32*iShift))</code> */
 
-  private final Natural addByWords (final Natural u,
+  private final BoundedNatural addByWords (final BoundedNatural u,
                                     final int iShift) {
     final int nt = hiInt();
     final int[] tt = words();
@@ -930,12 +931,12 @@ public final class Natural implements Ringlike<Natural> {
       final int[] vvv = new int[nv+1];
       for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
       vvv[nv] = 1; 
-      return new Natural(vvv); }
+      return new BoundedNatural(vvv); }
 
     for (;i<nt;i++) { vv[i] = tt[i]; }
-    return new Natural(vv); }
+    return new BoundedNatural(vv); }
 
-  private final Natural addByBits (final Natural u,
+  private final BoundedNatural addByBits (final BoundedNatural u,
                                    final int iShift,
                                    final int bShift) {
     final int nt = hiInt();
@@ -977,12 +978,12 @@ public final class Natural implements Ringlike<Natural> {
       final int[] vvv = new int[nv+1];
       for (int j=0;j<nv;j++) { vvv[j]=vv[j]; } 
       vvv[nv] = 1; 
-      return new Natural(vvv); }
+      return new BoundedNatural(vvv); }
 
     for (;i<nt;i++) { vv[i] = tt[i]; }
-    return new Natural(vv); }
+    return new BoundedNatural(vv); }
 
-  public final Natural add (final Natural u,
+  public final BoundedNatural add (final BoundedNatural u,
                             final int upShift) {
     assert 0<=upShift;
     //if (0==upShift) { return add(u); }
@@ -998,12 +999,12 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
 
   @Override
-  public final Natural abs () { return this; }
+  public final BoundedNatural abs () { return this; }
 
   //--------------------------------------------------------------
 
   @Override
-  public final Natural add (final Natural u) {
+  public final BoundedNatural add (final BoundedNatural u) {
     final int nt = hiInt();
     final int nu = u.hiInt();
     if (nt<nu) { return u.add(this); }
@@ -1022,19 +1023,19 @@ public final class Natural implements Ringlike<Natural> {
       vv[i] = (int) sum; 
       sum = hiWord(sum);}
     if (0L!=sum) { 
-      //vv[nt] = (int) sum; return new Natural(vv); }
+      //vv[nt] = (int) sum; return new BoundedNatural(vv); }
       final int[] vvv = new int[nt+1];
       for (int j=0;j<nt;j++) { vvv[j]=vv[j]; } 
       vvv[nt] = 1; 
-      return new Natural(vvv); }
+      return new BoundedNatural(vvv); }
 
     for (;i<nt;i++) { vv[i] = tt[i]; }
-    return new Natural(vv); }
+    return new BoundedNatural(vv); }
 
   //--------------------------------------------------------------
 
   @Override
-  public final Natural subtract (final Natural u) {
+  public final BoundedNatural subtract (final BoundedNatural u) {
     assert 0<=compareTo(u);
     final int nt = hiInt();
     final int nu = u.hiInt();
@@ -1062,10 +1063,10 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
 
   @Override
-  public final Natural absDiff (final Natural uu) {
+  public final BoundedNatural absDiff (final BoundedNatural uu) {
     //    //assert isValid();
     //    //assert u.isValid();
-    final Natural u = uu;
+    final BoundedNatural u = uu;
     final int c = compareTo(u);
     if (c==0) { return zero(); }
     if (c<0) { return u.subtract(this); }
@@ -1076,12 +1077,12 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
   // TODO: singleton class for one() and zero()?
 
-  static final Natural ONE = new Natural(new int[] {1});
+  static final BoundedNatural ONE = new BoundedNatural(new int[] {1});
 
   @Override
-  public final Natural one () { return ONE; }
+  public final BoundedNatural one () { return ONE; }
 
-  public static final Natural ones (final int n) {
+  public static final BoundedNatural ones (final int n) {
     final int[] vv = new int[n];
     Arrays.fill(vv, -1);
     return unsafe(vv,n); }
@@ -1134,7 +1135,7 @@ public final class Natural implements Ringlike<Natural> {
    * the low bit of the input, so it doesn't need special care.
    */
 
-  private final Natural squareSimple () {
+  private final BoundedNatural squareSimple () {
     final int nt = hiInt();
     final int[] tt = words();
     final int[] vv = new int[2*nt];
@@ -1177,7 +1178,7 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
 
   @Override
-  public final Natural square () {
+  public final BoundedNatural square () {
     if (isZero()) { return zero(); }
     if (isOne()) { return one(); }
     final int n = hiInt();
@@ -1193,17 +1194,17 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
 
   @Override
-  public final Natural multiply (final Natural u) {
+  public final BoundedNatural multiply (final BoundedNatural u) {
     //    //assert isValid();
     //    //assert u.isValid();
     return NaturalMultiply.multiply(this,u); }
 
   //--------------------------------------------------------------
 
-  //  public final Natural multiply (final long u) {
+  //  public final BoundedNatural multiply (final long u) {
   //    return NaturalMultiply.multiply(this,u); }
 
-  public final Natural multiply (final long v) {
+  public final BoundedNatural multiply (final long v) {
     if (0L==v) { return ZERO; }
     if (1L==v) { return this; }
     if (isZero()) { return ZERO; }
@@ -1233,11 +1234,11 @@ public final class Natural implements Ringlike<Natural> {
         vv[i1] = (int) product;
         carry = (product>>>32); }
       vv[i+1]= (int) carry; }
-    return Natural.unsafe(vv); }
+    return BoundedNatural.unsafe(vv); }
 
   //--------------------------------------------------------------
 
-  public final Natural multiply (final long u,
+  public final BoundedNatural multiply (final long u,
                                  final int upShift) {
     ////assert isValid();
     assert 0L<=u;
@@ -1245,41 +1246,41 @@ public final class Natural implements Ringlike<Natural> {
     if (0L==u) { return zero(); }
     if (0==upShift) { return multiply(u); }
     if (isZero()) { return this; }
-    return multiply(Natural.valueOf(u,upShift)); }
+    return multiply(BoundedNatural.valueOf(u,upShift)); }
 
   //--------------------------------------------------------------
   // divide
   //--------------------------------------------------------------
 
   // for testing
-  public final List<Natural> 
-  divideAndRemainderKnuth (final Natural u) {
+  public final List<BoundedNatural> 
+  divideAndRemainderKnuth (final BoundedNatural u) {
     ////assert isValid();
     ////assert u.isValid();
     return NaturalDivide.divideAndRemainderKnuth(this,u); }
 
   // for testing
-  public final List<Natural> 
-  divideAndRemainderBurnikelZiegler (final Natural u) {
+  public final List<BoundedNatural> 
+  divideAndRemainderBurnikelZiegler (final BoundedNatural u) {
     ////assert isValid();
     ////assert u.isValid();
     return NaturalDivide.divideAndRemainderBurnikelZiegler(this,u); }
 
   @Override
-  public final List<Natural> 
-  divideAndRemainder (final Natural u) {
+  public final List<BoundedNatural> 
+  divideAndRemainder (final BoundedNatural u) {
     //assert isValid();
     //assert u.isValid();
     return NaturalDivide.divideAndRemainder(this,u); }
 
   @Override
-  public final  Natural divide (final Natural u) {
+  public final  BoundedNatural divide (final BoundedNatural u) {
     //assert isValid();
     //assert u.isValid();
     return divideAndRemainder(u).get(0); }
 
   @Override
-  public final  Natural remainder (final Natural u) {
+  public final  BoundedNatural remainder (final BoundedNatural u) {
     //assert isValid();
     //assert u.isValid();
     return divideAndRemainder(u).get(1); }
@@ -1289,7 +1290,7 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
 
   @Override
-  public final Natural gcd (final Natural u) { 
+  public final BoundedNatural gcd (final BoundedNatural u) { 
     //assert isValid();
     //assert u.isValid();
     return NaturalDivide.gcd(this,u); }
@@ -1297,7 +1298,7 @@ public final class Natural implements Ringlike<Natural> {
   //--------------------------------------------------------------
 
   @Override
-  public final List<Natural> reduce (final Natural d) {
+  public final List<BoundedNatural> reduce (final BoundedNatural d) {
     //assert isValid();
     return NaturalDivide.reduce(this,d); }
 
@@ -1351,16 +1352,16 @@ public final class Natural implements Ringlike<Natural> {
 
   //--------------------------------------------------------------
 
-  private final Natural shiftDownByWords (final int iShift) {
+  private final BoundedNatural shiftDownByWords (final int iShift) {
     final int nt = hiInt();
     final int nv = nt-iShift;
     if (0>=nv) { return zero(); }
     final int[] vv = new int[nv];
     for (int i=0;i<nv;i++) { vv[i] = word(i+iShift); }
     //System.arraycopy(words(),iShift,vv,0,nv);
-    return new Natural(vv); }
+    return new BoundedNatural(vv); }
 
-  private final Natural shiftDownByBits (final int iShift,
+  private final BoundedNatural shiftDownByBits (final int iShift,
                                          final int bShift) {
     final int nt = hiInt();
     final int nv = nt-iShift;
@@ -1377,7 +1378,7 @@ public final class Natural implements Ringlike<Natural> {
       vv[i] = w; }
     return unsafe(vv); }
 
-  public final Natural shiftDown (final int downShift) {
+  public final BoundedNatural shiftDown (final int downShift) {
     assert 0<=downShift;
     if (0==downShift) { return this; }
     final int iShift = (downShift>>>5);
@@ -1387,16 +1388,16 @@ public final class Natural implements Ringlike<Natural> {
 
   //--------------------------------------------------------------
 
-  private final Natural shiftUpByWords (final int iShift) {
+  private final BoundedNatural shiftUpByWords (final int iShift) {
     final int nt = hiInt();
     final int nv = nt+iShift;
     final int[] tt = words();
     final int[] vv = new int[nv];
     for (int i=0;i<nt;i++) { vv[i+iShift] = tt[i]; }
     //System.arraycopy(words(),0,u,iShift,n0);
-    return new Natural(vv); }
+    return new BoundedNatural(vv); }
 
-  private final Natural shiftUpByBits (final int iShift,
+  private final BoundedNatural shiftUpByBits (final int iShift,
                                        final int bShift) {
     final int nt = hiInt();
     final int nv = nt+iShift;
@@ -1411,12 +1412,12 @@ public final class Natural implements Ringlike<Natural> {
       w0 = w1;
       vv[i+iShift] = w; }
     final int vvn = (w0>>>rShift);
-    if (0!=vvn) { vv[nv] = vvn; return new Natural(vv); }
+    if (0!=vvn) { vv[nv] = vvn; return new BoundedNatural(vv); }
     final int[] vvv = new int[nv];
     for  (int i=0;i<nv;i++) { vvv[i] = vv[i]; }
-    return new Natural(vvv); }
+    return new BoundedNatural(vvv); }
 
-  public final Natural shiftUp (final int upShift) {
+  public final BoundedNatural shiftUp (final int upShift) {
     assert 0<=upShift;
     //if (0==upShift) { return this; }
     if (isZero()) { return this; }
@@ -1431,7 +1432,7 @@ public final class Natural implements Ringlike<Natural> {
     if (hiInt()<=nn) { return false; }
     return 0!=(_words[nn] & (1<<(n&0x1F))); }
 
-  public final Natural setBit (final int i) {
+  public final BoundedNatural setBit (final int i) {
     assert 0<=i;
     final int iw = (i>>>5);
     final int w = word(iw);
@@ -1525,8 +1526,8 @@ public final class Natural implements Ringlike<Natural> {
   @Override
   public final boolean equals (final Object x) {
     if (x==this) { return true; }
-    if (!(x instanceof Natural)) { return false; }
-    final Natural u = (Natural) x;
+    if (!(x instanceof BoundedNatural)) { return false; }
+    final BoundedNatural u = (BoundedNatural) x;
     final int nt = hiInt();
     if (nt!=u.hiInt()) { return false; }
     for (int i=0; i<nt; i++) {
@@ -1589,7 +1590,7 @@ public final class Natural implements Ringlike<Natural> {
    * <code>loInt</code> or <code>hiInt</code.
    */
 
-  private Natural (final int[] words) { 
+  private BoundedNatural (final int[] words) { 
     checkOverflow(words.length);
     _words = words; }
 
@@ -1597,33 +1598,33 @@ public final class Natural implements Ringlike<Natural> {
    * or <code>hiInt</code>. 
    */
 
-  private static final Natural unsafe (final int[] words,
+  private static final BoundedNatural unsafe (final int[] words,
                                        final int hiInt){
     if (hiInt<words.length) {
       final int[] ww = new int[hiInt];
       for (int i=0;i<hiInt;i++) { ww[i] = words[i]; }
-      return new Natural(ww); }
-    return new Natural(words); }
+      return new BoundedNatural(ww); }
+    return new BoundedNatural(words); }
 
   /** Doesn't copy <code>words</code>. 
    */
 
-  static final Natural unsafe (final int[] words) {
+  static final BoundedNatural unsafe (final int[] words) {
     final int hi = Ints.hiInt(words);
     return unsafe(words,hi); }
 
   /** Copy <code>words</code>. 
    *  */
-  public static final Natural make (final int[] words) {
+  public static final BoundedNatural make (final int[] words) {
     final int end = Ints.hiInt(words);
-    return new Natural(Arrays.copyOf(words,end)); }
+    return new BoundedNatural(Arrays.copyOf(words,end)); }
 
   //--------------------------------------------------------------
   /** From a big endian {@code byte[]}, as produced by
    * {@link BigInteger#toByteArray()}.
    */
 
-  private static final Natural fromBigEndianBytes (final byte[] a) {
+  private static final BoundedNatural fromBigEndianBytes (final byte[] a) {
     final int nBytes = a.length;
     int keep = 0;
     while ((keep<nBytes) && (0==a[keep])) { keep++; }
@@ -1639,32 +1640,32 @@ public final class Natural implements Ringlike<Natural> {
       Ints.reverse(result);
       return make(result); }
 
-  public static final Natural valueOf (final BigInteger u) {
+  public static final BoundedNatural valueOf (final BigInteger u) {
     assert 0<=u.signum();
     return fromBigEndianBytes(u.toByteArray()); }
 
   //-------------------------------------------------------------
 
-  public static final Natural valueOf (final String s,
+  public static final BoundedNatural valueOf (final String s,
                                        final int radix) {
     return make(Ints.littleEndian(s,radix)); }
 
-  public static final Natural valueOf (final String s) {
+  public static final BoundedNatural valueOf (final String s) {
     return valueOf(s,0x10); }
 
   /** <code>0L<=u</code>. */
 
-  public static final Natural valueOf (final long u) {
+  public static final BoundedNatural valueOf (final long u) {
     assert 0L<=u;
     //if (0L==u) { return zero(); }
     final int lo = (int) u;
     final int hi = (int) hiWord(u);
     if (0==hi) { 
-      if (0==lo) { return new Natural(new int[0]); }
-      return new Natural(new int[] {lo}); }
-    return new Natural(new int[] { lo,hi }); }
+      if (0==lo) { return new BoundedNatural(new int[0]); }
+      return new BoundedNatural(new int[] {lo}); }
+    return new BoundedNatural(new int[] { lo,hi }); }
 
-  public static final Natural valueOf (final long u,
+  public static final BoundedNatural valueOf (final long u,
                                        final int upShift) {
     assert 0<=u;
     assert 0<=upShift;
@@ -1686,16 +1687,16 @@ public final class Natural implements Ringlike<Natural> {
       vv[iShift] = vv0;
       vv[iShift+1] = vv1;
       vv[iShift+2] = vv2;
-      return new Natural(vv); }
+      return new BoundedNatural(vv); }
     if (0!=vv1) { 
       final int[] vv = new int[iShift+2];
       vv[iShift] = vv0;
       vv[iShift+1] = vv1;
-      return new Natural(vv); }
+      return new BoundedNatural(vv); }
     if (0!=vv0) { 
       final int[] vv = new int[iShift+1];
       vv[iShift] = vv0;
-      return new Natural(vv); }
+      return new BoundedNatural(vv); }
     return ZERO; }
 
   //--------------------------------------------------------------

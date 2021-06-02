@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import sicpplus.java.numbers.BigFloat;
 import sicpplus.java.numbers.BigFloats;
-import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.BoundedNatural;
 import sicpplus.java.numbers.Numbers;
 import sicpplus.java.prng.Generator;
 import sicpplus.java.prng.PRNG;
@@ -37,17 +37,17 @@ public final class BigFloatTest {
     final BigFloat[] f =
     {
      BigFloat.valueOf(
-       true,Natural.valueOf("232330747ceeab",0x10),-23),
+       true,BoundedNatural.valueOf("232330747ceeab",0x10),-23),
      BigFloat.valueOf(
-       false,Natural.valueOf("232330747ceeab",0x10),-23),
+       false,BoundedNatural.valueOf("232330747ceeab",0x10),-23),
      BigFloat.valueOf(
-       true,Natural.valueOf("2366052b8b801d",0x10),-22),
+       true,BoundedNatural.valueOf("2366052b8b801d",0x10),-22),
      BigFloat.valueOf(
-       false,Natural.valueOf("21ab528c4dbc181",0x10),-26),
+       false,BoundedNatural.valueOf("21ab528c4dbc181",0x10),-26),
      BigFloat.valueOf(
-       true,Natural.valueOf("8d9814ae2e0074",0x10),-25),
+       true,BoundedNatural.valueOf("8d9814ae2e0074",0x10),-25),
      BigFloat.valueOf(
-       true,Natural.valueOf("2c94d1dcb123a56b9c1",0x10),-43), };
+       true,BoundedNatural.valueOf("2c94d1dcb123a56b9c1",0x10),-43), };
     for (final BigFloat fi : f) {
       Common.doubleRoundingTest(
         BigFloat::valueOf,Numbers::doubleValue,dist,

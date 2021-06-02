@@ -21,7 +21,7 @@ import sicpplus.java.prng.Generators;
  * numbers. Only implementing a commutative monoid 
  * (ie just addition) for now.
  * 
- * This is in contrast to {@link Natural} and
+ * This is in contrast to {@link BoundedNatural} and
  * {@link java.math.BigInteger}, which both have bounded ranges,
  * limited, for one thing, by the fact that bits are addressable
  * by <code>int</code>.
@@ -182,7 +182,7 @@ implements Comparable<UnboundedNatural> {
   /** Intended primarily for testing. 
    * For now, just a relatively small number of random bits.
    * Not large enough to test unboundedness compared to 
-   * {@link Natural}, but large examples take too long to
+   * {@link BoundedNatural}, but large examples take too long to
    * run as unit tests, cause OOM, etc..
    */
 
@@ -195,7 +195,7 @@ implements Comparable<UnboundedNatural> {
     final Generator g2 = 
       randomBitsGenerator (4L,urp);
 //    final Generator g3 = 
-//      randomBitsGenerator (1L+Natural.MAX_WORDS,urp);
+//      randomBitsGenerator (1L+BoundedNatural.MAX_WORDS,urp);
     final CollectionSampler gs =
       new CollectionSampler(urp,List.of(
         g0,
@@ -217,7 +217,7 @@ implements Comparable<UnboundedNatural> {
 
 private UnboundedNatural (final Words w) { words = w; }
 
-public static final UnboundedNatural valueOf (final Natural u) {
+public static final UnboundedNatural valueOf (final BoundedNatural u) {
   final int n = u.hiInt();
   Words r = null;
   for (int i=0;i<n;i++) { r = new Words(u.word(i),r); }
@@ -229,8 +229,8 @@ public static final UnboundedNatural valueOf (final Natural u) {
  * @param u0 low words
  * @param u1 high words
  */
-public static final UnboundedNatural concatenate (final Natural u0,
-                                                  final Natural u1) {
+public static final UnboundedNatural concatenate (final BoundedNatural u0,
+                                                  final BoundedNatural u1) {
   Words w = null;
   final int n0 = u0.hiInt();
   for (int i=0;i<n0;i++) { w = new Words(u0.word(i),w); }

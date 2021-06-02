@@ -90,8 +90,8 @@ public final class Numbers implements Set {
       return ((BigFloat) x).doubleValue(); }
     if (x instanceof RationalFloat) { 
       return ((RationalFloat) x).doubleValue(); }
-    if (x instanceof Natural) { 
-      return ((Natural) x).doubleValue(); }
+    if (x instanceof BoundedNatural) { 
+      return ((BoundedNatural) x).doubleValue(); }
     if (x instanceof Number) { 
       return ((Number) x).doubleValue(); }
     throw Exceptions.unsupportedOperation(null,"doubleValue",x); }
@@ -101,8 +101,8 @@ public final class Numbers implements Set {
       return ((BigFloat) x).floatValue(); }
     if (x instanceof RationalFloat) { 
       return ((RationalFloat) x).floatValue(); }
-    if (x instanceof Natural) { 
-      return ((Natural) x).floatValue(); }
+    if (x instanceof BoundedNatural) { 
+      return ((BoundedNatural) x).floatValue(); }
     if (x instanceof Number) { 
       return ((Number) x).floatValue(); }
     throw Exceptions.unsupportedOperation(null,"floatValue",x); }
@@ -118,11 +118,11 @@ public final class Numbers implements Set {
     return i.bitLength(); }
 
   /** inclusive */
-  public static final int loBit (final Natural i) {
+  public static final int loBit (final BoundedNatural i) {
     return i.loBit(); }
 
   /** exclusive */
-  public static final int hiBit (final Natural i) {
+  public static final int hiBit (final BoundedNatural i) {
      return i.hiBit(); }
 
   /** inclusive */

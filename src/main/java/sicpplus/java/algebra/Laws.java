@@ -251,7 +251,7 @@ public final class Laws {
   // by algebraic structure
   // TODO: reuse code by adding elements to (immutable) lists
   // TODO: how to fit ordering into this? specifically in cases
-  // like Natural numbers where a + b >= a and b.
+  // like BoundedNatural numbers where a + b >= a and b.
 
   public static final ImmutableList<Predicate<Map<Set,Supplier>>>
   magma  (final Set elements,

@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableMap;
 
 import sicpplus.java.algebra.Set;
 import sicpplus.java.algebra.Structure;
-import sicpplus.java.numbers.Natural;
+import sicpplus.java.numbers.BoundedNatural;
 import sicpplus.java.numbers.UnboundedNatural;
 import sicpplus.java.prng.Generator;
 import sicpplus.java.prng.Generators;
@@ -51,7 +51,7 @@ public final class Unbounded {
     try {
       final Generator g = 
         UnboundedNatural.randomBitsGenerator(
-          1L+(Natural.MAX_WORDS<<4),
+          1L+(BoundedNatural.MAX_WORDS<<4),
           PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
 
       final UnboundedNatural u0 = 
@@ -89,7 +89,7 @@ public final class Unbounded {
     final Supplier g = new Supplier () {
       final Generator rbg = 
         UnboundedNatural.randomBitsGenerator(
-          1L+(Natural.MAX_WORDS<<3),
+          1L+(BoundedNatural.MAX_WORDS<<3),
           PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
       @Override
       public final Object get () { return rbg.next(); } };
@@ -112,7 +112,7 @@ public final class Unbounded {
   private static final void addition () {
     final long t0 = System.nanoTime();
     try {
-      final Natural max = Natural.maxValue();
+      final BoundedNatural max = BoundedNatural.maxValue();
       UnboundedNatural u = 
         UnboundedNatural.concatenate(max,max);
       for (int i=0;i<32;i++) { 
