@@ -3294,7 +3294,7 @@ which is a monoid where the operation is symmetric:
 \begin{description}
 \item[Elements:] $\Set{N}$
 \item[Operation:] $\Add{N}$
-\item[Identity:] $\Ide{\Add{N}}() \rightarrow 0$
+\item[Identity:] $\Ide{\Add{N}}() \rightarrow 0_{\Space{N}}$
 \item[Associative:] 
 $(n_0 \Add{N} n_1) \Add{N} n_2 \;=\;
 n_0 \Add{N} (n_1 \Add{N} n_2)$, 
@@ -3342,28 +3342,45 @@ with methods for $\Add{N}$, $\Mul{N}$, $\Ide{\Add{N}}$,
 and $\Ide{\Mul{N}}$.
 But that locks us into the semi-ring view,
 disallowing the monoid views.
+
 \TODO In this particular case, that doesn't seem so bad,
 but we will see more convincing examples later.
 
 %-----------------------------------------------------------------
 \begin{plSection}{Implementations}
 
+\citeAuthorYearTitle{LindholmEtAl:2021:JVMS16}
+
+\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}
+
+%-----------------------------------------------------------------
+\begin{plSection}{\javaFont BoundedNatural}
+
+An implementation of a subsete of $\Space{N}$,
+similar to {\javaFont java.math.BigInteger},
+can be found at: 
+\href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/BoundedNatural.java}
+{\javaFont BoundedNatural.java}
+
+\end{plSection}%{\javaFont BoundedNatural}
 %-----------------------------------------------------------------
 \begin{plSection}{\javaFont UnboundedNatural}
 
-\citeAuthorYearTitle{LindholmEtAl:2021:JVMS16}
-
-\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}
+A proof-of-concept implementation in Java,
+supporting just the commutative monoiod over addition, 
+can be found at
+\href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/UnboundedNatural.java}
+{\javaFont UnboundedNatural.java}
 
 \end{plSection}%{\javaFont UnboundedNatural}
 %-----------------------------------------------------------------
-\begin{plSection}{\javaFont BigNatural}
+\begin{plSection}{Primitives}
 
 \citeAuthorYearTitle{LindholmEtAl:2021:JVMS16}
 
 \citeAuthorYearTitle{GoslingEtAl:2021:JLS16}
 
-\end{plSection}%{\javaFont BigNatural}
+\end{plSection}%{Primtives}
 %-----------------------------------------------------------------
 
 \end{plSection}%{Implementations}
@@ -3373,6 +3390,27 @@ but we will see more convincing examples later.
 \begin{plSection}{Integers}
 
 
+%-----------------------------------------------------------------
+\begin{plSection}{Implementations}
+%-----------------------------------------------------------------
+\begin{plSection}{\javaFont BigInteger}
+
+\citeAuthorYearTitle{LindholmEtAl:2021:JVMS16}
+
+\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}
+
+\end{plSection}%{\javaFont BigInteger}
+%-----------------------------------------------------------------
+\begin{plSection}{Primitives}
+
+\citeAuthorYearTitle{LindholmEtAl:2021:JVMS16}
+
+\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}
+
+\end{plSection}%{Primtives}
+%-----------------------------------------------------------------
+\end{plSection}%{Implementations}
+%-----------------------------------------------------------------
 \end{plSection}%{Integers}
 %-----------------------------------------------------------------
 \begin{plSection}{Rationals}
