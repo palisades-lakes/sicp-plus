@@ -27,7 +27,7 @@ import sicpplus.java.prng.Generators;
  * by <code>int</code>.
  *  
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-31
+ * @version 2021-06-01
  */
 
 @SuppressWarnings("unchecked")
@@ -168,7 +168,7 @@ implements Comparable<UnboundedNatural> {
    * random <code>int</code> words.
    */
 
-  private static final Generator 
+  public static final Generator 
   randomBitsGenerator (final long n,
                        final UniformRandomProvider urp) {
     final Generator ig = Generators.intGenerator(urp);
@@ -195,7 +195,7 @@ implements Comparable<UnboundedNatural> {
     final Generator g2 = 
       randomBitsGenerator (4L,urp);
 //    final Generator g3 = 
-//      randomBitsGenerator (1L+Integer.MAX_VALUE,urp);
+//      randomBitsGenerator (1L+Natural.MAX_WORDS,urp);
     final CollectionSampler gs =
       new CollectionSampler(urp,List.of(
         g0,
