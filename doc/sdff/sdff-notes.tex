@@ -2911,7 +2911,7 @@ A couple possibly relevant ones are:
 \citeAuthorTitle{wiki:VerletIntegration}
 and
 \citeAuthorYearTitle[%
-section 17.4 Second-orde+r conservative equations]%
+section 17.4 Second-order conservative equations]%
 {PressEtal:2007:NumericalRecipes}.
 
 I've spent a couple days rereading this section,
@@ -3057,28 +3057,29 @@ This adds up to what a mathematician would call an ordered
 \emph{field}~\cite{wiki:FieldMathematics}.
 Skipping the ``ordered'' part for now,
 a field $\Space{F}$ consists of
-$[\Set{F},\Add{F},\Mul{F},\Sub{F},\Div{F},\Zero{F}, \One{F}]$:
+$[\Set{F},\Add{\Space{F}},\Mul{\Space{F}},
+\Sub{\Space{F}},\Div{\Space{F}},\Zero{\Space{F}}, \One{\Space{F}}]$:
 \begin{description}
 \item[Elements:] a set $\Set{F}$, the ``numbers''.
 \item[Addition:] a binary operation (two argument function)
-$\Add{F} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
+$\Add{\Space{F}} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
 \item[Multiplication:] a binary operation 
-$\Mul{F} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
+$\Mul{\Space{F}} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
 \item[Additive inverse:] a unary operation (one argument function)
-$\Sub{F} :\Set{F} \rightarrow \Set{F}$.
+$\Sub{\Space{F}} :\Set{F} \rightarrow \Set{F}$.
 \item[Multiplicative inverse:] 
 a unary operation (one argument function)
 on everything but the additive identity:
-$\Div{F} :  \Set{F} \setminus \left\{\Zero{F}\right\} 
+$\Div{\Space{F}} :  \Set{F} \setminus \left\{\Zero{\Space{F}}\right\} 
 \rightarrow \Set{F}$.
 \item[Additive identity:] a nullary operation 
 (zero argument function)
-$\Zero{F} : \emptyset \rightarrow \Set{F}$.
+$\Zero{\Space{F}} : \emptyset \rightarrow \Set{F}$.
 Mathematicians typically ignore the difference between a zero
 argument function and the value of that function,
-acting as if $\Zero{F}() = \Zero{F}\, \in \, \Set{F}$.
+acting as if $\Zero{\Space{F}}() = \Zero{\Space{F}}\, \in \, \Set{F}$.
 \item[Multiplicative identity:] a nullary operation 
-$\One{F} : \emptyset \rightarrow \Set{F}$.
+$\One{\Space{F}} : \emptyset \rightarrow \Set{F}$.
 \end{description}
 Note that I am being pedantic about a number of things
 that mathematicians usually leave ambiguous,
@@ -3098,46 +3099,46 @@ $a, b, c \,\in \, \Set{F}$
 \begin{description}
 
 \item[Additive identity:] 
-$\Zero{F} \,\Add{F}\, a \,=\, a$.
+$\Zero{\Space{F}} \,\Add{\Space{F}}\, a \,=\, a$.
 
 \item[Multiplicative identity:] 
-$\One{F}() \,\Mul{F}\, a \,=\, a$.
+$\One{\Space{F}}() \,\Mul{\Space{F}}\, a \,=\, a$.
 
 \item[Additive inverse:] 
-$\Sub{F}(a) \;\Add{F}\; a = \Zero{F}$.
+$\Sub{\Space{F}}(a) \;\Add{\Space{F}}\; a = \Zero{\Space{F}}$.
 Binary subtraction is defined as the composition 
 of addition and inverse:
-$a \,\Sub{F}\, b = 
-a \,\Add{F}\, \left(\Sub{F}(b)\right) $
+$a \,\Sub{\Space{F}}\, b = 
+a \,\Add{\Space{F}}\, \left(\Sub{\Space{F}}(b)\right) $
 
 \item[Multiplicative inverse:] 
-$\Div{F}(a) \;\Mul{F}\; a = \One{F}$ for all $a \neq \Zero{F}$.
+$\Div{\Space{F}}(a) \;\Mul{\Space{F}}\; a = \One{\Space{F}}$ for all $a \neq \Zero{\Space{F}}$.
 Binary division is defined as with binary addition,
 with the wrinkle that the second argument (the divisor)
 cannot be the additive identity.
 
 \item[Associative addition:] 
-$\left( a \Add{F} b \right)  \Add{F} c 
+$\left( a \Add{\Space{F}} b \right)  \Add{\Space{F}} c 
 \,=\, 
-a  \Add{F} \left( b  \Add{F} c \right)$
+a  \Add{\Space{F}} \left( b  \Add{\Space{F}} c \right)$
 
 \item[Associative multiplication:] 
-$\left( a  \Mul{F} b \right) \Mul{F} c 
+$\left( a  \Mul{\Space{F}} b \right) \Mul{\Space{F}} c 
 \,=\, 
-a \Mul{F} \left( b \Mul{F} c \right)$
+a \Mul{\Space{F}} \left( b \Mul{\Space{F}} c \right)$
 
 \item[Commutative addition:] 
-$a \Add{F} b \,=\, b \Add{F} a$
+$a \Add{\Space{F}} b \,=\, b \Add{\Space{F}} a$
 
 \item[Commutative multiplication:] 
-$a \Mul{F} b \,=\, b \Mul{F} a$
+$a \Mul{\Space{F}} b \,=\, b \Mul{\Space{F}} a$
 
 \item[Distributive multiplication over addition:] 
-$a \, \Mul{F} \, \left( b \Add{F} c \right)
+$a \, \Mul{\Space{F}} \, \left( b \Add{\Space{F}} c \right)
 \,=\, 
-\left(a \Mul{F} b \right) 
-\, \Add{F} \, 
-\left(a \Mul{F} c \right)$
+\left(a \Mul{\Space{F}} b \right) 
+\, \Add{\Space{F}} \, 
+\left(a \Mul{\Space{F}} c \right)$
 
 \end{description}
 
@@ -3286,28 +3287,66 @@ or is just very slow.
 
 I'm going to take the \emph{natural numbers},
 $\Space{N} =
- [ \Set{N}=\left\{ 0, 1, 2, {\cdots}\right\}, \Add{N}]$,
-and the usual notion of addition on them $\Add{N}$,
+ [ \Set{N}=\left\{ 0, 1, 2, {\cdots}\right\}, \Add{\Naturals}]$,
+and the usual notion of addition on them $\Add{\Naturals}$,
 as given.
-This gives us $\Space{N}$, a \emph{commutative monoid},
+
+You can start from less than this if you like.
+What's essential is a starting element, eg, $0$,
+and a ``next'' or ``increment'' operation. 
+See, for example, 
+\citeAuthorYearTitle[section 3.1]{Feferman:1989:NumberSystems}.
+However, this kind of axiomatic minimalism 
+isn't my primary interest.
+What I want to do instead is to motivate the mathematical
+structures I describe by posing at least somewhat realistic
+problems that they can be used to solve.
+
+In the case of $\Space{N}$, I find it a bit difficult 
+come up with something convincing without
+jumping ahead to the rationals.
+So, if this seems a bit to trivial,
+ bear with me for the moment.
+
+The natural numbers answers two kinds of questions:
+\begin{itemize}
+\item How many? (cardinality)
+\item What's next? or Which is bigger? (ordinality)
+\end{itemize}
+
+Addition, $\Add{\Naturals}$, answers questions like:
+If I have a basket with $m$ loaves of bread,
+and my friend has $n$, how many do we have all together?
+
+The ordering tells us: Who has more bread?
+
+\TODO: This isn't very satisfying.
+Look into origins of math, Egypt, Mesopotamia, etc, for better
+examples?
+
+$\Space{N}$ is  a \emph{commutative monoid},
 which is a monoid where the operation is symmetric:
 \begin{description}
 \item[Elements:] $\Set{N}$
-\item[Operation:] $\Add{N}$
-\item[Identity:] $\Ide{\Add{N}}() \rightarrow 0_{\Space{N}}$
+\item[Operation:] $\Add{\Naturals}$
+\item[Identity:] $\Ide{\Add{\Naturals}}() \rightarrow \Zero{\Naturals}$
 \item[Associative:] 
-$(n_0 \Add{N} n_1) \Add{N} n_2 \;=\;
-n_0 \Add{N} (n_1 \Add{N} n_2)$, 
+$(n_0 \Add{\Naturals} n_1) \Add{\Naturals} n_2 \;=\;
+n_0 \Add{\Naturals} (n_1 \Add{\Naturals} n_2)$, 
 for all $n_0, n_1, n_2 \in \Set{N}$
-\item[Commutative:] $n_0 \Add{N} n_1 \;=\;
-n_1 \Add{N} n_0$,
+\item[Commutative:] $n_0 \Add{\Naturals} n_1 \;=\;
+n_1 \Add{\Naturals} n_0$,
 for all $n_0, n_1 \in \Set{N}$
 \end{description}
 
-Multiplication, $\Mul{N}$, can be derived from addition in the
+\TODO: missing $<$, $\leq$ as operator.
+Should this be \emph{ordered commutative monoid},
+oir dela with ordering separately?
+
+Multiplication, $\Mul{\Naturals}$, can be derived from addition in the
 obvious way.
 This gives us another commutative monoid:
-$[\Set{N}, \Mul{N}, \Ide{\Mul{N}}]$.
+$[\Set{N}, \Mul{\Naturals}, \Ide{\Mul{\Naturals}}]$.
 
 Monoids are examples of what sometimes are referred to 
 as group-like structures~\cite{wiki:GroupLike},
@@ -3317,15 +3356,15 @@ structures.
 We can also consider $\Space{N}$ as a ring-like
 (one set, two operation)
 structure, a \emph{commutative semi-ring}~\cite{wiki:Semiring}, 
-using both $\Add{N}$ and $\Mul{N}$,
+using both $\Add{\Naturals}$ and $\Mul{\Naturals}$,
 which then obeys the commutative monoid laws for
-$\Add{N}$ and $\Mul{N}$, and two more laws in addition:
+$\Add{\Naturals}$ and $\Mul{\Naturals}$, and two more laws in addition:
 \begin{description}
 \item[Distributive:] 
-$(n_0 \Add{N} n_1) \; \Mul{N}\; n_2 \;=\;
-(n_0 \Mul{N} n_2) \; \Add{N} \; (n_1 \Mul{N} n_2)$, \\
+$(n_0 \Add{\Naturals} n_1) \; \Mul{\Naturals}\; n_2 \;=\;
+(n_0 \Mul{\Naturals} n_2) \; \Add{\Naturals} \; (n_1 \Mul{\Naturals} n_2)$, \\
 for all $n_0, n_1, n_2 \in \Set{N}$.
-\item[Zero:] $\Ide{\Add{N}}() \Mul{N} n \; = \; \Ide{\Add{N}}() 
+\item[Zero:] $\Ide{\Add{\Naturals}}() \Mul{\Naturals} n \; = \; \Ide{\Add{\Naturals}}() 
 \; = \; 0$ for all $n \in \Set{N}$
 \end{description}
 
@@ -3338,14 +3377,85 @@ It's tempting, and a common mistake,
 to represent mathematical structures by types or classes.
 We might have, say, a Java class that provides an
 unbounded implementation of the natural numbers,
-with methods for $\Add{N}$, $\Mul{N}$, $\Ide{\Add{N}}$,
-and $\Ide{\Mul{N}}$.
+with methods for $\Add{\Naturals}$, $\Mul{\Naturals}$, 
+$\Ide{\Add{\Naturals}}$,
+and $\Ide{\Mul{\Naturals}}$.
 But that locks us into the semi-ring view,
 disallowing the monoid views.
 
 \TODO In this particular case, that doesn't seem so bad,
 but we will see more convincing examples later.
 
+%-----------------------------------------------------------------
+\begin{plSection}{Modular arithmetic}
+
+Another example of why it would be a mistake to implement
+$\Space{N}$ as, in Java terms,
+a class implementing some {\javaFont CommutativeMonoid} interface,
+Is the fact that there are many other important structures
+to be defined on subsets of $\Set{N}$, which require
+different definitions for $\Add{\Naturals}$ and $\Mul{\Naturals}$.
+
+The too simple motivating question here might be:
+It is the $20$th hour of the day. What hour will it be $5$ hours
+from now?
+
+To deal with questions like this, we need to modify $\Add{\Naturals}$,
+give up ordering, and get, as a result, two new \emph{families} of 
+commutative monoids (or a family of semi-rings, 
+if we prefer to think of of it that way).
+
+Consider the \emph{intervals} in $\Set{N}$:
+For $n_{0}\,\leq\, n_{1}$, 
+$\left[ n_{0}, n_{1} \right] \; \defeq \;
+\left\{ n_{0}, n_{0} + 1, \cdots , n_{1} \right\}$.
+
+(\NOTE To avoid off-by-one errors, 
+I prefer to define all integer intervals as half-open.
+But that is a bit difficult without subtraction.
+
+\NOTE Modular arithmetic is more often defined for the special 
+case of $n_0=0$. My reasons for this slightly more general 
+version should become apparent soon.)
+
+Then we can define a new addition operator 
+$\Add{ \Naturals[n_0,n_1] }$:
+\begin{plAlgorithm}
+{Modular addition}
+{modularAddition}
+\begin{lstlisting}[language=pseudocode]
+(defn $\Add{\Naturals[n_0,n_1]}$ [a b]
+  (assert (<= 0 $n_0$ a $n_1$))
+  (assert (<= 0 $n_0$ b $n_1$))
+  (let [step (fn [sum count]
+                       (if (= count b)
+                         sum
+                         (if (= sum $n_1$)
+                           (step $n_0$ ($\Add{\Naturals}$ count 1))
+                           (step ($\Add{\Naturals}$ sum 1) ($\Add{\Naturals}$ count 1)))))]
+    (step a 0)))
+\end{lstlisting}
+\end{plAlgorithm}
+
+We can then define the commutative semi-group 
+(a monoid without identity~\cite{wiki:Semigroup})
+$
+\Naturals[n_0,n_1] =
+\left[ 
+\left[ n_{0}, n_{1} \right], 
+\Add{\Naturals[n_0,n_1]}
+\right]
+$.
+(If $n_0=0$, then it's a commutative monoid.)
+
+(A perhaps cleaner, or ``more pure'' version of this
+would distinguish the elements of $\Space{\Naturals[n_0,n_1]}$
+from the elements of $\Set{N}$,
+and define $\Add{\Naturals[n_0,n_1]}$ via an isomorphism.
+I'm using the ambiguity typical of mathematics to ignore that
+distinction.)
+
+\end{plSection}%{Modular arithmetic}
 %-----------------------------------------------------------------
 \begin{plSection}{Implementations}
 
