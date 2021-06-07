@@ -31,7 +31,7 @@ import sicpplus.java.prng.GeneratorBase;
 /** Utilities for <code>float</code>, <code>float[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-29
+ * @version 2021-06-07
  */
 public final class Floats implements Set {
 
@@ -499,13 +499,12 @@ public final class Floats implements Set {
    * Create a fraction given the float value.
    * <p>
    * This constructor behaves <em>differently</em> from
-   * {@link #BigFraction(double, double, int)}. It converts the
+   * <code>BigFraction(double, double, int)</code>. It converts the
    * float value exactly, considering its internal bits
    * representation. This works for all values except NaN and
    * infinities and does not requires any loop or convergence
    * threshold.
    * </p>
-   * @see #BigFraction(double, double, int)
    * @param x the float value to convert to a fraction.
    * @exception IllegalArgumentException if value is not finite
    */
@@ -743,7 +742,7 @@ public final class Floats implements Set {
 
   //--------------------------------------------------------------
   /** Discretely uniform over 'normal' floats,
-   *  as opposed to 'subnormal' floats. <
+   *  as opposed to 'subnormal' floats.
    *  em>Not gaussian!</em>
    * @param urp
    * @param eMax

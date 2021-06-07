@@ -17,7 +17,7 @@ import sicpplus.java.exceptions.Exceptions;
  * arithmetic on them faster.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-12
+ * @version 2021-06-07
  */
 
 @SuppressWarnings("unchecked")
@@ -689,9 +689,7 @@ implements Ringlike<RationalFloat> {
   //--------------------------------------------------------------
   /** Half-even rounding from {@link BoundedNatural} ratio to
    * <code>float</code>.
-   * @param n numerator
-   * @param d positive denominator
-   * @return closest half-even rounded <code>float</code> to n / d.
+   * @return closest half-even rounded <code>float</code>.
    */
 
   @Override

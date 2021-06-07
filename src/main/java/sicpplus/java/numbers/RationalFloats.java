@@ -25,7 +25,7 @@ import sicpplus.java.prng.Generators;
  * <code>RationalFloat</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-12
+ * @version 2021-06-07
  */
 @SuppressWarnings({"unchecked","static-method"})
 public final class RationalFloats implements Set {
@@ -206,13 +206,11 @@ public final class RationalFloats implements Set {
 
   //--------------------------------------------------------------
 
-  /** Intended primarily for testing. Sample a random double
-   * (see {@link sicpplus.java.prng.DoubleSampler})
-   * and convert to <code></code>
-   * with {@link #DOUBLE_P} probability;
-   * otherwise return {@link #EMPTY} or
-   * {@link #ONE}, 
-   * with equal probability (these are potential edge cases).
+  /** Intended primarily for testing. 
+   * Mostly sample a random
+   * <code>BigInteger</code>
+   * and convert to <code>RationalFloat</code>,
+   * sometimes return an edge case (eg {@link RationalFloat#ONE}).
    */
 
   public static final Generator

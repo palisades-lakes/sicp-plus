@@ -41,7 +41,7 @@ import sicpplus.java.prng.GeneratorBase;
  * This suggests 
  * <code>MAX_WORDS = (Integer.MAX_VALUE >> 5)</code>.
  * and 
- * <code>MAX_BITS = (MAX_WORDS << 5)</code>
+ * <code>MAX_BITS = (MAX_WORDS &lt;&lt; 5)</code>
  * 
  * </ol>
  * (The limit I am talking about is separate from
@@ -63,7 +63,7 @@ import sicpplus.java.prng.GeneratorBase;
  * <code>Integer.MAX_VALUE-5</code>.
  *  
  * @author palisades dot lakes at gmail dot com
- * @version 2021-06-02
+ * @version 2021-06-07
  */
 
 @SuppressWarnings("unchecked")
@@ -1653,7 +1653,7 @@ implements Ringlike<BoundedNatural> {
   public static final BoundedNatural valueOf (final String s) {
     return valueOf(s,0x10); }
 
-  /** <code>0L<=u</code>. */
+  /** <code>0L &le; u</code>. */
 
   public static final BoundedNatural valueOf (final long u) {
     assert 0L<=u;

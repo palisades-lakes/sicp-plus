@@ -5,15 +5,15 @@ import sicpplus.java.functions.Function;
 import sicpplus.java.functions.scalar.DoubleBracket;
 
 /** Find 3 <code>double</code>
- * domain values, <code>x0 < x1 < x2</code>, such that
- * <code>f(x0) > f(x1) < f(x2)</code>.
+ * domain values, <code>x0 &lt; x1 &lt; x2</code>, such that
+ * <code>f(x0) &gt; f(x1) &lt; f(x2)</code>.
  * <p>
  * To simplify history bookkeeping It is left to the 
  * <code>objective</code> function to determine whether to re-compute,
  * or cache <code>f.doubleValue(x)</code>.
  * 
  * @author palisades dot lakes at gmail dot com
- * @version 2018-09-07
+ * @version 2021-06-07
  */
 
 public final class Bracket {

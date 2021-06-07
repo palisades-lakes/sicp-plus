@@ -46,14 +46,14 @@ import sicpplus.java.prng.PRNG;
  *
  * <b>TODO:</b> replace sampling iterators with 0-arg functions?
  *
- * <b>TODO:<.b> should a Set require an equality relation,
+ * <b>TODO:</b> should a Set require an equality relation,
  * not necessarily the same as <code>equals</code>?
  * ...since multiple classes might be used to represent the
  * elements. Or the set might really be the set of equivalence
  * classes, represented by some element of each equivalence class.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-03-05
+ * @version 2021-06-07
  */
 
 public interface Set {
@@ -235,7 +235,7 @@ public interface Set {
    * might be used for testing, so might make sense 'travel fast',
    * and go back to fill in.
    *
-   * TODO: unify with {@link #generator(UniformRandomProvider, Map)}
+   * TODO: unify with {@link #generator(Map)}
    * via options?
    */
   default Supplier iterator (final Map options) {

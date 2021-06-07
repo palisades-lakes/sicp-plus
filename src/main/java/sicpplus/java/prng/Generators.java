@@ -18,7 +18,7 @@ import sicpplus.java.numbers.Doubles;
  * that return different values on each call.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-11
+ * @version 2021-06-07
  */
 
 @SuppressWarnings("unchecked")
@@ -302,12 +302,12 @@ public final class Generators {
   // correct rounding to nearest double, etc.
 
   /** Intended primarily for testing. Sample a random double
-   * (see {@link sicpplus.java.prng.DoubleSampler})
+   * (see {@link Doubles#finiteGenerator})
    * and convert to <code>BigFraction</code>
-   * with {@link #DOUBLE_P} probability;
-   * otherwise return {@link BigFraction#ZERO} or 
-   * {@link BigFractrion#ONE}, {@link BigFractrion#MINUS_ONE},  
-   * with equal probability (these are potential edge cases).
+   * with high probability probability;
+   * otherwise return one of a set of edge case values
+   * (eg <code>BigFraction.ZERO</code>,  
+   * with equal probability.
    */
 
   public static final Generator 

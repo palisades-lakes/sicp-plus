@@ -10,7 +10,7 @@ import sicpplus.java.exceptions.Exceptions;
  * and <code>double</code> approximations.
  * 
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-05
+ * @version 2021-06-07
  */
 
 @SuppressWarnings("unchecked")
@@ -44,7 +44,7 @@ public interface Polynomial<T> {
     throw Exceptions.unsupportedOperation(this,"value",x); }
 
   //--------------------------------------------------------------
-  /** Return the exact value of <
+  /** Return the exact value of 
    * <code>a0 + a1*x + a2*x<sup>2</sup> + ...</code> 
    * rounded to nearest, even ties. (Note that this is just 
    * {@link Math#fma(double, double, double)}.)

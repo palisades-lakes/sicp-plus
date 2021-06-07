@@ -32,7 +32,7 @@ import sicpplus.java.prng.GeneratorBase;
 /** Utilities for <code>double</code>, <code>double[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-04
+ * @version 2021-06-07
  */
 public final class Doubles implements Set {
 
@@ -325,7 +325,7 @@ public final class Doubles implements Set {
    * &le; {@link Double#MAX_EXPONENT}, te result is a normal
    * number.
    * @param significand Must be in
-   * [0,{@link #SIGNIFICAND_MASK}].
+   * [0,SIGNIFICAND_MASK].
    * Treated as <code>significand *
    * 2<sup>-STORED_SIGNIFICAND_BITS</sup></code>.
    * @return <code>(-1)<sup>sign</sup> * 2<sup>exponent</sup>
@@ -614,7 +614,7 @@ public final class Doubles implements Set {
     ListSampler.shuffle(urp,Arrays.asList(y));
     return y; }
 
-  /** Shuffles the output of <code.g</code>.
+  /** Shuffles the output of <code>g</code>.
    * @param g must be a generator that returns
    * <code>double[]</code>.
    */
@@ -631,7 +631,7 @@ public final class Doubles implements Set {
         return shuffle(z,urp); } }; }
 
   //--------------------------------------------------------------
-  /** Sorts the output of <code.g</code>.
+  /** Sorts the output of <code>g</code>.
    * @param g must be a generator that returns
    * <code>double[]</code>.
    */
@@ -835,11 +835,10 @@ public final class Doubles implements Set {
 
   //--------------------------------------------------------------
   /** Discretely uniform over 'normal' doubles,
-   *  as opposed to 'subnormal' doubles. <
+   *  as opposed to 'subnormal' doubles. 
    *  em>Not gaussian!</em>
    * @param urp
    * @param eMax
-   * @return
    */
 
   public static final Generator

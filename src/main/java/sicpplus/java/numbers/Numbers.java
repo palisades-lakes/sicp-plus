@@ -17,15 +17,19 @@ import sicpplus.java.prng.Generators;
 /** Utilities for Object and primitive numbers.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-12
+ * @version 2021-06-07
  */
 @SuppressWarnings("unchecked")
 public final class Numbers implements Set {
 
-  /** (int & UNSIGNED_MASK) returns long containing unsigned int. */
+  /** <code>(int &amp; UNSIGNED_MASK)</code>
+   * returns <code>long<code> containing <code>unsigned int</code>
+ . */
   public static final long UNSIGNED_MASK = 0xFFFFFFFFL;
 
-  /** (int & UNSIGNED_MASK) returns long containing unsigned int. */
+  /** <code>(int &amp; UNSIGNED_MASK)</code>
+   * returns <code>long<code> containing <code>unsigned int</code>
+ . */
   public static final long unsigned (final int i) {
     return i & UNSIGNED_MASK; }
 
@@ -276,13 +280,8 @@ public final class Numbers implements Set {
         for (int i=0;i<n;i++) { z[i] = g.next(); }
         return z; } }; }
 
-  /** Intended primarily for testing. Sample a random double
-   * (see {@link sicpplus.java.prng.DoubleSampler})
-   * and convert to <code>BigFraction</code>
-   * with {@link #DOUBLE_P} probability;
-   * otherwise return {@link BigFraction#EMPTY} or
-   * {@link BigFraction#ONE}, {@link BigFraction#MINUS_ONE},
-   * with equal probability (these are potential edge cases).
+  /** Intended primarily for testing. Pick a number generator
+   * from a list and then sample that type.
    */
 
   public static final Generator
