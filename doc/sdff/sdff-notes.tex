@@ -1038,8 +1038,7 @@ Preview:
 {composeSchemeA}
 \begin{lstlisting}[language=scheme]
 (define (compose f g)
-  (lambda args
-    (f (apply g args))))
+  (lambda args (f (apply g args))))
 \end{lstlisting}
 \end{plListing}
 
@@ -1048,8 +1047,7 @@ Preview:
 {composeSchemeB}
 \begin{lstlisting}[language=scheme]
 (define (compose f g)
-  (define (the-composition . args)
-    (f (apply g args)))
+  (define (the-composition . args) (f (apply g args)))
   the-composition)
 \end{lstlisting}
 \end{plListing}
@@ -3341,7 +3339,7 @@ for all $n_0, n_1 \in \Set{N}$
 
 \TODO: missing $<$, $\leq$ as operator.
 Should this be \emph{ordered commutative monoid},
-oir dela with ordering separately?
+or deal with ordering separately?
 
 Multiplication, $\Mul{\Naturals}$, can be derived from addition in the
 obvious way.
@@ -3392,7 +3390,7 @@ but we will see more convincing examples later.
 Another example of why it would be a mistake to implement
 $\Space{N}$ as, in Java terms,
 a class implementing some {\javaFont CommutativeMonoid} interface,
-Is the fact that there are many other important structures
+is the fact that there are many other important structures
 to be defined on subsets of $\Set{N}$, which require
 different definitions for $\Add{\Naturals}$ and $\Mul{\Naturals}$.
 
@@ -3400,7 +3398,8 @@ The too simple motivating question here might be:
 It is the $20$th hour of the day. What hour will it be $5$ hours
 from now?
 
-To deal with questions like this, we need to modify $\Add{\Naturals}$,
+To deal with questions like this, we need to modify 
+$\Add{\Naturals}$,
 give up ordering, and get, as a result, two new \emph{families} of 
 commutative monoids (or a family of semi-rings, 
 if we prefer to think of of it that way).
@@ -3428,14 +3427,16 @@ $\Add{ \Naturals[n_0,n_1] }$:
   (assert (<= 0 $n_0$ a $n_1$))
   (assert (<= 0 $n_0$ b $n_1$))
   (let [step (fn [sum count]
-                       (if (= count b)
-                         sum
-                         (if (= sum $n_1$)
-                           (step $n_0$ ($\Add{\Naturals}$ count 1))
-                           (step ($\Add{\Naturals}$ sum 1) ($\Add{\Naturals}$ count 1)))))]
+                    (if (= count b)
+                      sum
+                      (if (= sum $n_1$)
+                        (step $n_0$ ($\Add{\Naturals}$ 1 count))
+                        (step ($\Add{\Naturals}$ 1 sum) ($\Add{\Naturals}$ 1 count)))))]
     (step a 0)))
 \end{lstlisting}
 \end{plAlgorithm}
+(\NOTE This is not intended to be a practical algorithm,
+more a specification using only $\Add{\Naturals}$.)
 
 We can then define the commutative semi-group 
 (a monoid without identity~\cite{wiki:Semigroup})
@@ -3449,8 +3450,8 @@ $.
 (If $n_0=0$, then it's a commutative monoid.)
 
 (A perhaps cleaner, or ``more pure'' version of this
-would distinguish the elements of $\Space{\Naturals[n_0,n_1]}$
-from the elements of $\Set{N}$,
+would distinguish the elements of $\Naturals[n_0,n_1]$
+from the elements of $\Naturals$,
 and define $\Add{\Naturals[n_0,n_1]}$ via an isomorphism.
 I'm using the ambiguity typical of mathematics to ignore that
 distinction.)
