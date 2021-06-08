@@ -29,7 +29,7 @@ import sicpplus.java.test.algebra.SetTests;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-06-01
+ * @version 2021-06-07
  */
 
 @SuppressWarnings("unchecked")
@@ -49,10 +49,12 @@ public final class Unbounded {
   private static final void noOverflow () {
     final long t0 = System.nanoTime();
     try {
+      final long n = 1L+(BoundedNatural.MAX_WORDS<<4);
+      System.out.println("n=" + n);
+      System.out.flush();
       final Generator g = 
         UnboundedNatural.randomBitsGenerator(
-          1L+(BoundedNatural.MAX_WORDS<<4),
-          PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
+          n,PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
 
       final UnboundedNatural u0 = 
         (UnboundedNatural) g.next();

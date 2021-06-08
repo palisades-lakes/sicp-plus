@@ -22,7 +22,7 @@ package sicpplus.java.scripts.numbers;
  * </pre>
  * 
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-24
+ * @version 2021-06-07
  */
 
 public final class MaxArrayLength {
@@ -36,10 +36,10 @@ public final class MaxArrayLength {
     // OpenJDK 64-Bit Server VM (build 16.0.1+9-24, mixed mode, sharing)
     // -Xms29g -Xmx29g -Xmn11g
     
-    //final int n = Integer.MAX_VALUE-1; // OutOfMemoryError: Requested array size exceeds VM limit
-    final int n = Integer.MAX_VALUE-2; // works:
+    final int n = Integer.MAX_VALUE-1; // OutOfMemoryError: Requested array size exceeds VM limit
+    //final int n = Integer.MAX_VALUE-2; // works:
     
-    final int[] words = new int[n];
+    final byte[] words = new byte[n];
     words[n-1] = -1;
     System.out.println(n-1 + " -> " + words[n-1]);
     System.out.println(n-1 + " -> " + Integer.toString(words[n-1],16));

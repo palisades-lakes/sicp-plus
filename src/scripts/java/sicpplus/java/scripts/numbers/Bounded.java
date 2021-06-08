@@ -14,7 +14,7 @@ import sicpplus.java.numbers.UnboundedNatural;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-29
+ * @version 2021-06-07
  */
 
 public final class Bounded {

@@ -3500,28 +3500,52 @@ A proof-of-concept implementation in Java,
 supporting just the commutative monoid over addition, 
 can be found at
 \href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/UnboundedNatural.java}
-{\javaFont UnboundedNatural.java}
+{\javaFont UnboundedNatural.java}.
+This implements $\Naturals$ with an unbounded sequence
+of {\javaFont int} 32 bit words, treated as unsigned.
+Adding two such sequences of $1073741809$ words
+takes more than $20$ minutes and 
+runs out of memory in a 56g JVM.
 
-
-\citeAuthorYearTitle{LindholmEtAl:2021:JVMS16}
-
-\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}
-
-%-----------------------------------------------------------------
-\begin{plSection}{\javaFont BoundedNatural}
-
-An implementation of a subsete of $\Naturals$,
-similar to {\javaFont java.math.BigInteger},
+A more practical implementation,
+that offers better performance for most purposes,
 can be found at: 
 \href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/BoundedNatural.java}
-{\javaFont BoundedNatural.java}
+{\javaFont BoundedNatural.java}.
+However, 
+like \href{https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/math/BigInteger.java}
+{java.math.BigInteger},
+its range is bounded, so it only supports a subset of $N$.
 
-\end{plSection}%{\javaFont BoundedNatural}
-%-----------------------------------------------------------------
-\begin{plSection}{Primitives}
+{\javaFont BoundedNatural} and {\javaFont BigInteger}
+both use {\javaFont int[]} arrays to hold their bits.
+The maximum size of an array in Java is limited
+by the fact that the JVM 
+requires array sizes and indexes to be specified 
+with {\javaFont int} values.
+(See \citeAuthorYearTitle[section 6.5]{LindholmEtAl:2021:JVMS16}.)
+This limits us to at most {\javaFont Integer.MAX\_VALUE} elements.
+However, the actual maximum array length is strictly less than that,
+by an amount that appears to be implementation dependent.
+In my particular setup, attempting to create an {\javaFont int[]}
+{\javaFont Integer.MAX\_VALUE-1} result in:
+``{\javaFont java.lang.OutOfMemoryError: 
+Requested array size exceeds VM limit}'',
+even though there is plenty of memory available to hold 
+an array of that size.
+(I haven't been able to find any clear discussion of this in
+\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}.)
 
-\end{plSection}%{Primtives}
-%-----------------------------------------------------------------
+There is an even smaller limit on the size of numbers that can be
+represented by {\javaFont BoundedNatural} and {\javaFont BigInteger},
+due to the fact that both allow access to arbitrary bits
+indexed by {\javaFont int}.
+This means the maximum length bit sequence is 
+{\javaFont Integer.MAX\_VALUE},
+and the maximum number of words is then
+{\javaFont Integer.MAX\_VALUE/32}, or
+{\javaFont Integer.MAX\_VALUE>>5}.
+
 
 \end{plSection}%{Implementation}
 %-----------------------------------------------------------------
