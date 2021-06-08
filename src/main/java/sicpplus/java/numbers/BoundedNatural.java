@@ -79,7 +79,8 @@ implements Ringlike<BoundedNatural> {
    * {@link #MAX_BITS}.
    */
 
-  public final static int MAX_WORDS = (Integer.MAX_VALUE >> 5);
+  public final static int MAX_WORDS = ((Integer.MAX_VALUE+1) >> 5);
+  //public final static int MAX_WORDS = (Integer.MAX_VALUE >> 5);
 
 /** throw an {@link ArithmeticException} if
    * <code>nwords</code> exceeds {@link #MAX_WORDS}.
@@ -101,7 +102,7 @@ implements Ringlike<BoundedNatural> {
    * so <code>MAX_BITS</code> should be a multiple of 32.
    */
 
-  public static final int MAX_BITS = (MAX_WORDS << 5);
+  public static final long MAX_BITS = (MAX_WORDS << 5);
 
   /** This array is never modified.
    */

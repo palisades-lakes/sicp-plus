@@ -3023,7 +3023,9 @@ in  Numerical Recipes.
 
 \end{plSection}%{3.1.1 A simple ODE integrator}
 %-----------------------------------------------------------------
-\begin{plSection}{Number systems and arithmetic}
+\begin{plSection}{3.1.2 Modulating arithmetic operators}
+
+``Modulating''?
 
 I think ``arithmetic'' is a good example for generic functions,
 but not because it is simple and familiar
@@ -3037,562 +3039,12 @@ and accepting that there is no single right answer.
 
 I wouldn't use ``arithmetic'' as a first example for
 generic functions, but would introduce it later.
-However, since it comes here in the book,
-I'm going do a review of mathematical and computational
-number systems and arithmetic together in this section.
 
-%-----------------------------------------------------------------
-\begin{plSection}{Unexamined assumptions}
-
-I think when most software developers see ``arithmetic''
-they remember elementary school
-and think of addition, subtraction, multiplication, and division.
-The ``numbers'' passed to these operations are 
-understood to be the (classical) reals, 
-though probably only partially understood.
-
-This adds up to what a mathematician would call an ordered 
-\emph{field}~\cite{wiki:FieldMathematics}.
-Skipping the ``ordered'' part for now,
-a field $\Space{F}$ consists of
-$[\Set{F},\Add{\Space{F}},\Mul{\Space{F}},
-\Sub{\Space{F}},\Div{\Space{F}},\Zero{\Space{F}}, \One{\Space{F}}]$:
-\begin{description}
-\item[Elements:] a set $\Set{F}$, the ``numbers''.
-\item[Addition:] a binary operation (two argument function)
-$\Add{\Space{F}} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
-\item[Multiplication:] a binary operation 
-$\Mul{\Space{F}} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
-\item[Additive inverse:] a unary operation (one argument function)
-$\Sub{\Space{F}} :\Set{F} \rightarrow \Set{F}$.
-\item[Multiplicative inverse:] 
-a unary operation (one argument function)
-on everything but the additive identity:
-$\Div{\Space{F}} :  \Set{F} \setminus \left\{\Zero{\Space{F}}\right\} 
-\rightarrow \Set{F}$.
-\item[Additive identity:] a nullary operation 
-(zero argument function)
-$\Zero{\Space{F}} : \emptyset \rightarrow \Set{F}$.
-Mathematicians typically ignore the difference between a zero
-argument function and the value of that function,
-acting as if $\Zero{\Space{F}}() = \Zero{\Space{F}}\, \in \, \Set{F}$.
-\item[Multiplicative identity:] a nullary operation 
-$\One{\Space{F}} : \emptyset \rightarrow \Set{F}$.
-\end{description}
-Note that I am being pedantic about a number of things
-that mathematicians usually leave ambiguous,
-such as the difference between the field $\Space{F}$ 
-and the set of elements $\Set{F}$,
-and labeling the operations
-with the field for which they are defined.
-Another non-standard aspect of my definition is taking
-the identities to be zero-argument functions rather than
-elements of the set.
-The reason for these peculiarities is to better match the needs 
-of implementation, which should, I hope, 
-become clear later.
-
-The operations satisfy the following laws, for all 
-$a, b, c \,\in \, \Set{F}$
-\begin{description}
-
-\item[Additive identity:] 
-$\Zero{\Space{F}} \,\Add{\Space{F}}\, a \,=\, a$.
-
-\item[Multiplicative identity:] 
-$\One{\Space{F}}() \,\Mul{\Space{F}}\, a \,=\, a$.
-
-\item[Additive inverse:] 
-$\Sub{\Space{F}}(a) \;\Add{\Space{F}}\; a = \Zero{\Space{F}}$.
-Binary subtraction is defined as the composition 
-of addition and inverse:
-$a \,\Sub{\Space{F}}\, b = 
-a \,\Add{\Space{F}}\, \left(\Sub{\Space{F}}(b)\right) $
-
-\item[Multiplicative inverse:] 
-$\Div{\Space{F}}(a) \;\Mul{\Space{F}}\; a = \One{\Space{F}}$ for all $a \neq \Zero{\Space{F}}$.
-Binary division is defined as with binary addition,
-with the wrinkle that the second argument (the divisor)
-cannot be the additive identity.
-
-\item[Associative addition:] 
-$\left( a \Add{\Space{F}} b \right)  \Add{\Space{F}} c 
-\,=\, 
-a  \Add{\Space{F}} \left( b  \Add{\Space{F}} c \right)$
-
-\item[Associative multiplication:] 
-$\left( a  \Mul{\Space{F}} b \right) \Mul{\Space{F}} c 
-\,=\, 
-a \Mul{\Space{F}} \left( b \Mul{\Space{F}} c \right)$
-
-\item[Commutative addition:] 
-$a \Add{\Space{F}} b \,=\, b \Add{\Space{F}} a$
-
-\item[Commutative multiplication:] 
-$a \Mul{\Space{F}} b \,=\, b \Mul{\Space{F}} a$
-
-\item[Distributive multiplication over addition:] 
-$a \, \Mul{\Space{F}} \, \left( b \Add{\Space{F}} c \right)
-\,=\, 
-\left(a \Mul{\Space{F}} b \right) 
-\, \Add{\Space{F}} \, 
-\left(a \Mul{\Space{F}} c \right)$
-
-\end{description}
-
-The problem with this viewpoint is that computer arithmetic
-doesn't work this way
-and, more critically, computer arithmetic \emph{can't} work
-this way.
-The (classical) reals, $\Re$, are \emph{uncountable};
-computer arithmetic can at most handle countably infinite sets
-(in the sense is bounded by available memory,
-rather than having an intrinsically limited range)
-
-This suggests the following question:
-Is there a countable, implementable number system,
-probably a subset of $\Re$,
-which is sufficient for, in my case,
-``scientific computing''?
-
-Perhaps surprisingly, the answer to this seems to be yes.
-See: 
-
-\citeAuthorYearTitle{Feferman:1989:IsCantorNecessary}
-
-\citeAuthorYearTitle{Feferman:1992:ALittleBit}
-
-Reprinted, updated in:
-
-\citeAuthorYearTitle[ch.~2 ``Is Cantor necessary?'']{
-Feferman:1998:LightOfLogic}
-
-\citeAuthorYearTitle[ch.~12 ``Is Cantor necessary? (Conclusion)'']
-{Feferman:1998:LightOfLogic}
-
-\citeAuthorYearTitle[ch~14 ``Why a little bit goes a long way:
-logical foundations of scientifically applicable mathematics'']{
-Feferman:1998:LightOfLogic}
-
-Useful references, intended for undergraduates, include:
- 
-\citeAuthorYearTitle{Feferman:1989:NumberSystems}
-
-\citeAuthorYearTitle{Henle:2012:RealNumbers}
-
-\citeAuthorYearTitle{Bridger:2019}
-
-In the next few sections I'm going to work thru a series
-of number systems, both mathematical and computational.
-My approach is to motivate a new structure
-by posing a problem that can't be solved in the structures
-introduced up to that point.
-This leads to an implementation/representation
-in terms of previous (structures),
-which can then be abstracted into a set of axioms.
-The goal is to end up with something that is both
-implementable and covers ``scientifically applicable mathematics''.
-
-\end{plSection}%{Unexamined assumptions}
-%-----------------------------------------------------------------
-\begin{plSection}{Nonstandard foundations}
-
-The mathematics I will be using is unusual in two ways:
-
-\begin{itemize}
-  
-\item Universal quantification only.
-
-This is related to, but not exactly the same as,
-universal algebra~\cite{wiki:UniversalAlgebra}.
-The idea here is that the laws (axioms) 
-in the definition of a mathematical structure
-will be expressed using
-universal (``for all'') quantifiers, 
-not existential (``there exists") ones.
-
-For example, the classical definition of 
-\emph{monoid}~\cite{wiki:Monoid} $\Space{M} = [\Set{M}, \odot]$
-would be:
-\begin{description}
-  \item[Elements:] The set $\Set{M}$ is given.
-  \item[Binary operation:] The function
-  $\odot : \Set{M} \times \Set{M} \rightarrow \Set{M}$ is given.
-  Implied here is 
-  $m_0 \odot m_1 = \odot(m_0,m_1) \in \Set{M};
-  \text{ for all } m_0, m_1 \in \Set{M}$.
-  \item[Associativity:] For all $m_0, m_1, m_2 \in \Set{M}$,
-  $(m_0 \odot m_1) \odot m_2 \;=\; m_0 \odot (m_1 \odot m_2).$
-  \item[Identity:] There exists $e \in \Set{M}$ such that
-  $e \odot m \,=\, m \odot e \,=\, m$,
-  for all $m \in \Set{M}$. 
-\end{description}
-The universal version treats the identity as given
-(as a nullary/zero-argument/constant) function.
-\begin{description}
-  \item[Identity:] Given a zero-argument function 
-  $e() : \emptyset \rightarrow \Set{M}$ such that
-  $e() \odot m \,=\, m \odot e() \,=\, m$,
-  for all $m \in \Set{M}$. 
-\end{description}
-The difference may seem subtle, but the universal approach
-helps with test generation.
-Proving an implementation satisfies all the laws is difficult 
-in either case, but is it easier to validate
-universal laws with generative tests.
-
-\item Computable/constructive/intuitionist mathematics
-
-(To be honest, this is not fully worked out.)
-
-The basic idea here is to start from an
-idealized, Turing machine equivalent,
-virtual machine for ``procedures'', and define 
-``computable mathematics'' in terms of what can be computed 
-in a finite number of steps.
-I believe this restricts us to at most countable sets,
-and eliminates some of the paradoxes that led to the crisis
-in the foundations of mathematics circa 1900.
-More important in a practical sense, a mathematics that is
-defined by finitary procedures translates more-or-less
-directly into physical computation---the only difference is 
-that real machines are bounded in space and time.
-
-There is at least some reason to think 
-that this kind of foundation covers all ``scientifically
-applicable mathematics''.
-See:
-
-This approach to mathematics eliminates much of the ugliness
-of classical analysis---no axiom of choice, no unmeasurable
-sets, etc.
-
-However, more or less in exchange, it adds other complexities,
-related to the fact that one can't in general tell whether a given
-procedure with a given input, will ever halt.
-This modifies our idea of ``true'' and ``false''.
-A statement is ``true'' if there is a finite procedure that
-proves it true, and the same for false,
-but we have a third state: not halting. 
-And we can't be sure whether a running procedure won't halt,
-or is just very slow.
-
-\end{itemize}
-
-\end{plSection}%{Nonstandard foundations}
-%-----------------------------------------------------------------
-\begin{plSection}{Natural numbers}
-
-I'm going to take the \emph{natural numbers},
-$\Naturals =
- [ \Set{N}=\left\{ 0, 1, 2, {\cdots}\right\}, \Add{\Naturals}]$,
-and the usual notion of addition on them $\Add{\Naturals}$,
-as given.
-
-You can start from less than this if you like.
-What's essential is a starting element, eg, $0$,
-and a ``next'' or ``increment'' operation. 
-See, for example, 
-\citeAuthorYearTitle[section 3.1]{Feferman:1989:NumberSystems}.
-However, this kind of axiomatic minimalism 
-isn't my primary interest.
-What I want to do instead is to motivate the mathematical
-structures I describe by posing at least somewhat realistic
-problems that they can be used to solve.
-
-In the case of $\Naturals$, I find it a bit difficult 
-come up with something convincing without
-jumping ahead to the rationals.
-So, if this seems a bit to trivial,
- bear with me for the moment.
-
-The natural numbers answers two kinds of questions:
-\begin{itemize}
-\item How many? (cardinality)
-\item What's next? or Which is bigger? (ordinality)
-\end{itemize}
-
-Addition, $\Add{\Naturals}$, answers questions like:
-If I have a basket with $m$ loaves of bread,
-and my friend has $n$, how many do we have all together?
-
-The ordering tells us: Who has more bread?
-
-\TODO: This isn't very satisfying.
-Look into origins of math, Egypt, Mesopotamia, etc, for better
-examples?
-
-$\Naturals$ is  a \emph{commutative monoid},
-which is a monoid where the operation is symmetric:
-\begin{description}
-\item[Elements:] $\Set{N}$
-\item[Operation:] $\Add{\Naturals}$
-\item[Identity:] $\Ide{\Add{\Naturals}}() \rightarrow \Zero{\Naturals}$
-\item[Associative:] 
-$(n_0 \Add{\Naturals} n_1) \Add{\Naturals} n_2 \;=\;
-n_0 \Add{\Naturals} (n_1 \Add{\Naturals} n_2)$, 
-for all $n_0, n_1, n_2 \in \Set{N}$
-\item[Commutative:] $n_0 \Add{\Naturals} n_1 \;=\;
-n_1 \Add{\Naturals} n_0$,
-for all $n_0, n_1 \in \Set{N}$
-\end{description}
-
-\TODO: missing $<$, $\leq$ as operator.
-Should this be \emph{ordered commutative monoid},
-or deal with ordering separately?
-
-Multiplication, $\Mul{\Naturals}$, can be derived from addition in the
-obvious way.
-This gives us another commutative monoid:
-$[\Set{N}, \Mul{\Naturals}, \Ide{\Mul{\Naturals}}]$.
-
-Monoids are examples of what sometimes are referred to 
-as group-like structures~\cite{wiki:GroupLike},
-but might be better called ``one set, one (binary) operation''
-structures.
-
-We can also consider $\Naturals$ as a ring-like
-(one set, two operation)
-structure, a \emph{commutative semi-ring}~\cite{wiki:Semiring}, 
-using both $\Add{\Naturals}$ and $\Mul{\Naturals}$,
-which then obeys the commutative monoid laws for
-$\Add{\Naturals}$ and $\Mul{\Naturals}$, and two more laws in addition:
-\begin{description}
-\item[Distributive:] 
-$(n_0 \Add{\Naturals} n_1) \; \Mul{\Naturals}\; n_2 \;=\;
-(n_0 \Mul{\Naturals} n_2) \; \Add{\Naturals} \; (n_1 \Mul{\Naturals} n_2)$, \\
-for all $n_0, n_1, n_2 \in \Set{N}$.
-\item[Zero:] $\Ide{\Add{\Naturals}}() \Mul{\Naturals} n \; = \; \Ide{\Add{\Naturals}}() 
-\; = \; 0$ for all $n \in \Set{N}$
-\end{description}
-
-This is not particularly important, but it serves as 
-a very simple example
-of how multiple mathematical structures can be defined
-over a single set.
-This does have significant implications for implementations.
-It's tempting, and a common mistake, 
-to represent mathematical structures by types or classes.
-We might have, say, a Java class that provides an
-unbounded implementation of the natural numbers,
-with methods for $\Add{\Naturals}$, $\Mul{\Naturals}$, 
-$\Ide{\Add{\Naturals}}$,
-and $\Ide{\Mul{\Naturals}}$.
-But that locks us into the semi-ring view,
-disallowing the monoid views.
-
-\TODO In this particular case, that doesn't seem so bad,
-but we will see more convincing examples later.
-
-%-----------------------------------------------------------------
-\begin{plSection}{Modular arithmetic}
-
-Another example of why it would be a mistake to implement
-$\Naturals$ as, in Java terms,
-a class implementing some {\javaFont CommutativeMonoid} interface,
-is the fact that there are many other important structures
-to be defined on subsets of $\Set{N}$, which require
-different definitions for $\Add{\Naturals}$ and $\Mul{\Naturals}$.
-
-The too simple motivating question here might be:
-It is the $20$th hour of the day. What hour will it be $5$ hours
-from now?
-
-To deal with questions like this, we need to modify 
-$\Add{\Naturals}$,
-give up ordering, and get, as a result, two new \emph{families} of 
-commutative monoids (or a family of semi-rings, 
-if we prefer to think of of it that way).
-
-Consider the \emph{intervals} in $\Set{N}$:
-For $n_{0}\,\leq\, n_{1}$, 
-$\left[ n_{0}, n_{1} \right] \; \defeq \;
-\left\{ n_{0}, n_{0} + 1, \cdots , n_{1} \right\}$.
-
-(\NOTE To avoid off-by-one errors, 
-I prefer to define all integer intervals as half-open.
-But that is a bit difficult without subtraction.
-
-\NOTE Modular arithmetic is more often defined for the special 
-case of $n_0=0$. My reasons for this slightly more general 
-version should become apparent soon.)
-
-Then we can define a new addition operator 
-$\Add{ \Naturals[n_0,n_1] }$:
-\begin{plAlgorithm}
-{Modular addition}
-{modularAddition}
-\begin{lstlisting}[language=pseudocode]
-(defn $\Add{\Naturals[n_0,n_1]}$ [a b]
-  (assert (<= 0 $n_0$ a $n_1$))
-  (assert (<= 0 $n_0$ b $n_1$))
-  (let [step (fn [sum count]
-                    (if (= count b)
-                      sum
-                      (if (= sum $n_1$)
-                        (step $n_0$ ($\Add{\Naturals}$ 1 count))
-                        (step ($\Add{\Naturals}$ 1 sum) ($\Add{\Naturals}$ 1 count)))))]
-    (step a 0)))
-\end{lstlisting}
-\end{plAlgorithm}
-(\NOTE This is not intended to be a practical algorithm,
-more a specification using only $\Add{\Naturals}$.)
-
-We can then define the commutative semi-group 
-(a monoid without identity~\cite{wiki:Semigroup})
-$
-\Naturals[n_0,n_1] =
-\left[ 
-\left[ n_{0}, n_{1} \right], 
-\Add{\Naturals[n_0,n_1]}
-\right]
-$.
-(If $n_0=0$, then it's a commutative monoid.)
-
-(A perhaps cleaner, or ``more pure'' version of this
-would distinguish the elements of $\Naturals[n_0,n_1]$
-from the elements of $\Naturals$,
-and define $\Add{\Naturals[n_0,n_1]}$ via an isomorphism.
-I'm using the ambiguity typical of mathematics to ignore that
-distinction.)
-
-\end{plSection}%{Modular arithmetic}
-%-----------------------------------------------------------------
-\begin{plSection}{Implementation}
-
-Implementing $\Naturals$ is straightforward 
-(as long as we ignore time and space constraints).
-All we need is an implementation of unbounded bit sequences:
-
-Any natural number $n$ can be written as
-\begin{equation}
-n \; = \; \sum_{k=0} \beta_{k}(n) * 2^{k}
-\end{equation}
-where $\beta_{k}(n)$ is $0$ or $1$,
-and exponentiation over natural numbers is defined from
-$\Mul{\Naturals}$ in the obvious way.
-I'll note without proof that for any $n$ there is a 
-$k_{\text{max}}(n)$ such that $\beta_{k}(n) \equiv 0$ for all
-$k \geq k_{\text{max}(n)}$.
-In other words, all such sequences are finite. 
-
-Note also that we can define addition on bit sequences in the
-obvious way, to match addition of the corresponding numbers.
-
-The set of finite bit sequences 
-$\Space{B} = \left\{[\beta_{0}, \beta_{1}, \cdots, 
-\beta_{k_{\text{max}}]} \right\}$
- is a 
-\emph{representation} of $\Naturals$
-in the sense that we can define an invertible function,
-$\beta : \Naturals \rightarrow \Space{B}$,
-(an \emph{isomorphism}) between $\Naturals$ and 
-finite bit sequences
-that preserves addition (and ordering and identity):
-\begin{equation}
-\beta \left( a \,\Add{\Naturals} \, b\right)
-\;=\;
-\beta ( a ) \, \Add{\Space{B}} \, \beta ( b )
-\end{equation}
-(again without proof).
-
-A proof-of-concept implementation in Java,
-supporting just the commutative monoid over addition, 
-can be found at
-\href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/UnboundedNatural.java}
-{\javaFont UnboundedNatural.java}.
-This implements $\Naturals$ with an unbounded sequence
-of {\javaFont int} 32 bit words, treated as unsigned.
-Adding two such sequences of $1073741809$ words
-takes more than $20$ minutes and 
-runs out of memory in a 56g JVM.
-
-A more practical implementation,
-that offers better performance for most purposes,
-can be found at: 
-\href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/BoundedNatural.java}
-{\javaFont BoundedNatural.java}.
-However, 
-like \href{https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/math/BigInteger.java}
-{java.math.BigInteger},
-its range is bounded, so it only supports a subset of $N$.
-
-{\javaFont BoundedNatural} and {\javaFont BigInteger}
-both use {\javaFont int[]} arrays to hold their bits.
-The maximum size of an array in Java is limited
-by the fact that the JVM 
-requires array sizes and indexes to be specified 
-with {\javaFont int} values.
-(See \citeAuthorYearTitle[section 6.5]{LindholmEtAl:2021:JVMS16}.)
-This limits us to at most {\javaFont Integer.MAX\_VALUE} elements.
-However, the actual maximum array length is strictly less than that,
-by an amount that appears to be implementation dependent.
-In my particular setup, attempting to create an {\javaFont int[]}
-{\javaFont Integer.MAX\_VALUE-1} result in:
-``{\javaFont java.lang.OutOfMemoryError: 
-Requested array size exceeds VM limit}'',
-even though there is plenty of memory available to hold 
-an array of that size.
-(I haven't been able to find any clear discussion of this in
-\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}.)
-
-There is an even smaller limit on the size of numbers that can be
-represented by {\javaFont BoundedNatural} and {\javaFont BigInteger},
-due to the fact that both allow access to arbitrary bits
-indexed by {\javaFont int}.
-This means the maximum length bit sequence is 
-{\javaFont Integer.MAX\_VALUE},
-and the maximum number of words is then
-{\javaFont Integer.MAX\_VALUE/32}, or
-{\javaFont Integer.MAX\_VALUE>>5}.
-
-
-\end{plSection}%{Implementation}
-%-----------------------------------------------------------------
-\end{plSection}%{Natural numbers}
-%-----------------------------------------------------------------
-\begin{plSection}{Integers}
-
-
-%-----------------------------------------------------------------
-\begin{plSection}{Implementation}
-%-----------------------------------------------------------------
-\begin{plSection}{\javaFont BigInteger}
-
-\end{plSection}%{\javaFont BigInteger}
-%-----------------------------------------------------------------
-\begin{plSection}{Primitives}
-
-\end{plSection}%{Primtives}
-%-----------------------------------------------------------------
-\end{plSection}%{Implementation}
-%-----------------------------------------------------------------
-\end{plSection}%{Integers}
-%-----------------------------------------------------------------
-\begin{plSection}{Rationals}
-
-
-\end{plSection}%{Rationals}
-%-----------------------------------------------------------------
-\begin{plSection}{Classical Reals}
-
-
-\end{plSection}%{Classical Reals}
-%-----------------------------------------------------------------
-\begin{plSection}{Computable Reals}
-
-\end{plSection}%{Computable Reals}
-%-----------------------------------------------------------------
-\begin{plSection}{Hyperreals and infinitesimals}
-
-\end{plSection}%{Hyperreals and infinitesimals}
-%-----------------------------------------------------------------
-
-\end{plSection}%{Number systems}
-%-----------------------------------------------------------------
-\begin{plSection}{3.1.2 Modulating arithmetic operators}
-
-``Modulating''?
+See \cref{sec:NumberSystems} 
+for a more thorough discussion 
+of what "arithmetic" should or might mean,
+an example of the kind of preparation needed 
+to avoid ``programming ourselves into a corner''.
 
 %-----------------------------------------------------------------
 \begin{plSection}{Problems with redefining operators}
@@ -3772,6 +3224,655 @@ Unnecessary in a ``master class''.
 \end{plSection}%{3 Variations on an arithmetic theme}
 %-----------------------------------------------------------------
 \BeginAppendices
+%-----------------------------------------------------------------
+\begin{plSection}{Number systems and arithmetic}
+\label{sec:NumberSystems}
+
+I think when most software developers see ``arithmetic''
+they remember elementary school
+and think of addition, subtraction, multiplication, and division.
+The ``numbers'' passed to these operations are 
+understood to be the (classical) reals, 
+though probably only partially understood.
+
+This adds up to what a mathematician would call an ordered 
+\emph{field}~\cite{wiki:FieldMathematics}.
+Skipping the ``ordered'' part for now,
+a field $\Space{F}$ consists of
+$[\Set{F},\Add{\Space{F}},\Mul{\Space{F}},
+\Sub{\Space{F}},\Div{\Space{F}},\Zero{\Space{F}}, \One{\Space{F}}]$:
+\begin{description}
+\item[Elements:] a set $\Set{F}$, the ``numbers''.
+\item[Addition:] a binary operation (two argument function)
+$\Add{\Space{F}} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
+\item[Multiplication:] a binary operation 
+$\Mul{\Space{F}} : \Set{F} \times \Set{F} \rightarrow \Set{F}$
+\item[Additive inverse:] a unary operation (one argument function)
+$\Sub{\Space{F}} :\Set{F} \rightarrow \Set{F}$.
+\item[Multiplicative inverse:] 
+a unary operation (one argument function)
+on everything but the additive identity:
+$\Div{\Space{F}} :  \Set{F} \setminus \left\{\Zero{\Space{F}}\right\} 
+\rightarrow \Set{F}$.
+\item[Additive identity:] a nullary operation 
+(zero argument function)
+$\Zero{\Space{F}} : \emptyset \rightarrow \Set{F}$.
+Mathematicians typically ignore the difference between a zero
+argument function and the value of that function,
+acting as if $\Zero{\Space{F}}() = \Zero{\Space{F}}\, \in \, \Set{F}$.
+\item[Multiplicative identity:] a nullary operation 
+$\One{\Space{F}} : \emptyset \rightarrow \Set{F}$.
+\end{description}
+Note that I am being pedantic about a number of things
+that mathematicians usually leave ambiguous,
+such as the difference between the field $\Space{F}$ 
+and the set of elements $\Set{F}$,
+and labeling the operations
+with the field for which they are defined.
+Another non-standard aspect of my definition is taking
+the identities to be zero-argument functions rather than
+elements of the set.
+The reason for these peculiarities is to better match the needs 
+of implementation, which should, I hope, 
+become clear later.
+
+The operations satisfy the following laws, for all 
+$a, b, c \,\in \, \Set{F}$
+\begin{description}
+
+\item[Additive identity:] 
+$\Zero{\Space{F}} \,\Add{\Space{F}}\, a \,=\, a$.
+
+\item[Multiplicative identity:] 
+$\One{\Space{F}} \,\Mul{\Space{F}}\, a \,=\, a$.
+
+\item[Additive inverse:] 
+$\Sub{\Space{F}}(a) \;\Add{\Space{F}}\; a = \Zero{\Space{F}}$.
+Binary subtraction is defined as the composition 
+of addition and inverse:
+$a \,\Sub{\Space{F}}\, b = 
+a \,\Add{\Space{F}}\, \left(\Sub{\Space{F}}(b)\right) $
+
+\item[Multiplicative inverse:] 
+$\Div{\Space{F}}(a) \;\Mul{\Space{F}}\; a = \One{\Space{F}}$ for all $a \neq \Zero{\Space{F}}$.
+Binary division is defined as with binary addition,
+with the wrinkle that the second argument (the divisor)
+cannot be the additive identity.
+
+\item[Associative addition:] 
+$\left( a \Add{\Space{F}} b \right)  \Add{\Space{F}} c 
+\,=\, 
+a  \Add{\Space{F}} \left( b  \Add{\Space{F}} c \right)$
+
+\item[Associative multiplication:] 
+$\left( a  \Mul{\Space{F}} b \right) \Mul{\Space{F}} c 
+\,=\, 
+a \Mul{\Space{F}} \left( b \Mul{\Space{F}} c \right)$
+
+\item[Commutative addition:] 
+$a \Add{\Space{F}} b \,=\, b \Add{\Space{F}} a$
+
+\item[Commutative multiplication:] 
+$a \Mul{\Space{F}} b \,=\, b \Mul{\Space{F}} a$
+
+\item[Distributive multiplication over addition:] 
+$a \, \Mul{\Space{F}} \, \left( b \Add{\Space{F}} c \right)
+\,=\, 
+\left(a \Mul{\Space{F}} b \right) 
+\, \Add{\Space{F}} \, 
+\left(a \Mul{\Space{F}} c \right)$
+
+\end{description}
+
+The problem with this viewpoint is that computer arithmetic
+doesn't work this way
+and, more critically, computer arithmetic \emph{can't} work
+this way.
+The (classical) reals, $\Re$, are \emph{uncountable};
+computer arithmetic can at most handle countably infinite sets
+(in the sense that the representable values are 
+bounded by available memory (and time),
+rather than having an intrinsically limited range)
+
+This suggests the following question:
+Is there a countable, implementable number system,
+probably a subset of $\Re$,
+which is sufficient for, in my case,
+``scientific computing''?
+
+Perhaps surprisingly, the answer to this seems to be yes.
+See: 
+
+\citeAuthorYearTitle{Feferman:1989:IsCantorNecessary}
+
+\citeAuthorYearTitle{Feferman:1992:ALittleBit}
+
+Reprinted, updated in:
+
+\citeAuthorYearTitle[ch.~2 ``Is Cantor necessary?'']{
+Feferman:1998:LightOfLogic}
+
+\citeAuthorYearTitle[ch.~12 ``Is Cantor necessary? (Conclusion)'']
+{Feferman:1998:LightOfLogic}
+
+\citeAuthorYearTitle[ch~14 ``Why a little bit goes a long way:
+logical foundations of scientifically applicable mathematics'']{
+Feferman:1998:LightOfLogic}
+
+Useful references, intended for undergraduates, include:
+ 
+\citeAuthorYearTitle{Feferman:1989:NumberSystems}
+
+\citeAuthorYearTitle{Henle:2012:RealNumbers}
+
+\citeAuthorYearTitle{Bridger:2019}
+
+In the next few sections I'm going to work thru a series
+of number systems, both mathematical and computational.
+My approach is to motivate a new structure
+by posing a problem that can't be solved in the structures
+introduced up to that point.
+This leads to an implementation/representation
+in terms of previous (structures),
+which can then be abstracted into a set of axioms.
+The goal is to end up with something that is both
+implementable and covers ``scientifically applicable mathematics''.
+
+%-----------------------------------------------------------------
+\begin{plSection}{Nonstandard foundations}
+
+\begin{plQuote}
+{\citeAuthorYearTitle{Thurston:1994:Proof}}{}%
+{Mathematics as we practice it is much more formally 
+complete and precise than
+other sciences, but it is much less formally complete and precise 
+for its content than computer programs.
+}
+\end{plQuote}
+
+The mathematics I will be using is unusual in two ways:
+
+\begin{itemize}
+  
+\item Universal quantification only.
+
+This is related to, but not exactly the same as,
+universal algebra~\cite{wiki:UniversalAlgebra}.
+The idea here is that the laws (axioms) 
+in the definition of a mathematical structure
+will be expressed using
+universal (``for all'') quantifiers, 
+not existential (``there exists") ones.
+
+For example, the classical definition of 
+\emph{monoid}~\cite{wiki:Monoid} $\Space{M} = [\Set{M}, \odot]$
+would be:
+\begin{description}
+  \item[Elements:] The set $\Set{M}$ is given.
+  \item[Binary operation:] The function
+  $\odot : \Set{M} \times \Set{M} \rightarrow \Set{M}$ is given.
+  Implied here is 
+  $m_0 \odot m_1 = \odot(m_0,m_1) \in \Set{M};
+  \text{ for all } m_0, m_1 \in \Set{M}$.
+  \item[Associativity:] For all $m_0, m_1, m_2 \in \Set{M}$,
+  $(m_0 \odot m_1) \odot m_2 \;=\; m_0 \odot (m_1 \odot m_2).$
+  \item[Identity:] There exists $e \in \Set{M}$ such that
+  $e \odot m \,=\, m \odot e \,=\, m$,
+  for all $m \in \Set{M}$. 
+\end{description}
+The universal version treats the identity as given
+(as a nullary/zero-argument/constant) function.
+\begin{description}
+  \item[Identity:] Given a zero-argument function 
+  $e() : \emptyset \rightarrow \Set{M}$ such that
+  $e() \odot m \,=\, m \odot e() \,=\, m$,
+  for all $m \in \Set{M}$. 
+\end{description}
+The difference may seem subtle, but the universal approach
+helps with test generation.
+Proving an implementation satisfies all the laws is difficult 
+in either case, but is it easier to validate
+universal laws with generative tests.
+
+\item Computable/constructive/intuitionist mathematics
+
+(To be honest, this is not fully worked out.)
+
+The basic idea here is to start from an
+idealized, Turing machine equivalent,
+virtual machine for ``procedures'', and define 
+``computable mathematics'' in terms of what can be computed 
+in a finite number of steps.
+I believe this restricts us to at most countable sets,
+and eliminates some of the paradoxes that led to the crisis
+in the foundations of mathematics circa 1900.
+More important in a practical sense, a mathematics that is
+defined by finitary procedures translates more-or-less
+directly into physical computation---the only difference is 
+that real machines are bounded in space and time.
+
+There is at least some reason to think 
+that this kind of foundation covers all ``scientifically
+applicable mathematics''.
+See:
+
+This approach to mathematics eliminates much of the ugliness
+of classical analysis---no axiom of choice, no unmeasurable
+sets, etc.
+
+However, more or less in exchange, it adds other complexities,
+related to the fact that one can't in general tell whether a given
+procedure with a given input, will ever halt.
+This modifies our idea of ``true'' and ``false''.
+A statement is ``true'' if there is a finite procedure that
+proves it true, and the same for false,
+but we have a third state: not halting. 
+And we can't be sure whether a running procedure won't halt,
+or is just very slow.
+
+\end{itemize}
+
+\end{plSection}%{Nonstandard foundations}
+%-----------------------------------------------------------------
+\begin{plSection}{Natural numbers}
+
+I'm going to take the \emph{natural numbers},
+$\Naturals =
+ [ \Set{N}=\left\{ 0, 1, 2, {\cdots}\right\}, \Add{\Naturals}]$,
+and the usual notion of addition on them $\Add{\Naturals}$,
+as given.
+
+(You can start from less than this if you like.
+What's essential is a starting element, eg, $0$,
+and a {\pseudocodeFont next}
+or {\pseudocodeFont increment} operation. 
+See, for example, 
+\citeAuthorYearTitle[section 3.1]{Feferman:1989:NumberSystems}.
+However, this kind of axiomatic minimalism 
+isn't my primary interest.
+What I want to do instead is to motivate the mathematical
+structures I describe by posing at least somewhat realistic
+problems that they can be used to solve.)
+
+In the case of $\Naturals$, I find it a bit difficult 
+come up with something convincing without
+jumping ahead to the rationals.
+So, if this seems a bit too trivial,
+ bear with me for the moment.
+
+The natural numbers answer two kinds of questions:
+\begin{itemize}
+\item How many? (cardinality)
+\item What's next? or Which is bigger? (ordinality)
+\end{itemize}
+
+Addition, $\Add{\Naturals}$, answers questions like:
+If I have a basket with $m$ loaves of bread,
+and my friend has $n$, how many do we have all together?
+
+The ordering tells us: Who has more bread?
+
+\TODO: This isn't very satisfying.
+Look into origins of math, Egypt, Mesopotamia, etc, for better
+examples?
+
+$\Naturals$ is  a \emph{commutative monoid},
+which is a monoid where the operation is symmetric:
+\begin{description}
+\item[Elements:] $\Set{N}$
+\item[Operation:] $\Add{\Naturals}$
+\item[Identity:] $\Ide{\Add{\Naturals}}() \rightarrow \Zero{\Naturals}$
+\item[Associative:] 
+$(n_0 \Add{\Naturals} n_1) \Add{\Naturals} n_2 \;=\;
+n_0 \Add{\Naturals} (n_1 \Add{\Naturals} n_2)$, 
+for all $n_0, n_1, n_2 \in \Set{N}$
+\item[Commutative:] $n_0 \Add{\Naturals} n_1 \;=\;
+n_1 \Add{\Naturals} n_0$,
+for all $n_0, n_1 \in \Set{N}$
+\end{description}
+
+\TODO: missing $<$, $\leq$ as operator.
+Should this be \emph{ordered commutative monoid},
+or deal with ordering separately?
+
+Multiplication, $\Mul{\Naturals}$, can be derived from addition in the
+obvious way.
+This gives us another commutative monoid:
+$[\Set{N}, \Mul{\Naturals}, \Ide{\Mul{\Naturals}}]$.
+
+Monoids are examples of what sometimes are referred to 
+as group-like structures~\cite{wiki:GroupLike},
+but might be better called ``one set, one (binary) operation''
+structures.
+
+We can also consider $\Naturals$ as a ring-like
+(one set, two operation)
+structure, a \emph{commutative semi-ring}~\cite{wiki:Semiring}, 
+using both $\Add{\Naturals}$ and $\Mul{\Naturals}$,
+which then obeys the commutative monoid laws for
+$\Add{\Naturals}$ and $\Mul{\Naturals}$, and two more laws in addition:
+\begin{description}
+\item[Distributive:] 
+$(n_0 \Add{\Naturals} n_1) \; \Mul{\Naturals}\; n_2 \;=\;
+(n_0 \Mul{\Naturals} n_2) \; \Add{\Naturals} \; (n_1 \Mul{\Naturals} n_2)$, \\
+for all $n_0, n_1, n_2 \in \Set{N}$.
+\item[Zero:] $\Ide{\Add{\Naturals}} \Mul{\Naturals} n 
+\; = \; \Ide{\Add{\Naturals}}
+\; = \; 0$ for all $n \in \Set{N}$
+\end{description}
+
+This is not particularly important, but it serves as 
+a very simple example
+of how multiple mathematical structures can be defined
+over a single set.
+This does have significant implications for implementations.
+It's tempting, and a common mistake, 
+to represent mathematical structures by types or classes.
+We might have, say, a Java class that provides an
+unbounded implementation of the natural numbers,
+with methods for $\Add{\Naturals}$, $\Mul{\Naturals}$, 
+$\Ide{\Add{\Naturals}}$,
+and $\Ide{\Mul{\Naturals}}$.
+But that locks us into the semi-ring view,
+disallowing the monoid views.
+
+\TODO In this particular case, that doesn't seem so bad,
+but we will see more convincing examples later.
+
+%-----------------------------------------------------------------
+\begin{plSection}{Modular arithmetic}
+
+Another example of why it would be a mistake to implement
+$\Naturals$ as, in Java terms,
+a class implementing some {\javaFont CommutativeMonoid} interface,
+is the fact that there are many other important structures
+to be defined on subsets of $\Set{N}$, which require
+different definitions for $\Add{\Naturals}$ and $\Mul{\Naturals}$.
+
+The too simple motivating question here might be:
+It is the $20$th hour of the day. What hour will it be $5$ hours
+from now?
+
+To deal with questions like this, we need to modify 
+$\Add{\Naturals}$,
+give up ordering, and get, as a result, two new \emph{families} of 
+commutative monoids (or a family of semi-rings, 
+if we prefer to think of of it that way).
+
+Consider the \emph{intervals} in $\Set{N}$:
+For $n_{0}\,\leq\, n_{1}$, 
+$\left[ n_{0}, n_{1} \right] \; \defeq \;
+\left\{ n_{0}, n_{0} + 1, \cdots , n_{1} \right\}$.
+
+(\NOTE To avoid off-by-one errors, 
+I prefer to define all integer intervals as half-open.
+But that is a bit difficult without subtraction.
+
+\NOTE Modular arithmetic is more often defined for the special 
+case of $n_0=0$. My reasons for this slightly more general 
+version should become apparent soon.)
+
+Then we can define a new addition operator 
+$\Add{ \Naturals[n_0,n_1] }$:
+\begin{plAlgorithm}
+{Modular addition}
+{modularAddition}
+\begin{lstlisting}[language=pseudocode]
+(defn $\Add{\Naturals[n_0,n_1]}$ [a b]
+  (assert (<= 0 $n_0$ a $n_1$))
+  (assert (<= 0 $n_0$ b $n_1$))
+  (let [step (fn [sum count]
+                    (if (= count b)
+                      sum
+                      (if (= sum $n_1$)
+                        (step $n_0$ ($\Add{\Naturals}$ 1 count))
+                        (step ($\Add{\Naturals}$ 1 sum) ($\Add{\Naturals}$ 1 count)))))]
+    (step a 0)))
+\end{lstlisting}
+\end{plAlgorithm}
+(\NOTE This is not intended to be a practical algorithm,
+more a specification using only $\Add{\Naturals}$.)
+
+We can then define the commutative semi-group 
+(a monoid without identity~\cite{wiki:Semigroup})
+$
+\Naturals[n_0,n_1] =
+\left[ 
+\left[ n_{0}, n_{1} \right], 
+\Add{\Naturals[n_0,n_1]}
+\right]
+$.
+(If $n_0=0$, then it's a commutative monoid.)
+
+(A perhaps cleaner, or ``more pure'' version of this
+would distinguish the elements of $\Naturals[n_0,n_1]$
+from the elements of $\Naturals$,
+and define $\Add{\Naturals[n_0,n_1]}$ via an isomorphism.
+I'm using the ambiguity typical of mathematics to ignore that
+distinction.)
+
+\end{plSection}%{Modular arithmetic}
+%-----------------------------------------------------------------
+\begin{plSection}{Implementation}
+
+Implementing $\Naturals$ is straightforward 
+(as long as we ignore time and space constraints).
+All we need is an implementation of unbounded bit sequences:
+
+Any natural number $n$ can be written as
+\begin{equation}
+n \; = \; \sum_{k=0} \beta_{k}(n) * 2^{k}
+\end{equation}
+where $\beta_{k}(n)$ is $0$ or $1$,
+and exponentiation over natural numbers is defined from
+$\Mul{\Naturals}$ in the obvious way.
+I'll note without proof that for any $n$ there is a 
+$k_{\text{max}}(n)$ such that $\beta_{k}(n) \equiv 0$ for all
+$k \geq k_{\text{max}(n)}$.
+In other words, all such sequences are finite. 
+
+Note also that we can define addition on bit sequences in the
+obvious way, to match addition of the corresponding numbers.
+
+The set of finite bit sequences 
+$\Space{B} = \left\{[\beta_{0}, \beta_{1}, \cdots, 
+\beta_{k_{\text{max}}]} \right\}$
+ is a 
+\emph{representation} of $\Naturals$
+in the sense that we can define an invertible function,
+$\beta : \Naturals \rightarrow \Space{B}$,
+(an \emph{isomorphism}) between $\Naturals$ and 
+finite bit sequences
+that preserves addition (and ordering and identity):
+\begin{equation}
+\beta \left( a \,\Add{\Naturals} \, b\right)
+\;=\;
+\beta ( a ) \, \Add{\Space{B}} \, \beta ( b )
+\end{equation}
+(again without proof).
+
+A proof-of-concept implementation in Java,
+supporting just the commutative monoid over addition, 
+can be found at
+\href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/UnboundedNatural.java}
+{\javaFont UnboundedNatural.java}.
+This implements $\Naturals$ with an unbounded sequence
+of {\javaFont int} 32 bit words, treated as unsigned.
+Adding two such sequences of $1073741809$ words
+takes more than $20$ minutes and 
+runs out of memory in a 56g JVM.
+
+A more practical implementation,
+that offers better performance for most purposes,
+can be found at: 
+\href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/BoundedNatural.java}
+{\javaFont BoundedNatural.java}.
+However, 
+like \href{https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/math/BigInteger.java}
+{\javaFont java.math.BigInteger},
+its range is bounded, so it only supports a subset of $N$.
+
+{\javaFont BoundedNatural} and {\javaFont BigInteger}
+both use {\javaFont int[]} arrays to hold their bits.
+The maximum size of an array in Java is limited
+by the fact that the JVM 
+requires array sizes and indexes to be specified 
+with {\javaFont int} values.
+(See \citeAuthorYearTitle[section 6.5]{LindholmEtAl:2021:JVMS16}.)
+This limits us to at most {\javaFont Integer.MAX\_VALUE} elements.
+However, the actual maximum array length is strictly less than that,
+by an amount that appears to be implementation dependent.
+In my particular setup, attempting to create an {\javaFont int[]}
+{\javaFont Integer.MAX\_VALUE-1} result in:
+``{\javaFont java.lang.OutOfMemoryError: 
+Requested array size exceeds VM limit}'',
+even though there is plenty of memory available to hold 
+an array of that size.
+(I haven't been able to find any clear discussion of this in
+\citeAuthorYearTitle{GoslingEtAl:2021:JLS16}.)
+
+There is an even smaller limit on the size of numbers that can be
+represented by {\javaFont BoundedNatural} and 
+{\javaFont java.math.BigInteger},
+due to the fact that both allow access to arbitrary bits
+indexed by {\javaFont int}.
+This means the maximum length bit sequence is 
+{\javaFont Integer.MAX\_VALUE},
+and the maximum number of words is then
+{\javaFont Integer.MAX\_VALUE/32}, or
+{\javaFont Integer.MAX\_VALUE>>5}.
+
+{\javaFont BoundedNatural}, like {\javaFont java.math.BigInteger}
+Most C-family languages o
+
+\begin{plQuote}
+{\citeAuthorYearTitle{RitchieStroustrupGosling:2000:CFamily}}{}%
+{%
+Q: Programmers often talk about the advantages and disadvantages 
+of programming in a "simple language."  
+What does that phrase mean to you, and is [C/C++/Java] 
+a simple language in your view? 
+
+\ldots
+
+Gosling: For me as a language designer, 
+which I don't really count myself as these days, 
+what "simple" really ended up meaning was could I expect 
+J. Random Developer to hold the spec in his head. 
+That definition says that, for instance, Java isn't---and 
+in fact a lot of these languages end up 
+with a lot of corner cases, things that nobody really understands. 
+Quiz any C developer about unsigned, and pretty soon you discover 
+that almost no C developers actually understand what goes on 
+with unsigned, what unsigned arithmetic is. 
+Things like that made C complex. 
+The language part of Java is, I think, pretty simple. 
+The libraries you have to look up.}
+\end{plQuote}
+
+\begin{plQuote}
+{\citeAuthorYearTitle{JDK-4879804}}{}%
+{%
+A DESCRIPTION OF THE REQUEST: (Ranjith Mandala)
+
+I've seen that there have been several requests 
+for unsigned integral types in Java, 
+and you have generally blown these off 
+in a fairly cavalier manner. 
+Usually you report that these types are unnecessary 
+and can be worked around. In some cases you are correct, 
+and I can write code that chews up CPU time 
+masking and shifting bits around, 
+using the char type as an unsigned temporary bucket, etc. 
+However, I'm dealing with a stream of bytes 
+that contains numeric values. 
+I have to grab a few bytes at a time 
+and make a number out of them---an integer, a long, whatever. 
+Obviously, some of those bytes may have the high-order bit set, 
+not because they are negative numbers 
+but because that's how they fit in that particular byte 
+in the sequence. 
+Java's insistence on treating each byte as a signed value, 
+and therefore doing sign-extension for me, is a major pain.
+
+What this all boils down to is this: 
+as a language vendor you should not be continually telling 
+your user community that they are wrong 
+when they request support from the language. 
+Support the unsigned types because it is a reasonable thing to do, 
+and stop pontificating. 
+This is a major oversight in the language, and quite frankly, 
+I'm amazed that you think it's okay to waste CPU run time 
+rather than CPU compile time!
+
+Joe Darcy added a comment - 2003-06-16 17:00
+
+BT2:EVALUATION
+
+If you want to more conveniently convert bytes to int or long, 
+consider using nio byte buffers and viewing the byte buffer 
+as an int or long buffer instead.
+
+A parallel family of unsigned types was deliberately 
+omitted from Java to avoid the confusion 
+of combining signed and unsigned values in arithmetic expressions. 
+That said, there are times
+ when having unsigned arithmetic operations would be convenient. 
+ However, if the bits of an int or long are interepreted 
+ as unsigned two's complement numbers, 
+ the output of add/subtract and multiply are 
+ the same as if the numbers are interpreted as signed values 
+ (this is a features of two's complement arithmetic). 
+ Therefore, if you track signed-ness yourself, 
+ you only need a separate unsigned divide method 
+ and some conversion methods to have all the operations.}
+\end{plQuote}
+
+
+\end{plSection}%{Implementation}
+%-----------------------------------------------------------------
+\end{plSection}%{Natural numbers}
+%-----------------------------------------------------------------
+\begin{plSection}{Integers}
+
+
+%-----------------------------------------------------------------
+\begin{plSection}{Implementation}
+%-----------------------------------------------------------------
+\begin{plSection}{\javaFont BigInteger}
+
+\end{plSection}%{\javaFont BigInteger}
+%-----------------------------------------------------------------
+\begin{plSection}{Primitives}
+
+\end{plSection}%{Primtives}
+%-----------------------------------------------------------------
+\end{plSection}%{Implementation}
+%-----------------------------------------------------------------
+\end{plSection}%{Integers}
+%-----------------------------------------------------------------
+\begin{plSection}{Rationals}
+
+
+\end{plSection}%{Rationals}
+%-----------------------------------------------------------------
+\begin{plSection}{Classical Reals}
+
+
+\end{plSection}%{Classical Reals}
+%-----------------------------------------------------------------
+\begin{plSection}{Computable Reals}
+
+\end{plSection}%{Computable Reals}
+%-----------------------------------------------------------------
+\begin{plSection}{Hyperreals and infinitesimals}
+
+\end{plSection}%{Hyperreals and infinitesimals}
+%-----------------------------------------------------------------
+
+\end{plSection}%{Number systems}
+
+%-----------------------------------------------------------------
 \input{typesetting}
 %-----------------------------------------------------------------
 %-----------------------------------------------------------------
