@@ -108,6 +108,7 @@ public final class Bounded {
         Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
 
   public static final void main (final String[] args) {
+    System.out.println();
     additionNatural();
 //    additionBigInteger();
   }

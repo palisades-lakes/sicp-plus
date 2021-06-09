@@ -63,7 +63,7 @@ import sicpplus.java.prng.GeneratorBase;
  * <code>Integer.MAX_VALUE-5</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-06-07
+ * @version 2021-06-08
  */
 
 @SuppressWarnings("unchecked")
@@ -79,8 +79,7 @@ implements Ringlike<BoundedNatural> {
    * {@link #MAX_BITS}.
    */
 
-  public final static int MAX_WORDS = ((Integer.MAX_VALUE+1) >> 5);
-  //public final static int MAX_WORDS = (Integer.MAX_VALUE >> 5);
+  public final static int MAX_WORDS = (Integer.MAX_VALUE >> 5);
 
 /** throw an {@link ArithmeticException} if
    * <code>nwords</code> exceeds {@link #MAX_WORDS}.
@@ -95,8 +94,8 @@ implements Ringlike<BoundedNatural> {
 
 
   /** The value of {@link #hiBit()} is assumed to fit in an
-   * <code>int</code>. That means we could have at most
-   * <code>{@link Integer#MAX_VALUE}</code> bits.
+   * <code>int</code>. That means it can be at most
+   * <code>{@link Integer#MAX_VALUE}</code>.
    * For convenience, I want the representation to use
    * all the bits in each of the <code>int</code> words,
    * so <code>MAX_BITS</code> should be a multiple of 32.
