@@ -3710,7 +3710,7 @@ can be found at:
 However, 
 like \href{https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/math/BigInteger.java}
 {\javaFont java.math.BigInteger},
-its range is bounded, so it only supports a subset of $N$.
+its range is bounded, so it only supports a subset of $\Naturals$.
 
 {\javaFont BoundedNatural} and {\javaFont BigInteger}
 both use {\javaFont int[]} arrays to hold their bits.
@@ -3904,6 +3904,17 @@ Might re-arrangements of the code may change whether the
 wraparound happens or not, so a given intermediate value
 may be $0$ in some cases, and $1+2^{32}$ in others.
 
+I think the key problem is an invisible redefinition of 
+``{\javaFont +}''.
+Expressions in {\javaFont unsigned byte} implicitly define
+{\javaFont +} as $\Add{\Naturals[0,0xFF]}$.
+Change one argument to {\javaFont unsigned short} 
+and {\javaFont +} is quietly redefined as
+$\Add{\Naturals[0,0xFFFF]}$.
+I suspect this leads to many developers forgetting about the
+fact that the arithmetic is modular, and ignoring the possibility
+of overflow.
+
 The situation is worse, but not fundamentally different,
 when you mixed number representations where neither set of
 values is a subset of the other.
@@ -3918,7 +3929,6 @@ implement).
 The C standard, that Gosling was complaining about,
 interprets the twos-complement bits of the signed number
 as unsigned, effectively for signed/unsigned byte:
-\TODO ref?
 \begin{equation}
 u + s \; \;=
 \begin{cases}
@@ -3928,6 +3938,8 @@ u + s \; \;=
 \end{equation}
 which makes even less sense as ``generic addition''.
 
+\TODO C-standard ref?
+
 \NOTE Java's exclusion of unsigned integer types doesn't
 eliminate the problem---the same issue arises in arithmetic mixing
 {\javaFont long} and {\javaFont double},
@@ -3935,6 +3947,89 @@ where, despite it being described as a ``widening'' conversion
 \cite[section 5.1.2]{GoslingEtAl:2021:JLS16},
 the set of numbers representable in neither of the two types
 is a subset of the other.
+
+So then. what could/should $+$ mean---when given operands
+representing different subsets of $\Naturals$?
+\begin{itemize}
+  \item No overflow: Implement {\javaFont +} as 
+  $\Add{\Naturals}$. In other words, whenever the value of 
+  {\javaFont a + b} would be outside the subset of $\Naturals$
+  covered by their implementations, return an implementation
+  that can handle that value. 
+  
+  This could be done statically,
+  {\javaFont 
+  ((unsigned int) a) + ((unsigned int) b) -> unsigned long},
+  for all {\javaFont unsigned int} {\javaFont a} and {\javaFont b},
+  or dynamically, where the returned type depends whether 
+  {\javaFont a + b} fits in an {\javaFont unsigned int} or not.
+  
+  Either way is very expensive. The static version would quickly
+  promote all but the simplest expressions to an impractical
+  unbounded representation.
+  The dynamic version requires giving up primitive arithmetic
+  for object-based. (at least, I don't know of any language 
+  that supports dynamically changing which primitive type is
+  returned from a function, though I think I can see how 
+  that might be done in some kind of tagged architecture.)
+  
+  \TODO JMH code to measure the cost of static/dynamic promotion,
+  at least for a proof-of-concept implementation.
+  
+  \item Overflow exceptions: 
+  \href{https://github.com/palisades-lakes/sicpplus/blob/main/src/main/java/sicpplus/java/numbers/BoundedNatural.java}
+{\javaFont BoundedNatural} and 
+\href{https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/math/BigInteger.java}
+{\javaFont BigInteger}
+both behave this way.
+  
+  Java offers this in some cases (for signed integers)
+  with {\javaFont Math.addExact}.
+  
+  This still has significant cost relative to instruction level
+  modular addition.
+  
+  \TODO JHM code to measure this, at least p-o-c.
+  
+  \item All arithmetic is modular, 
+  using a specific $\Add{\Naturals[n_0,n_1]}$.
+  Mixing arguments from implementations covering different subsets
+  of $\Naturals$ requires explicit conversion to a monoid
+  $\Naturals[n_0,n_1]$ that includes all of them.
+  The danger here is that it's easy to forget that the arithmetic
+  is modular, because the $+$ we learned in elementary school
+  wasn't, and it's also easy to lose track of exactly which
+  $\Naturals[n_0,n_1]$ we are operating in 
+  (though requiring explicit conversion helps.)
+  
+  One way to think about this is that it is exposing a fundamental
+  difference between mathematics (as a language) and programming
+  languages. 
+  Mathematics, as practiced is full of ambiguity---one 
+  of its great strengths I would argue.
+  We can view $3$ as simultaneously an element of $\Naturals$
+  and any of the modular subsets of $\Naturals$ that contain it.
+  Or we can think of $\Naturals[n_0,n_1]$ as isomorphic to 
+  a subset of $\Naturals$, with a very distinct addition operator.
+  
+  When we start talking about implementation, on the other hand,
+  we have to make a choice. 
+  
+  Are {\javaFont unsigned byte},
+  {\javaFont unsigned short}, {\ldots} are to be viewed as
+  elements of distinct monoids (or semi-rings),
+  with natural isomorphisms between matching subsets?
+  Then requiring explicit conversion makes sense.
+  
+  Or do we want to think of them all as elements of one big set?
+  Then, to get one big monoid, we need to pick one definition
+  of {\javaFont +}, and the modular $\Add{\Naturals[n_0,n_1]}$
+  for the enclosing $\Naturals[n_0,n_1]$ 
+  is the only choice that works.
+  This is equivalent to automatic promotion to the largest 
+  word size, as discussed above.
+  
+\end{itemize}
 
 \end{plSection}%{Implementation}
 %-----------------------------------------------------------------
