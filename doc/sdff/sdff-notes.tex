@@ -53,11 +53,13 @@
 \date{draft of \today}
 %-----------------------------------------------------------------
 \begin{document}
+
 \maketitle
 \PalisadesLakesTableOfContents{7}
 %-----------------------------------------------------------------
 \def\sharedFolder{../../shared/}
 %-----------------------------------------------------------------
+\TODO Choose sans math font to match pseudocode font everywhere?
 \begin{plSection}{Short preview}
 
 \citeAuthorYearTitle{HansonSussman:2021:SDFF}
@@ -3614,7 +3616,11 @@ version should become apparent soon.)
 
 Then we can define a new addition operator 
 $\Add{ \Naturals[n_0,n_1] }$:
+
+\TODO breakable option for plChunks
+
 \begin{plAlgorithm}
+[breakable=false]
 {Modular addition}
 {modularAddition}
 \begin{lstlisting}[language=pseudocode]
@@ -4053,19 +4059,47 @@ both behave this way.
 %-----------------------------------------------------------------
 \begin{plSection}{Integers}
 
-\TODO Choose sans math font to match pseudocode font everywhere?
+A common situation that leads to new mathematical structures
+is this:
+We have a problem that can be expressed in an existing structure,
+but doesn't have a solution that can be expressed 
+in that structure, at least, not in all cases.
 
-Suppose we have a problem to solve:
+This is how we get from the natural numbers to the positive
+and negative integers.
+Posing an example problem requiring
+negative integers will no doubt seem silly,
+since nearly all developers already know the answer.
+But perhaps it will make the core process clearer,
+without the potential distraction that later,
+more complex problems may add.
+
+And it's worth noting that, even though just about everyone learns
+about negative numbers in elementary school,
+and they were in use by at least the $200$s (in Han China),
+european mathematicians resisted them
+an invalid, or cheating, up to the $1800$s. 
+(See \citeAuthorTitle{wiki:NegativeNumber}.)
+
+Suppose I have $12$ loaves and I've promised 
+my friend $8$. How many can I give to someone else?
+Abstracting that a bit,
+we have
 $a = b + c$
-where $a,b,c\in \Naturals$ and we know $a$ and $b$,
-but not $c$.
+where $a,b,c \in \Naturals$ and I know 
+$a$, the number of loaves I have, 
+and $b$, the number I've promised,
+but not $c$, the number that will remain.
+I am also assuming I have more loaves than I have promised.
+Pretending that we have never heard of subtraction,
+we might solve for $c$ with a simple search:
 
 \begin{plAlgorithm}
 {Reinventing subtraction}
 {reinventSubtraction}
 \begin{lstlisting}[language=pseudocode]
-(defn $\Sub{\Naturals}$ [a b]
-  (assert ($\Leq{\Naturals}$ 0 b a))
+(defn $\Sub{\Naturals}$ [^$\Naturals$ a ^$\Naturals$ b]
+  (assert ($\Leq{\Naturals}$ b a))
   (let [step (fn [c]
                     (if ($\Eq{\Naturals}$ a ($\Add{\Naturals}$ b c))
                       c
@@ -4073,6 +4107,20 @@ but not $c$.
     (step 0)))
 \end{lstlisting}
 \end{plAlgorithm}
+
+Given an implementation for $\Naturals$, or some subset that
+includes $a,b,c$, and a little thought, 
+we can come up with a more efficient, direct algorithm 
+for $\Sub{\Naturals}$, one that doesn't involve trying all 
+possibilities.
+
+What we end up with is a new operator (binary function),
+which, unlike the previous ones, is only defined on a 
+subset:
+$\Sub{\Naturals}:
+\left\{ \, [a,b] \in \Naturals{\times}\Naturals 
+\; \mathbf{\middle|} \; a \geq b \, \right\} \, \rightarrow \, \Naturals$.
+
 
 %-----------------------------------------------------------------
 \begin{plSection}{Implementation}
