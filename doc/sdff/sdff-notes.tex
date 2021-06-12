@@ -3507,7 +3507,7 @@ The natural numbers answer two kinds of questions:
 \end{itemize}
 
 Addition, $\Add{\Naturals}$, answers questions like:
-If I have a basket with $m$ loaves of bread,
+If I have $m$ loaves of bread,
 and my friend has $n$, how many do we have all together?
 
 The ordering tells us: Who has more bread?
@@ -3516,7 +3516,7 @@ The ordering tells us: Who has more bread?
 Look into origins of math, Egypt, Mesopotamia, etc, for better
 examples?
 
-$\Naturals$ is  a \emph{commutative monoid},
+$\Naturals$ is a \emph{commutative monoid},
 which is a monoid where the operation is symmetric:
 \begin{description}
 \item[Elements:] $\Set{N}$
@@ -3619,12 +3619,12 @@ $\Add{ \Naturals[n_0,n_1] }$:
 {modularAddition}
 \begin{lstlisting}[language=pseudocode]
 (defn $\Add{\Naturals[n_0,n_1]}$ [a b]
-  (assert (<= 0 $n_0$ a $n_1$))
-  (assert (<= 0 $n_0$ b $n_1$))
+  (assert ($\Leq{\Naturals}$ 0 $n_0$ a $n_1$))
+  (assert ($\Leq{\Naturals}$ 0 $n_0$ b $n_1$))
   (let [step (fn [sum count]
-                    (if (= count b)
+                    (if ($\Eq{\Naturals}$ count b)
                       sum
-                      (if (= sum $n_1$)
+                      (if ($\Eq{\Naturals}$ sum $n_1$)
                         (step $n_0$ ($\Add{\Naturals}$ 1 count))
                         (step ($\Add{\Naturals}$ 1 sum) ($\Add{\Naturals}$ 1 count)))))]
     (step a 0)))
@@ -3632,6 +3632,16 @@ $\Add{ \Naturals[n_0,n_1] }$:
 \end{plAlgorithm}
 (\NOTE This is not intended to be a practical algorithm,
 more a specification using only $\Add{\Naturals}$.)
+
+\TODO Change $\Add{\Naturals}$ to something like
+$\mathsf{\Naturals{.}+}$, 
+$\mathsf{\Naturals{:}+}$, 
+$\Naturals\mathsf{{:}+}$, 
+$\Naturals\mathsf{{\colon}+}$, 
+$\Naturals\mathsf{/+}$, 
+$\mathsf{(+ \, \Naturals)}$, 
+$\mathsf{+(\Naturals)}$, 
+to look more like a package prefix or field value?
 
 We can then define the commutative semi-group 
 (a monoid without identity~\cite{wiki:Semigroup})
@@ -3765,10 +3775,16 @@ at present.
 In practice, time and space constraints limit how much useful
 computation can be done close to the overflow limit.
 
-\TODO use JMH to measure cost of arithmetic with
+\TODO Use JMH to measure cost of arithmetic with
 {\javaFont UnboundedNatural},
 {\javaFont BoundedNatural},
 and primitives.
+
+\TODO Should this discussion be moved to the integer section?
+So that signed numbers make more sense? On the other hand, 
+it is a simpler to just stick to one operation:
+the $\Add{\Naturals}$ monoid.
+
 
 Most C-family languages offer primitive fixed length
 unsigned integers, with $8$, $16$, $32$, $64$, and 
@@ -4037,6 +4053,26 @@ both behave this way.
 %-----------------------------------------------------------------
 \begin{plSection}{Integers}
 
+\TODO Choose sans math font to match pseudocode font everywhere?
+
+Suppose we have a problem to solve:
+$a = b + c$
+where $a,b,c\in \Naturals$ and we know $a$ and $b$,
+but not $c$.
+
+\begin{plAlgorithm}
+{Reinventing subtraction}
+{reinventSubtraction}
+\begin{lstlisting}[language=pseudocode]
+(defn $\Sub{\Naturals}$ [a b]
+  (assert ($\Leq{\Naturals}$ 0 b a))
+  (let [step (fn [c]
+                    (if ($\Eq{\Naturals}$ a ($\Add{\Naturals}$ b c))
+                      c
+                      (step ($\Add{\Naturals}$ 1 c))]
+    (step 0)))
+\end{lstlisting}
+\end{plAlgorithm}
 
 %-----------------------------------------------------------------
 \begin{plSection}{Implementation}
