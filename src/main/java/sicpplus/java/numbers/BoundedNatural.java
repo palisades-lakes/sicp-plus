@@ -101,7 +101,7 @@ implements Ringlike<BoundedNatural> {
    * so <code>MAX_BITS</code> should be a multiple of 32.
    */
 
-  public static final long MAX_BITS = (MAX_WORDS << 5);
+  public static final int MAX_BITS = (MAX_WORDS << 5);
 
   /** This array is never modified.
    */
